@@ -1,6 +1,6 @@
 const draggable = {};
 
-draggable.Setup = function()
+(function()
 {
     let elementStyle, handleStyle;
     const prevStyle = {};
@@ -81,6 +81,22 @@ draggable.Setup = function()
         {
             if (elem.draggableData && elem.draggableData.isDropArea) // search for drop area
             {
+                // skip if the drop area is the child of the dragged element
+                let parentNode = elem.parentNode;
+                let skip = false;
+                while (parentNode)
+                {
+                    if (parentNode === element)
+                    {
+                        skip = true;
+                        break;
+                    }
+                    parentNode = parentNode.parentNode;
+                }
+
+                if (skip)
+                    continue;
+
                 isHoveringOverAnyDropArea = true;
                 if (previousHoveredElement !== elem)
                 {
@@ -103,7 +119,7 @@ draggable.Setup = function()
         elementStyle.top = top + "px";
     };
     document.addEventListener(isTouchDevice ? "touchmove" : "mousemove", draggable.MouseMoved);
-    
+
     draggable.MouseUp = function()
     {
         if (!dragging)
@@ -119,6 +135,7 @@ draggable.Setup = function()
             if (hoveredElement.draggableData.onDropCheck(element))
             {
                 element.draggableData.attachedDropArea = hoveredElement;
+                hoveredElement.draggableData.onDropHoverLeave(element);
                 hoveredElement.draggableData.onDrop(element);
             }
             else
@@ -203,13 +220,23 @@ draggable.Setup = function()
 
     let elementMouseDown = function(ev)
     {
-        let node = ev.target;
-        while (!node.draggableData)
+        if (dragging)
+            return;
+
+        let node;
+        let isValidElement = false;
+        for (let i = 0; i < ev.path.length; ++i)
         {
-            node = node.parentNode;
-            if (!node)
-                return;
+            node = ev.path[i];
+            if (node.draggableData && !node.draggableData.isDropArea)
+            {
+                isValidElement = true;
+                break;
+            }   
         }
+
+        if (!isValidElement)
+            return;
 
         if (isTouchDevice)
             ev = ev.touches[0];
@@ -219,8 +246,10 @@ draggable.Setup = function()
         elementStyle = element.style;
         handleStyle = draggableData.handle.style;
         dragging = true;
-        dragStartX = ev.clientX;
-        dragStartY = ev.clientY;
+
+        const borderSize = draggableData.constraintData && draggableData.constraintData.borderSize || 0;
+        dragStartX = ev.clientX + borderSize;
+        dragStartY = ev.clientY + borderSize;
         dragStartScrollX = window.pageXOffset;
         dragStartScrollY = window.pageYOffset;
 
@@ -265,12 +294,10 @@ draggable.Setup = function()
 
         functions = functions || {};
         element.draggableData.isDropArea = true;
-        element.draggableData.onDropCheck = functions.check || (() => true);
-        element.draggableData.onDropHoverEnter = functions.hoverenter || (() => {});
-        element.draggableData.onDropHoverLeave = functions.hoverleave || (() => {});
-        element.draggableData.onDrop = functions.drop || (() => {});
-        element.draggableData.onDetach = functions.detach || (() => {});
+        element.draggableData.onDropCheck = functions.check || (() => true); // function to check if a drop area accepts the element
+        element.draggableData.onDropHoverEnter = functions.hoverenter || (() => {}); // element is dragged over the drop area
+        element.draggableData.onDropHoverLeave = functions.hoverleave || (() => {}); // element is dragged out of the drop area
+        element.draggableData.onDrop = functions.drop || (() => {}); // element is dropped onto the drop area
+        element.draggableData.onDetach = functions.detach || (() => {}); // an element that was dropped inside the drop area is detached
     };
-};
-
-draggable.Setup();
+})();

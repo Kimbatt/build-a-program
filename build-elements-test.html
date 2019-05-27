@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="utf-8">
+<title>Builder</title>
+
+<style>
+body
+{
+    background: #323639;
+    color: white;
+}
+</style>
+</head>
+<body>
+
+<div id="main-drag-area" style="position: relative; border: 2px solid red; margin: 100px; width: 1400px; height: 600px;">
+
+</div>
+
+<script src="draggable.js"></script>
+
+<script src="ui-elements/ElementBase.js"></script>
+<script src="ui-elements/StatementBase.js"></script>
+<script src="ui-elements/ExpressionBase.js"></script>
+<script src="ui-elements/BlockStatement.js"></script>
+<script src="ui-elements/IfStatement.js"></script>
+
+<script src="build-elements.js"></script>
+<script>
+const dragArea = document.getElementById("main-drag-area");
+const ifstatement = new IfStatement(dragArea);
+const ifstatement2 = new IfStatement(dragArea);
+const ifstatement3 = new IfStatement(dragArea);
+const ifstatement4 = new IfStatement(dragArea);
+const ifstatement5 = new IfStatement(dragArea);
+</script>
+</body>
+</html>

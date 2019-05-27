@@ -117,7 +117,6 @@ document.querySelectorAll(".drop-area").forEach(dropArea =>
         drop: elem =>
         {
             console.log("drop");
-            dropArea.classList.remove("drop-area-hover");
             elem.style.position = "";
             dropArea.appendChild(elem);
         },

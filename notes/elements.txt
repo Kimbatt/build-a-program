@@ -1,0 +1,52 @@
+
+variable declaration: // statement
+(type) (name) = (type expression)
+
+block: // statement
+(statement)*
+
+if: // statement
+if (boolean expression) (block)
+[else if (boolean expression) (block)]*
+[else (block)]?
+
+
+while: // statement
+while (boolean expression) (block)
+
+
+do-while: // statement
+do (block) while (boolean expression)
+
+
+for: // statement
+for (statement) (boolean expression) (statement) (block)
+
+
+mathematical operators: // number expression
+add subtract multiply divide modulo: (number expression) [+ (number expression)]+
+
+
+boolean operators: // boolean expression
+and or: (boolean expression) [&& (boolean expression)]+
+
+
+number comparison: // boolean expression
+equal less greater lequal gequal notequal: (number expression) == (number expression)
+
+
+boolean comparison: // boolean expression
+equal notequal: (boolean expression) == (boolean expression)
+
+
+function call: // type expression (maybe void)
+functionname((type expression)*)
+
+
+
+
+
+
+
+
+
