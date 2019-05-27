@@ -30,11 +30,8 @@ body
 <script src="build-elements.js"></script>
 <script>
 const dragArea = document.getElementById("main-drag-area");
-const ifstatement = new IfStatement(dragArea);
-const ifstatement2 = new IfStatement(dragArea);
-const ifstatement3 = new IfStatement(dragArea);
-const ifstatement4 = new IfStatement(dragArea);
-const ifstatement5 = new IfStatement(dragArea);
+for (let i = 0; i < 10; ++i)
+    new IfStatement(dragArea);
 </script>
 </body>
 </html>

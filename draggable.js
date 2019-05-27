@@ -207,10 +207,10 @@ const draggable = {};
         const thisRect = getCoords(thisElement);
         const otherRect = getCoords(toElement);
 
-        constraintData.minX = otherRect.x - thisRect.x + borderSize;
-        constraintData.minY = otherRect.y - thisRect.y + borderSize;
-        constraintData.maxX = otherRect.x + otherRect.width - (thisRect.x + thisRect.width + borderSize);
-        constraintData.maxY = otherRect.y + otherRect.height - (thisRect.y + thisRect.height + borderSize);
+        constraintData.minX = 0; //otherRect.x - thisRect.x + borderSize;
+        constraintData.minY = 0; //otherRect.y - thisRect.y + borderSize;
+        constraintData.maxX = otherRect.width - thisRect.width - borderSize * 2;//otherRect.x + otherRect.width - (thisRect.x + thisRect.width + borderSize);
+        constraintData.maxY = otherRect.height - thisRect.height - borderSize * 2;//otherRect.y + otherRect.height - (thisRect.y + thisRect.height + borderSize);
 
         // constraintData.left = otherRect.x + borderSize;
         // constraintData.top = otherRect.y + borderSize;
@@ -222,6 +222,9 @@ const draggable = {};
     {
         if (dragging)
             return;
+
+        if (isTouchDevice)
+            ev = ev.touches[0];
 
         let node;
         let isValidElement = false;
@@ -237,9 +240,6 @@ const draggable = {};
 
         if (!isValidElement)
             return;
-
-        if (isTouchDevice)
-            ev = ev.touches[0];
 
         const draggableData = node.draggableData;
         element = draggableData.draggedElement;
