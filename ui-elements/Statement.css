@@ -1,0 +1,96 @@
+
+.if-statement
+{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    font-size: 20px;
+}
+
+.if-statement .container
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.if-statement .drag-handle
+{
+    display: inline-block;
+    align-self: stretch;
+    flex-shrink: 0;
+    width: 20px;
+    top: 0px;
+    cursor: grab;
+    background: cyan;
+}
+
+.if-statement .header
+{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.if-statement .iftext
+{
+    background: black;
+    padding: 5px 10px;
+}
+
+.if-statement .maincondition
+{
+    border: 2px solid black;
+    background: #404040;
+    display: inline-block;
+}
+
+.if-statement .maincondition.not-empty
+{
+    border: 0px;
+    background: black;
+}
+
+.if-statement .maincondition-placeholder
+{
+    width: 100%;
+    text-align: center;
+}
+
+.if-statement .mainblock
+{
+    background: #404040;
+    border: 2px solid black;
+    text-align: center;
+}
+
+.if-statement .mainblock-placeholder
+{
+    align-self: stretch;
+}
+
+.if-statement .mainblock-container
+{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.if-statement .mainblock-borderleft
+{
+    flex-shrink: 0;
+    align-self: stretch;
+    background: /*#ff8000*/ black;
+    width: 33px;
+}
+
+.if-statement .drop-highlight
+{
+    border: 2px dashed black;
+    background: #a0a0a0;
+}
+
+.if-statement .drop-normal
+{
+    border: 2px solid black;
+    background: #404040;
+}

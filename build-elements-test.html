@@ -4,6 +4,8 @@
 <head>
 <meta charset="utf-8">
 <title>Builder</title>
+<link rel="stylesheet" href="ui-elements/Statement.css">
+<link rel="stylesheet" href="ui-elements/Expression.css">
 
 <style>
 body
@@ -25,13 +27,22 @@ body
 <script src="ui-elements/StatementBase.js"></script>
 <script src="ui-elements/ExpressionBase.js"></script>
 <script src="ui-elements/BlockStatement.js"></script>
+<script src="ui-elements/BinaryBooleanExpression.js"></script>
 <script src="ui-elements/IfStatement.js"></script>
+<script src="ui-elements/BooleanAndExpression.js"></script>
+<script src="ui-elements/BooleanOrExpression.js"></script>
 
 <script src="build-elements.js"></script>
 <script>
 const dragArea = document.getElementById("main-drag-area");
 for (let i = 0; i < 10; ++i)
     new IfStatement(dragArea);
+
+for (let i = 0; i < 5; ++i)
+    new BooleanAndExpression(dragArea);
+
+for (let i = 0; i < 5; ++i)
+    new BooleanOrExpression(dragArea);
 </script>
 </body>
 </html>

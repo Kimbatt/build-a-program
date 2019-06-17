@@ -218,7 +218,20 @@ const draggable = {};
         // constraintData.bottom = constraintData.top + otherRect.height - borderSize * 2;
     };
 
-    let elementMouseDown = function(ev)
+    const getEventPath = function(ev)
+    {
+        const path = [];
+        let currentElement = ev.target;
+        while (currentElement)
+        {
+            path.push(currentElement);
+            currentElement = currentElement.parentNode;
+        }
+
+        return path;
+    }
+
+    const elementMouseDown = function(ev)
     {
         if (dragging)
             return;
@@ -228,9 +241,10 @@ const draggable = {};
 
         let node;
         let isValidElement = false;
-        for (let i = 0; i < ev.path.length; ++i)
+        const path = getEventPath(ev);
+        for (let i = 0; i < path.length; ++i)
         {
-            node = ev.path[i];
+            node = path[i];
             if (node.draggableData && !node.draggableData.isDropArea)
             {
                 isValidElement = true;

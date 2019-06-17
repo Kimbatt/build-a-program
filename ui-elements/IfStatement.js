@@ -9,26 +9,32 @@ class IfStatement extends StatementBase
         // main element
         this.element = document.createElement("div");
         this.element.uiElementData = this;
-        this.element.style = "display: flex; flex-direction: column; position: absolute; background: black; border: 2px solid red; font-size: 20px;";
+        this.element.className = "if-statement";
 
         // header: if (condition)
         this.header = document.createElement("div");
-        this.header.style = "display: flex; justify-content: flex-start;";
+        this.header.className = "header";
 
         const dragHandle = document.createElement("div");
-        dragHandle.style = "display: inline-block; align-self: stretch; flex-shrink: 0; width: 10px; top: 0px; cursor: grab; background: cyan;";
-        this.header.appendChild(dragHandle);
+        dragHandle.className = "drag-handle";
+        this.element.appendChild(dragHandle);
+
+        const container = document.createElement("div");
+        container.className = "container";
+        this.element.appendChild(container);
 
         const ifText = document.createElement("div");
         ifText.innerText = "if";
-        ifText.style = "padding: 5px 10px;";
+        ifText.className = "iftext";
 
         // condition drop area
+        this.mainConditionMinWidth = "150px";
         this.hasCondition = false;
         this.mainCondition = document.createElement("div");
-        this.mainCondition.style = "border: 2px solid black; background: #404040; display: inline-block; width: 100%;";
+        this.mainCondition.className = "maincondition drop-normal";
+        this.mainCondition.style.minWidth = this.mainConditionMinWidth;
         draggable.CreateDropArea(this.mainCondition, {
-            check: elem => !this.hasCondition,
+            check: elem => !this.hasCondition && elem.uiElementData && elem.uiElementData.isExpression(),
             hoverenter: this.onHoverEnterCondition.bind(this),
             hoverleave: this.onHoverLeaveCondition.bind(this),
             drop: this.onDropCondition.bind(this),
@@ -37,31 +43,34 @@ class IfStatement extends StatementBase
 
         // placeholder for the main condition +
         this.mainConditionPlaceholder = document.createElement("div");
-        this.mainConditionPlaceholder.style = "width: 100%; text-align: center;";
+        this.mainConditionPlaceholder.className = "maincondition-placeholder";
         this.mainConditionPlaceholder.innerText = "+";
         this.mainCondition.appendChild(this.mainConditionPlaceholder);
 
         this.header.appendChild(ifText);
         this.header.appendChild(this.mainCondition);
 
-        this.element.appendChild(this.header);
+        container.appendChild(this.header);
 
         this.mainBlockContainer = document.createElement("div");
-        this.mainBlockContainer.style = "display: flex; justify-content: flex-start; width: 100%;";
+        this.mainBlockContainer.className = "mainblock-container";
         // the statements of the main block
+        this.mainBlockMinWidth = "200px";
         this.mainBlock = document.createElement("div");
-        this.mainBlock.style = "background: #404040; border: 2px solid black; width: 100%; text-align: center;";
+        this.mainBlock.className = "mainblock";
+        this.mainBlock.style.minWidth = this.mainBlockMinWidth;
 
         this.mainBlockPlaceholder = document.createElement("div");
-        this.mainBlockPlaceholder.style = "align-self: stretch;";
+        this.mainBlockPlaceholder.className = "mainblock-placeholder";
         this.mainBlockPlaceholder.innerText = "+";
 
         this.mainBlock.appendChild(this.mainBlockPlaceholder);
 
         const mainBlockBorderLeft = document.createElement("div");
-        mainBlockBorderLeft.style = "flex-shrink: 0; align-self: stretch; background: #ff8000; width: 30px;";
+        mainBlockBorderLeft.className = "mainblock-borderleft";
         this.mainBlockContainer.appendChild(mainBlockBorderLeft);
         draggable.CreateDropArea(this.mainBlock, {
+            check: elem => elem.uiElementData && elem.uiElementData.isStatement(),
             hoverenter: this.onHoverEnterBlock.bind(this),
             hoverleave: this.onHoverLeaveBlock.bind(this),
             drop: this.onDropBlock.bind(this),
@@ -70,7 +79,7 @@ class IfStatement extends StatementBase
 
         this.mainBlockContainer.appendChild(this.mainBlock);
 
-        this.element.appendChild(this.mainBlockContainer);
+        container.appendChild(this.mainBlockContainer);
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, dragHandle);
@@ -92,24 +101,27 @@ class IfStatement extends StatementBase
     onHoverEnterCondition(element)
     {
         console.log("hover enter");
-        this.mainCondition.style.border = "2px dashed black";
-        this.mainCondition.style.background = "#a0a0a0";
+        this.mainCondition.classList.remove("drop-normal");
+        this.mainCondition.classList.add("drop-highlight");
     }
 
     onHoverLeaveCondition(element)
     {
         console.log("hover leave");
-        this.mainCondition.style.border = "2px solid black";
-        this.mainCondition.style.background = "#404040";
+        this.mainCondition.classList.add("drop-normal");
+        this.mainCondition.classList.remove("drop-highlight");
     }
 
     onDropCondition(element)
     {
         this.hasCondition = true;
         this.mainConditionPlaceholder.style.display = "none";
+        this.mainCondition.style.minWidth = "";
+        this.mainCondition.classList.add("not-empty");
         console.log("drop");
-        element.style.position = "";
+        element.style.position = "static";
         this.mainCondition.appendChild(element);
+        element.classList.add("nested");
 
         this.recalculateDraggableSizes();
     }
@@ -118,9 +130,11 @@ class IfStatement extends StatementBase
     {
         this.hasCondition = false;
         this.mainConditionPlaceholder.style.display = "";
+        this.mainCondition.style.minWidth = this.mainConditionMinWidth;
+        this.mainCondition.classList.remove("not-empty");
         console.log("detach");
-        //this.mainCondition.removeChild(elem);
         this.parentNode.appendChild(element);
+        element.classList.remove("nested");
 
         this.recalculateDraggableSizes();
     }
@@ -128,22 +142,23 @@ class IfStatement extends StatementBase
     onHoverEnterBlock(element)
     {
         console.log("hover enter");
-        this.mainBlock.style.border = "2px dashed black";
-        this.mainBlock.style.background = "#a0a0a0";
+        this.mainBlock.classList.remove("drop-normal");
+        this.mainBlock.classList.add("drop-highlight");
     }
 
     onHoverLeaveBlock(element)
     {
         console.log("hover leave");
-        this.mainBlock.style.border = "2px solid black";
-        this.mainBlock.style.background = "#404040";
+        this.mainBlock.classList.add("drop-normal");
+        this.mainBlock.classList.remove("drop-highlight");
     }
 
     onDropBlock(element)
     {
         console.log("drop");
-        element.style.position = "";
-        this.mainBlock.appendChild(element);
+        element.style.position = "static";
+        this.mainBlock.style.minWidth = "";
+        this.mainBlock.prepend(element);
 
         this.recalculateDraggableSizes();
     }
@@ -151,7 +166,7 @@ class IfStatement extends StatementBase
     onDetachBlock(element)
     {
         console.log("detach");
-        //this.mainCondition.removeChild(elem);
+        this.mainBlock.style.minWidth = this.mainBlockMinWidth;
         this.parentNode.appendChild(element);
 
         this.recalculateDraggableSizes();

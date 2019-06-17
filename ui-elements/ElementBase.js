@@ -1,5 +1,6 @@
 
 class ElementBase
 {
-    
+    isExpression() {}
+    isStatement() {}
 }
