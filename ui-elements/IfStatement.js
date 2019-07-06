@@ -5,6 +5,7 @@ class IfStatement extends StatementBase
     {
         super();
         this.parentNode = parentNode;
+        this.childCount = 0;
 
         // main element
         this.element = document.createElement("div");
@@ -65,6 +66,7 @@ class IfStatement extends StatementBase
         this.mainBlockPlaceholder.innerText = "+";
 
         this.mainBlock.appendChild(this.mainBlockPlaceholder);
+        this.mainBlockPlaceholderActive = true;
 
         const mainBlockBorderLeft = document.createElement("div");
         mainBlockBorderLeft.className = "mainblock-borderleft";
@@ -73,6 +75,7 @@ class IfStatement extends StatementBase
             check: elem => elem.uiElementData && elem.uiElementData.isStatement(),
             hoverenter: this.onHoverEnterBlock.bind(this),
             hoverleave: this.onHoverLeaveBlock.bind(this),
+            hovermove: this.onHoverMoveBlock.bind(this),
             drop: this.onDropBlock.bind(this),
             detach: this.onDetachBlock.bind(this)
         });
@@ -101,15 +104,15 @@ class IfStatement extends StatementBase
     onHoverEnterCondition(element)
     {
         console.log("hover enter");
-        this.mainCondition.classList.remove("drop-normal");
-        this.mainCondition.classList.add("drop-highlight");
+        this.mainConditionPlaceholder.classList.remove("drop-normal");
+        this.mainConditionPlaceholder.classList.add("drop-highlight");
     }
 
     onHoverLeaveCondition(element)
     {
         console.log("hover leave");
-        this.mainCondition.classList.add("drop-normal");
-        this.mainCondition.classList.remove("drop-highlight");
+        this.mainConditionPlaceholder.classList.add("drop-normal");
+        this.mainConditionPlaceholder.classList.remove("drop-highlight");
     }
 
     onDropCondition(element)
@@ -142,29 +145,75 @@ class IfStatement extends StatementBase
     onHoverEnterBlock(element)
     {
         console.log("hover enter");
-        this.mainBlock.classList.remove("drop-normal");
-        this.mainBlock.classList.add("drop-highlight");
+        this.mainBlockPlaceholder.classList.remove("drop-normal");
+        this.mainBlockPlaceholder.classList.add("drop-highlight");
+
+        this.mainBlockPlaceholderActive = true;
+        this.mainBlock.appendChild(this.mainBlockPlaceholder);
     }
 
-    onHoverLeaveBlock(element)
+    onHoverMoveBlock(element, mouseX, mouseY)
     {
+        let foundElem = undefined;
+
+        for (let child of this.mainBlock.children)
+        {
+            const { y, height } = GetCoords(child);
+            if (y + height / 2 > mouseY)
+            {
+                foundElem = child;
+                break;
+            }
+        }
+
+        if (foundElem !== undefined)
+        {
+            if (foundElem !== this.mainBlockPlaceholder)
+                this.mainBlock.insertBefore(this.mainBlockPlaceholder, foundElem);
+        }
+        else
+        {
+            this.mainBlock.appendChild(this.mainBlockPlaceholder);
+        }
+    }
+
+    onHoverLeaveBlock(element, isDrop)
+    {
+        if (!isDrop && this.childCount !== 0 && this.mainBlockPlaceholderActive)
+        {
+            this.mainBlock.removeChild(this.mainBlockPlaceholder);
+            this.mainBlockPlaceholderActive = false;
+        }
+
         console.log("hover leave");
-        this.mainBlock.classList.add("drop-normal");
-        this.mainBlock.classList.remove("drop-highlight");
+        this.mainBlockPlaceholder.classList.add("drop-normal");
+        this.mainBlockPlaceholder.classList.remove("drop-highlight");
     }
 
     onDropBlock(element)
     {
+        ++this.childCount;
+        if (this.mainBlockPlaceholderActive)
+        {
+            this.mainBlock.replaceChild(element, this.mainBlockPlaceholder);
+            this.mainBlockPlaceholderActive = false;
+        }
+        else
+            throw "ehh";
+
         console.log("drop");
         element.style.position = "static";
         this.mainBlock.style.minWidth = "";
-        this.mainBlock.prepend(element);
 
         this.recalculateDraggableSizes();
     }
 
     onDetachBlock(element)
     {
+        --this.childCount;
+        if (this.childCount === 0)
+            this.mainBlock.appendChild(this.mainBlockPlaceholder);
+
         console.log("detach");
         this.mainBlock.style.minWidth = this.mainBlockMinWidth;
         this.parentNode.appendChild(element);

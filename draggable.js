@@ -38,7 +38,7 @@ const draggable = {};
 
         if (isTouchDevice)
             ev = ev.touches[0];
-        
+
         const elem = element.draggableData.draggedElement;
 
         let mouseX = ev.clientX, mouseY = ev.clientY;
@@ -112,8 +112,15 @@ const draggable = {};
         if (!isHoveringOverAnyDropArea)
             hoveredElement = undefined;
 
+        if (hoveredElement !== undefined && hoveredElement.draggableData.onDropCheck(element))
+        {
+            hoveredElement.draggableData.onDropHoverMove(element,
+                mouseX + window.pageXOffset + document.documentElement.clientLeft,
+                mouseY + window.pageYOffset + document.documentElement.clientTop);
+        }
+
         if (previousHoveredElement && previousHoveredElement !== hoveredElement)
-            previousHoveredElement.draggableData.onDropHoverLeave(element);
+            previousHoveredElement.draggableData.onDropHoverLeave(element, false);
 
         elementStyle.left = left + "px";
         elementStyle.top = top + "px";
@@ -135,11 +142,11 @@ const draggable = {};
             if (hoveredElement.draggableData.onDropCheck(element))
             {
                 element.draggableData.attachedDropArea = hoveredElement;
-                hoveredElement.draggableData.onDropHoverLeave(element);
+                hoveredElement.draggableData.onDropHoverLeave(element, true);
                 hoveredElement.draggableData.onDrop(element);
             }
             else
-                hoveredElement.draggableData.onDropHoverLeave(element);
+                hoveredElement.draggableData.onDropHoverLeave(element, false);
 
             hoveredElement = undefined;
         }
@@ -174,27 +181,6 @@ const draggable = {};
         }
     };
 
-    const getCoords = function(elem) // https://stackoverflow.com/a/26230989
-    {
-        const rect = elem.getBoundingClientRect();
-    
-        const body = document.body;
-        const docEl = document.documentElement;
-    
-        const scrollTop = window.pageYOffset; // || docEl.scrollTop || body.scrollTop;
-        const scrollLeft = window.pageXOffset; // || docEl.scrollLeft || body.scrollLeft;
-    
-        const clientTop = docEl.clientTop || body.clientTop || 0;
-        const clientLeft = docEl.clientLeft || body.clientLeft || 0;
-    
-        return {
-            y: Math.round(rect.top + scrollTop - clientTop),
-            x: Math.round(rect.left + scrollLeft - clientLeft),
-            width: rect.width,
-            height: rect.height
-        };
-    }
-
     draggable.ConstrainToElement = function(thisElement, toElement, borderSize)
     {
         borderSize = borderSize || 0;
@@ -204,8 +190,8 @@ const draggable = {};
         constraintData.constraintElement = toElement;
         constraintData.borderSize = borderSize;
 
-        const thisRect = getCoords(thisElement);
-        const otherRect = getCoords(toElement);
+        const thisRect = GetCoords(thisElement);
+        const otherRect = GetCoords(toElement);
 
         constraintData.minX = 0; //otherRect.x - thisRect.x + borderSize;
         constraintData.minY = 0; //otherRect.y - thisRect.y + borderSize;
@@ -260,10 +246,11 @@ const draggable = {};
         elementStyle = element.style;
         handleStyle = draggableData.handle.style;
         dragging = true;
+        const elementComputedStyle = getComputedStyle(element);
 
         const borderSize = draggableData.constraintData && draggableData.constraintData.borderSize || 0;
-        dragStartX = ev.clientX + borderSize;
-        dragStartY = ev.clientY + borderSize;
+        dragStartX = ev.clientX + window.pageXOffset + document.documentElement.clientLeft;
+        dragStartY = ev.clientY + window.pageYOffset + document.documentElement.clientTop;
         dragStartScrollX = window.pageXOffset;
         dragStartScrollY = window.pageYOffset;
 
@@ -271,14 +258,14 @@ const draggable = {};
         let parentCoords;
         while (parentNode)
         {
-            parentCoords = getCoords(parentNode);
+            parentCoords = GetCoords(parentNode);
             if (getComputedStyle(parentNode).position === "relative")
                 break;
 
             parentNode = parentNode.parentNode;
         }
 
-        const startCoords = getCoords(element);
+        const startCoords = GetCoords(element);
         startPosLeft = startCoords.x - parentCoords.x;
         startPosTop = startCoords.y - parentCoords.y;
         
@@ -311,6 +298,7 @@ const draggable = {};
         element.draggableData.onDropCheck = functions.check || (() => true); // function to check if a drop area accepts the element
         element.draggableData.onDropHoverEnter = functions.hoverenter || (() => {}); // element is dragged over the drop area
         element.draggableData.onDropHoverLeave = functions.hoverleave || (() => {}); // element is dragged out of the drop area
+        element.draggableData.onDropHoverMove = functions.hovermove || (() => {}); // element is moved over the drop area
         element.draggableData.onDrop = functions.drop || (() => {}); // element is dropped onto the drop area
         element.draggableData.onDetach = functions.detach || (() => {}); // an element that was dropped inside the drop area is detached
     };

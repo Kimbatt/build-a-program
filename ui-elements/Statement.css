@@ -5,6 +5,7 @@
     flex-direction: row;
     position: absolute;
     font-size: 20px;
+    margin: 50px;
 }
 
 .if-statement .container
@@ -52,8 +53,11 @@
 
 .if-statement .maincondition-placeholder
 {
-    width: 100%;
-    text-align: center;
+    height: 30px;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
 }
 
 .if-statement .mainblock
@@ -65,7 +69,11 @@
 
 .if-statement .mainblock-placeholder
 {
+    height: 60px;
+    display: flex;
     align-self: stretch;
+    align-items: center;
+    justify-content: center;
 }
 
 .if-statement .mainblock-container
@@ -85,12 +93,12 @@
 
 .if-statement .drop-highlight
 {
+    box-sizing: border-box;
     border: 2px dashed black;
     background: #a0a0a0;
 }
 
 .if-statement .drop-normal
 {
-    border: 2px solid black;
     background: #404040;
 }
