@@ -5,7 +5,7 @@
     flex-direction: row;
     position: absolute;
     font-size: 20px;
-    margin: 50px;
+    margin: 10px;
 }
 
 .if-statement .container
@@ -87,7 +87,7 @@
 {
     flex-shrink: 0;
     align-self: stretch;
-    background: /*#ff8000*/ black;
+    background: black;
     width: 33px;
 }
 
@@ -96,6 +96,11 @@
     box-sizing: border-box;
     border: 2px dashed black;
     background: #a0a0a0;
+}
+
+.if-statement .maincondition.not-empty .drop-highlight
+{
+    box-sizing: content-box;
 }
 
 .if-statement .drop-normal

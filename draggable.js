@@ -17,7 +17,7 @@ const draggable = {};
     const isTouchDevice = window.ontouchstart !== undefined;
 
     let dragging = false;
-    let dragStartX, dragStartY, dragStartScrollX, dragStartScrollY;
+    let dragStartX, dragStartY;
     let startPosLeft, startPosTop;
     
     let element;
@@ -44,8 +44,8 @@ const draggable = {};
         let mouseX = ev.clientX, mouseY = ev.clientY;
         //const scrollX = ev.pageX - mouseX, scrollY = ev.pageY - mouseY;
 
-        const diffX = mouseX - dragStartX + window.pageXOffset - dragStartScrollX;
-        const diffY = mouseY - dragStartY + window.pageYOffset - dragStartScrollY;
+        const diffX = mouseX - dragStartX + window.pageXOffset;
+        const diffY = mouseY - dragStartY + window.pageYOffset;
 
         let left = diffX + startPosLeft;
         let top = diffY + startPosTop;
@@ -243,16 +243,17 @@ const draggable = {};
 
         const draggableData = node.draggableData;
         element = draggableData.draggedElement;
+        const draggableData2 = element.draggableData;
         elementStyle = element.style;
         handleStyle = draggableData.handle.style;
         dragging = true;
         const elementComputedStyle = getComputedStyle(element);
 
-        const borderSize = draggableData.constraintData && draggableData.constraintData.borderSize || 0;
-        dragStartX = ev.clientX + window.pageXOffset + document.documentElement.clientLeft;
-        dragStartY = ev.clientY + window.pageYOffset + document.documentElement.clientTop;
-        dragStartScrollX = window.pageXOffset;
-        dragStartScrollY = window.pageYOffset;
+        const borderSize = (draggableData.constraintData && draggableData.constraintData.borderSize) ||
+            (draggableData2.constraintData && draggableData2.constraintData.borderSize) || 0;
+
+        dragStartX = ev.clientX + window.pageXOffset + document.documentElement.clientLeft + borderSize;
+        dragStartY = ev.clientY + window.pageYOffset + document.documentElement.clientTop + borderSize;
 
         let parentNode = element.parentNode;
         let parentCoords;

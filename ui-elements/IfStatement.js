@@ -86,7 +86,8 @@ class IfStatement extends StatementBase
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, dragHandle);
-        draggable.ConstrainToElement(this.element, parentNode, 2);
+        const style = getComputedStyle(this.element);
+        draggable.ConstrainToElement(this.element, parentNode, 2 + Number(style.margin.match(/(\d+)/)[1]) + Number(style.border.match(/(\d+)/)[1]));
     }
 
     recalculateDraggableSizes()
