@@ -1,5 +1,5 @@
 
-.if-statement
+.statement
 {
     display: flex;
     flex-direction: row;
@@ -8,13 +8,13 @@
     margin: 10px;
 }
 
-.if-statement .container
+.statement .container
 {
     display: flex;
     flex-direction: column;
 }
 
-.if-statement .drag-handle
+.statement .drag-handle
 {
     display: inline-block;
     align-self: stretch;
@@ -25,33 +25,33 @@
     background: cyan;
 }
 
-.if-statement .header
+.statement .header
 {
     display: flex;
     justify-content: flex-start;
     width: 100%;
 }
 
-.if-statement .iftext
+.statement .header-text
 {
     background: black;
     padding: 5px 10px;
 }
 
-.if-statement .maincondition
+.statement .header-drop-area
 {
     border: 2px solid black;
     background: #404040;
     display: inline-block;
 }
 
-.if-statement .maincondition.not-empty
+.statement .header-drop-area.not-empty
 {
     border: 0px;
     background: black;
 }
 
-.if-statement .maincondition-placeholder
+.statement .header-drop-area-placeholder
 {
     height: 30px;
     display: flex;
@@ -60,15 +60,16 @@
     justify-content: center;
 }
 
-.if-statement .mainblock
+.statement .mainblock
 {
     background: #404040;
     border: 2px solid black;
     text-align: center;
 }
 
-.if-statement .mainblock-placeholder
+.statement .mainblock-placeholder
 {
+    box-sizing: border-box;
     height: 60px;
     display: flex;
     align-self: stretch;
@@ -76,14 +77,14 @@
     justify-content: center;
 }
 
-.if-statement .mainblock-container
+.statement .mainblock-container
 {
     display: flex;
     justify-content: flex-start;
     width: 100%;
 }
 
-.if-statement .mainblock-borderleft
+.statement .mainblock-borderleft
 {
     flex-shrink: 0;
     align-self: stretch;
@@ -91,19 +92,18 @@
     width: 33px;
 }
 
-.if-statement .drop-highlight
+.statement .drop-highlight
 {
-    box-sizing: border-box;
     border: 2px dashed black;
     background: #a0a0a0;
 }
 
-.if-statement .maincondition.not-empty .drop-highlight
+.statement .header-drop-area.drop-highlight
 {
     box-sizing: content-box;
 }
 
-.if-statement .drop-normal
+.statement .drop-normal
 {
     background: #404040;
 }
