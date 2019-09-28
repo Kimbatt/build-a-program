@@ -1,5 +1,0 @@
-
-class BlockStatement extends StatementBase
-{
-    
-}

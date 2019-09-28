@@ -1,0 +1,109 @@
+
+.block
+{
+    display: flex;
+    flex-direction: row;
+    position: absolute;
+    font-size: 20px;
+    margin: 10px;
+}
+
+.block .container
+{
+    display: flex;
+    flex-direction: column;
+}
+
+.block .drag-handle
+{
+    display: inline-block;
+    align-self: stretch;
+    flex-shrink: 0;
+    width: 20px;
+    top: 0px;
+    cursor: grab;
+    background: cyan;
+}
+
+.block .header
+{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.block .header-text
+{
+    background: black;
+    padding: 5px 10px;
+}
+
+.block .header-drop-area
+{
+    border: 2px solid black;
+    background: #404040;
+    display: inline-block;
+}
+
+.block .header-drop-area.not-empty
+{
+    border: 0px;
+    background: black;
+}
+
+.block .header-drop-area-placeholder
+{
+    height: 30px;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+}
+
+.block .mainblock
+{
+    background: #404040;
+    border: 2px solid black;
+    text-align: center;
+}
+
+.block .mainblock-placeholder
+{
+    box-sizing: border-box;
+    height: 60px;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+}
+
+.block .mainblock-container
+{
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.block .mainblock-borderleft
+{
+    flex-shrink: 0;
+    align-self: stretch;
+    background: black;
+    width: 33px;
+}
+
+.block .drop-highlight
+{
+    border: 2px dashed black;
+    background: #a0a0a0;
+}
+
+.block .header-drop-area.drop-highlight
+{
+    box-sizing: content-box;
+}
+
+.block .drop-normal
+{
+    background: #404040;
+}

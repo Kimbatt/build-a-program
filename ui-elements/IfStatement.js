@@ -1,5 +1,5 @@
 
-class IfStatement extends StatementBase
+class IfStatement extends BlockBase
 {
     constructor(parentNode)
     {
