@@ -18,8 +18,9 @@ function GetVariable(variableName, parentBlock)
 
 /// statement handlers
 
-function HandleBlockStatement(block, parentBlock)
+function HandleBlockStatement(data, parentBlock)
 {
+    const { block } = data;
     const thisBlock = {
         parentBlock: parentBlock,
         childBlocks: [],
@@ -40,6 +41,36 @@ function HandleBlockStatement(block, parentBlock)
         }
 
         handler(statement, thisBlock);
+    }
+}
+
+function HandleIfStatement(data, parentBlock)
+{
+    const { conditions, blocks, elseBlock } = data;
+
+    for (let i = 0; i < conditions.length; ++i)
+    {
+        const conditionValue = EvaluateExpression(conditions[i], parentBlock);
+        if (conditionValue.value /* === true */)
+        {
+            HandleBlockStatement(blocks[i], parentBlock);
+            return;
+        }
+    }
+
+    // no conditions met, handle else block if any
+    if (elseBlock)
+    {
+        HandleBlockStatement(elseBlock, parentBlock);
+    }
+}
+
+function HandleWhileStatement(data, parentBlock)
+{
+    const { condition, block } = data;
+    while (EvaluateExpression(condition, parentBlock).value /* === true */)
+    {
+        HandleBlockStatement(block, parentBlock);
     }
 }
 
@@ -76,7 +107,11 @@ function HandleVariableDeclaration(data, parentBlock)
     const { variableName, variableValue } = data;
 
     parentBlock.variables[variableName] = {
-        variableValue: variableValue,
+        variableValue: {
+            // copy
+            type: variableValue.type,
+            value: variableValue.value
+        },
         variableName: variableName
     };
 }
@@ -91,8 +126,9 @@ function HandleVariableAssignment(data, parentBlock)
 
 const statementHandlers = {
     block: HandleBlockStatement,
+    ifStatement: HandleIfStatement,
+    whileStatement: HandleWhileStatement,
     functionCall: HandleFunctionCall,
-
     variableDeclaration: HandleVariableDeclaration,
     variableAssignment: HandleVariableAssignment
 };
@@ -106,22 +142,214 @@ function EvaluateExpression(data, parentBlock)
 
 function EvaluateLiteral(data, parentBlock)
 {
-    return data.literalValue;
+    return {
+        type: data.type,
+        value: data.value
+    };
 }
 
 function EvaluateVariable(data, parentBlock)
 {
-    return GetVariable(data.variableName, parentBlock).variableValue;
+    const variableValue = GetVariable(data.variableName, parentBlock).variableValue;
+    return {
+        type: variableValue.type,
+        value: variableValue.value
+    }
+}
+
+function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boolean -> boolean
+{
+    const { value, operator } = data;
+
+    const ret = {
+        type: "boolean"
+    }
+
+    const jsBooleanValue = EvaluateExpression(value, parentBlock).value;
+
+    switch (operator)
+    {
+        case "!":
+            ret.value = !jsBooleanValue;
+            break;
+        default:
+            console.error("unknown unary boolean operator: " + operator);
+            break;
+    }
+
+    return ret;
+}
+
+function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean operator boolean -> boolean
+{
+    const { first, second, operator } = data;
+
+    const ret = {
+        type: "boolean"
+    }
+
+    const jsBooleanValueFirst = EvaluateExpression(first, parentBlock).value;
+    const jsBooleanValueSecond = EvaluateExpression(second, parentBlock).value;
+
+    switch (operator)
+    {
+        case "&&":
+            ret.value = jsBooleanValueFirst && jsBooleanValueSecond;
+            break;
+        case "||":
+            ret.value = jsBooleanValueFirst || jsBooleanValueSecond;
+            break;
+        case "^":
+            ret.value = jsBooleanValueFirst ^ jsBooleanValueSecond;
+            break;
+        case "==":
+            ret.value = jsBooleanValueFirst === jsBooleanValueSecond;
+            break;
+        case "!=":
+            ret.value = jsBooleanValueFirst !== jsBooleanValueSecond;
+            break;
+        default:
+            console.error("unknown binary boolean operator: " + operator);
+            break;
+    }
+
+    return ret;
+}
+
+function EvaluateUnaryNumericExpression(data, parentBlock) // operator number -> number
+{
+    const { value, operator } = data;
+
+    const ret = {
+        type: "number"
+    }
+
+    const jsNumberValue = EvaluateExpression(value, parentBlock).value;
+    switch (operator)
+    {
+        case "+":
+            ret.value = Math.abs(jsNumberValue);
+            break;
+        case "-":
+            ret.value = -jsNumberValue;
+            break;
+        case "~":
+            ret.value = ~jsNumberValue;
+            break;
+        default:
+            console.error("unknown unary numeric operator: " + operator);
+            break;
+    }
+
+    return ret;
+}
+
+function EvaluateBinaryNumericExpression(data, parentBlock) // number operator number -> number
+{
+    const { first, second, operator } = data;
+
+    const ret = {
+        type: "number"
+    }
+
+    const jsNumberValueFirst = EvaluateExpression(first, parentBlock).value;
+    const jsNumberValueSecond = EvaluateExpression(second, parentBlock).value;
+
+    switch (operator)
+    {
+        case "+":
+            ret.value = jsNumberValueFirst + jsNumberValueSecond;
+            break;
+        case "-":
+            ret.value = jsNumberValueFirst - jsNumberValueSecond;
+            break;
+        case "*":
+            ret.value = jsNumberValueFirst * jsNumberValueSecond;
+            break;
+        case "/":
+            ret.value = jsNumberValueFirst / jsNumberValueSecond;
+            break;
+        case "%":
+            ret.value = jsNumberValueFirst % jsNumberValueSecond;
+            break;
+        case "**":
+            ret.value = jsNumberValueFirst ** jsNumberValueSecond;
+            break;
+        case "&":
+            ret.value = jsNumberValueFirst & jsNumberValueSecond;
+            break;
+        case "|":
+            ret.value = jsNumberValueFirst | jsNumberValueSecond;
+            break;
+        case "^":
+            ret.value = jsNumberValueFirst ^ jsNumberValueSecond;
+            break;
+        case "<<":
+            ret.value = jsNumberValueFirst << jsNumberValueSecond;
+            break;
+        case ">>":
+            ret.value = jsNumberValueFirst >> jsNumberValueSecond;
+            break;
+        default:
+            console.error("unknown binary numeric operator: " + operator);
+            break;
+    }
+
+    return ret;
+}
+
+function EvaluateNumberComparison(data, parentBlock) // number operator number -> boolean
+{
+    const { first, second, operator } = data;
+
+    const ret = {
+        type: "boolean"
+    }
+
+    const jsNumberValueFirst = EvaluateExpression(first, parentBlock).value;
+    const jsNumberValueSecond = EvaluateExpression(second, parentBlock).value;
+
+    switch (operator)
+    {
+        case "<":
+            ret.value = jsNumberValueFirst < jsNumberValueSecond;
+            break;
+        case ">":
+            ret.value = jsNumberValueFirst > jsNumberValueSecond;
+            break;
+        case "<=":
+            ret.value = jsNumberValueFirst <= jsNumberValueSecond;
+            break;
+        case ">=":
+            ret.value = jsNumberValueFirst >= jsNumberValueSecond;
+            break;
+        case "==":
+            ret.value = jsNumberValueFirst == jsNumberValueSecond;
+            break;
+        case "!=":
+            ret.value = jsNumberValueFirst != jsNumberValueSecond;
+            break;
+        default:
+            console.error("unknown number comparison operator: " + operator);
+            break;
+    }
+
+    return ret;
 }
 
 const expressionEvaluators = {
     literal: EvaluateLiteral,
     variable: EvaluateVariable,
+    unaryBooleanExpression: EvaluateUnaryBooleanExpression,
+    binaryBooleanExpression: EvaluateBinaryBooleanExpression,
+    unaryNumericExpression: EvaluateUnaryNumericExpression,
+    binaryNumericExpression: EvaluateBinaryNumericExpression,
+    numberComparison: EvaluateNumberComparison
 };
 
 function RunProgram(mainFunction)
 {
-    HandleBlockStatement(mainFunction.block, null);
+    HandleBlockStatement(mainFunction, null);
 }
 
 function CreateTestProgram()
@@ -129,36 +357,37 @@ function CreateTestProgram()
     const mainFunction = {
         parameters: [],
         block: {
-            type: "statement",
             statementType: "block",
             statements: [
                 {
-                    type: "statement",
                     statementType: "variableDeclaration", // only literals at declaration
                     variableName: "asd",
                     variableValue: {
+                        expressionType: "literal",
                         type: "number",
-                        value: 0
+                        value: 17
                     }
                 }, {
-                    type: "statement",
                     statementType: "variableAssignment",
                     variableName: "asd",
                     newVariableValue: {
-                        type: "expression",
-                        expressionType: "literal",
-                        literalValue: {
+                        expressionType: "binaryNumericExpression",
+                        first: {
+                            expressionType: "variable",
+                            variableName: "asd",
+                        },
+                        second: {
+                            expressionType: "literal",
                             type: "number",
-                            value: 50
-                        }
+                            value: 9
+                        },
+                        operator: "*"
                     }
                 }, {
-                    type: "statement",
                     statementType: "functionCall",
                     functionName: "write",
                     parameters: [
                         {
-                            type: "expression",
                             expressionType: "variable",
                             variableName: "asd"
                         }
