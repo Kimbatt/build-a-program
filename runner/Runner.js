@@ -8,7 +8,7 @@ function GetVariable(variableName, parentBlock)
         if (variable)
             return variable;
 
-        currentBlock = currentBlock.parent;
+        currentBlock = currentBlock.parentBlock;
     }
 
     // should not happen, variables should be checked before running
@@ -20,14 +20,12 @@ function GetVariable(variableName, parentBlock)
 
 function HandleBlockStatement(data, parentBlock)
 {
-    const { block } = data;
+    const { statements } = data;
     const thisBlock = {
         parentBlock: parentBlock,
         childBlocks: [],
         variables: {}
     };
-
-    const statements = block.statements;
 
     for (let i = 0; i < statements.length; ++i)
     {
@@ -337,6 +335,57 @@ function EvaluateNumberComparison(data, parentBlock) // number operator number -
     return ret;
 }
 
+function EvaluateStringComparison(data, parentBlock) // string operator string -> boolean
+{
+    const { first, second, operator } = data;
+
+    const ret = {
+        type: "boolean"
+    }
+
+    const jsStringValueFirst = EvaluateExpression(first, parentBlock).value;
+    const jsStringValueSecond = EvaluateExpression(second, parentBlock).value;
+
+    switch (operator)
+    {
+        case "==":
+            ret.value = jsStringValueFirst === jsStringValueSecond;
+            break;
+        case "!=":
+            ret.value = jsStringValueFirst !== jsStringValueSecond;
+            break;
+        default:
+            console.error("unknown string comparison operator: " + operator);
+            break;
+    }
+
+    return ret;
+}
+
+function EvaluateBinaryStringExpression(data, parentBlock) // string operator string -> string
+{
+    const { first, second, operator } = data;
+
+    const ret = {
+        type: "string"
+    }
+
+    const jsStringValueFirst = EvaluateExpression(first, parentBlock).value;
+    const jsStringValueSecond = EvaluateExpression(second, parentBlock).value;
+
+    switch (operator)
+    {
+        case "+":
+            ret.value = jsStringValueFirst + jsStringValueSecond;
+            break;
+        default:
+            console.error("unknown binary string operator: " + operator);
+            break;
+    }
+
+    return ret;
+}
+
 const expressionEvaluators = {
     literal: EvaluateLiteral,
     variable: EvaluateVariable,
@@ -344,12 +393,14 @@ const expressionEvaluators = {
     binaryBooleanExpression: EvaluateBinaryBooleanExpression,
     unaryNumericExpression: EvaluateUnaryNumericExpression,
     binaryNumericExpression: EvaluateBinaryNumericExpression,
-    numberComparison: EvaluateNumberComparison
+    numberComparison: EvaluateNumberComparison,
+    binaryStringExpression: EvaluateBinaryStringExpression,
+    stringComparison: EvaluateStringComparison
 };
 
 function RunProgram(mainFunction)
 {
-    HandleBlockStatement(mainFunction, null);
+    HandleBlockStatement(mainFunction.block, null);
 }
 
 function CreateTestProgram()
@@ -365,23 +416,94 @@ function CreateTestProgram()
                     variableValue: {
                         expressionType: "literal",
                         type: "number",
-                        value: 17
+                        value: 123
                     }
                 }, {
-                    statementType: "variableAssignment",
-                    variableName: "asd",
-                    newVariableValue: {
-                        expressionType: "binaryNumericExpression",
-                        first: {
-                            expressionType: "variable",
-                            variableName: "asd",
-                        },
-                        second: {
-                            expressionType: "literal",
-                            type: "number",
-                            value: 9
-                        },
-                        operator: "*"
+                    statementType: "ifStatement",
+                    conditions: [
+                        {
+                            expressionType: "numberComparison",
+                            first: {
+                                expressionType: "variable",
+                                variableName: "asd"
+                            },
+                            second: {
+                                expressionType: "literal",
+                                value: 100
+                            },
+                            operator: "<"
+                        }
+                    ],
+                    blocks: [
+                        {
+                            statementType: "block",
+                            statements: [
+                            {
+                                statementType: "variableAssignment",
+                                variableName: "asd",
+                                newVariableValue: {
+                                    expressionType: "binaryNumericExpression",
+                                    first: {
+                                        expressionType: "variable",
+                                        variableName: "asd"
+                                    },
+                                    second: {
+                                        expressionType: "literal",
+                                        value: 99
+                                    },
+                                    operator: "*"
+                                }
+                            }]
+                        }
+                    ],
+                    elseBlock: {
+                        statementType: "block",
+                        statements: [
+                            {
+                                statementType: "whileStatement",
+                                condition: {
+                                    expressionType: "numberComparison",
+                                    first: {
+                                        expressionType: "variable",
+                                        variableName: "asd"
+                                    },
+                                    second: {
+                                        expressionType: "literal",
+                                        value: 100
+                                    },
+                                    operator: ">"
+                                },
+                                block: {
+                                    statementType: "block",
+                                    statements: [
+                                    {
+                                        statementType: "variableAssignment",
+                                        variableName: "asd",
+                                        newVariableValue: {
+                                            expressionType: "binaryNumericExpression",
+                                            first: {
+                                                expressionType: "variable",
+                                                variableName: "asd"
+                                            },
+                                            second: {
+                                                expressionType: "literal",
+                                                value: 1.25
+                                            },
+                                            operator: "-"
+                                        }
+                                    }, {
+                                        statementType: "functionCall",
+                                        functionName: "write",
+                                        parameters: [
+                                            {
+                                                expressionType: "variable",
+                                                variableName: "asd"
+                                            }
+                                        ]
+                                    }]
+                                }
+                            }
+                        ]
                     }
                 }, {
                     statementType: "functionCall",

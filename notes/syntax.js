@@ -36,7 +36,7 @@ class binaryNumericExpression extends expression
 {
     first: expression;
     second: expression;
-    operator: string; // possible operators: + - * / % & | ^ << >>
+    operator: string; // possible operators: + - * / % ** & | ^ << >>
 }
 
 class numberComparison extends expression
@@ -44,6 +44,20 @@ class numberComparison extends expression
     first: expression;
     second: expression;
     operator: string; // possible operators: < > <= >= == !=
+}
+
+class binaryStringExpression extends expression // string operator string -> string
+{
+    first: expression;
+    second: expression;
+    operator: string; // possible operators: +
+}
+
+class stringComparison extends expression
+{
+    first: expression;
+    second: expression;
+    operator: string; // possible operators: == !=
 }
 
 ///////////////
