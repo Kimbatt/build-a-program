@@ -19,3 +19,19 @@ function GetCoords(elem) // https://stackoverflow.com/a/26230989
         height: rect.height
     };
 }
+
+let GetTextSize;
+(() =>
+{
+    const div = document.createElement("div");
+    div.style = "display: table; visibility: hidden;";
+    GetTextSize = function(text, element)
+    {
+        div.innerText = text;
+        div.style.font = getComputedStyle(element).font;
+        document.body.appendChild(div);
+        const rect = div.getBoundingClientRect();
+        document.body.removeChild(div);
+        return rect.width;
+    }
+})();

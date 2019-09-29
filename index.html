@@ -32,18 +32,27 @@ body
 <script src="ui-elements/FunctionBody.js"></script>
 
 <script src="build-elements.js"></script>
+
+<script src="runner/Expressions.js"></script>
+<script src="runner/Statements.js"></script>
+<script src="runner/Runner.js"></script>
+
 <script>
 const dragArea = document.getElementById("main-drag-area");
-for (let i = 0; i < 10; ++i)
+for (let i = 0; i < 1; ++i)
     new IfStatement(dragArea);
 
-for (let i = 0; i < 5; ++i)
+for (let i = 0; i < 1; ++i)
     new BooleanAndExpression(dragArea);
 
-for (let i = 0; i < 5; ++i)
+for (let i = 0; i < 1; ++i)
     new BooleanOrExpression(dragArea);
 
 new FunctionBody(dragArea);
+
+new NumberLiteralExpression(dragArea);
+new BooleanLiteralExpression(dragArea);
+new StringLiteralExpression(dragArea);
 </script>
 </body>
 </html>

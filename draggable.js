@@ -225,6 +225,9 @@ const draggable = {};
         if (isTouchDevice)
             ev = ev.touches[0];
 
+        if (ev.button !== undefined && ev.button !== 0)
+            return;
+
         let node;
         let isValidElement = false;
         const path = getEventPath(ev);

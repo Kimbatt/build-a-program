@@ -37,7 +37,7 @@ class BlockBase extends ElementBase
         this.headerDropAreaMinWidth = "150px";
         for (let i = 0; i < headerElements.length; ++i)
         {
-            const isExpression = headerElements[i];
+            const expressionType = headerElements[i];
             const headerElement = {};
             headerElement.isEmpty = true;
             
@@ -55,7 +55,7 @@ class BlockBase extends ElementBase
 
             draggable.CreateDropArea(dropArea,
             {
-                check: elem => headerElement.isEmpty && elem.uiElementData && (elem.uiElementData.isExpression() === isExpression),
+                check: elem => headerElement.isEmpty && elem.uiElementData && elem.uiElementData.getType() === expressionType,
                 hoverenter: element =>
                 {
                     dropArea.classList.remove("drop-normal");
