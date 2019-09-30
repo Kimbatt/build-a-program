@@ -95,7 +95,8 @@
 .block .drop-highlight
 {
     border: 2px dashed black;
-    background: #a0a0a0;
+    background: white !important;
+    color: black;
 }
 
 .block .header-drop-area.drop-highlight

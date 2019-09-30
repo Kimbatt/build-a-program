@@ -5,4 +5,7 @@ class FunctionBody extends BlockBase
     {
         super(parentNode, "Function", []);
     }
+
+    isExpression() { return false; }
+    isStatement() { return false; }
 }

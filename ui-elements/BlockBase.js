@@ -44,6 +44,20 @@ class BlockBase extends ElementBase
             const dropArea = document.createElement("div");
             dropArea.className = "header-drop-area drop-normal";
             dropArea.style.minWidth = this.headerDropAreaMinWidth;
+            
+            switch (expressionType)
+            {
+                case "number":
+                    dropArea.style.background = "var(--number-color)";
+                    break;
+                case "boolean":
+                    dropArea.style.background = "var(--boolean-color)";
+                    break;
+                case "string":
+                    dropArea.style.background = "var(--string-color)";
+                    break;
+            }
+
             headerElement.dropArea = dropArea;
 
             // placeholder while empty +

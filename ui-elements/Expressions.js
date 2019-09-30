@@ -67,6 +67,22 @@ class BinaryExpression extends ExpressionBase
         this.dragHandle = document.createElement("div");
         this.dragHandle.className = "drag-handle";
 
+        switch (acceptsType)
+        {
+            case "number":
+                    this.expression1.style.background = "var(--number-color)";
+                    this.expression2.style.background = "var(--number-color)";
+                break;
+            case "boolean":
+                    this.expression1.style.background = "var(--boolean-color)";
+                    this.expression2.style.background = "var(--boolean-color)";
+                break;
+            case "string":
+                    this.expression1.style.background = "var(--string-color)";
+                    this.expression2.style.background = "var(--string-color)";
+                break;
+        }
+
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(this.expression1);
         this.element.appendChild(operatorText);
@@ -167,6 +183,7 @@ class LiteralExpression extends ExpressionBase
         {
             case "number":
                 this.inputField = document.createElement("input");
+                this.inputField.style.background = "var(--number-color)";
                 this.inputField.type = "text";
                 this.inputField.value = "0";
                 this.inputField.style.minWidth = "80px";
@@ -188,6 +205,7 @@ class LiteralExpression extends ExpressionBase
                 break;
             case "boolean":
                 this.inputField = document.createElement("select");
+                this.inputField.style.background = "var(--boolean-color)";
 
                 const falseOption = document.createElement("option");
                 falseOption.value = "false";
@@ -202,6 +220,7 @@ class LiteralExpression extends ExpressionBase
                 break;
             case "string":
                 this.inputField = document.createElement("input");
+                this.inputField.style.background = "var(--string-color)";
                 this.inputField.type = "text";
                 this.inputField.placeholder = "(empty)";
                 this.inputField.style.minWidth = "120px";

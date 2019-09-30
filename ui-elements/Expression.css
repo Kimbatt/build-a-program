@@ -1,4 +1,11 @@
 
+:root
+{
+    --number-color: #366339 /*#a6cea8*/;
+    --string-color: #734726 /*#d69d85*/;
+    --boolean-color: #1e517b /*#559cd6*/;
+}
+
 .binary-expression
 {
     position: absolute;
@@ -47,7 +54,8 @@
 .binary-expression .drop-highlight
 {
     border: 2px dashed black;
-    background: #a0a0a0;
+    background: white !important;
+    color: black;
 }
 
 .binary-expression .drop-normal
@@ -73,6 +81,17 @@
     background: black;
     font-size: 20px;
     height: 34px;
+}
+
+.literal-expression input::placeholder
+{
+    color: #a8a8a8;
+}
+
+.literal-expression input::selection
+{
+    background: #ffffff;
+    color: #2b2b2b;
 }
 
 .literal-expression input::-webkit-outer-spin-button, .literal-expression input::-webkit-inner-spin-button {
