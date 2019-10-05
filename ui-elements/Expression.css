@@ -6,7 +6,7 @@
     --boolean-color: #1e517b /*#559cd6*/;
 }
 
-.binary-expression
+.binary-expression, .unary-expression
 {
     position: absolute;
     display: flex;
@@ -15,7 +15,7 @@
     font-size: 20px;
 }
 
-.binary-expression .expression
+.binary-expression .expression, .unary-expression .expression
 {
     background: #404040;
     border: 2px solid black;
@@ -23,13 +23,13 @@
     width: 100%;
 }
 
-.binary-expression .expression.not-empty
+.binary-expression .expression.not-empty, .unary-expression .expression.not-empty
 {
     background: black;
     border: 0px;
 }
 
-.binary-expression .expression-placeholder
+.binary-expression .expression-placeholder, .unary-expression .expression-placeholder
 {
     display: flex;
     justify-content: center;
@@ -37,7 +37,7 @@
     width: 100%;
 }
 
-.binary-expression .drag-handle
+.binary-expression .drag-handle, .unary-expression .drag-handle
 {
     width: 20px;
     flex-shrink: 0;
@@ -45,20 +45,36 @@
     cursor: grab;
 }
 
-.binary-expression .operator-text
+.binary-expression .operator-selector, .unary-expression .operator-selector
 {
-    display: inline-block;
-    padding: 5px 8px;
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8'><path d='M0 0l8 0l-4 6Z' fill='white'/></svg>");
+    background-color: #404040;
+    background-repeat: no-repeat;
+    background-position: right;
+
+    flex-shrink: 0;
+    font-size: 20px;
+    color: white;
+    border: 2px solid black;
+    padding: 4px 25px 4px 10px;
+    outline: none;
+    text-align-last: center;
+    height: 34px;
+    vertical-align: middle;
 }
 
-.binary-expression .drop-highlight
+.binary-expression .drop-highlight, .unary-expression .drop-highlight
 {
     border: 2px dashed black;
     background: white !important;
     color: black;
 }
 
-.binary-expression .drop-normal
+.binary-expression .drop-normal, .unary-expression .drop-normal
 {
     border: 2px solid black;
     background: #404040;
@@ -94,14 +110,15 @@
     color: #2b2b2b;
 }
 
-.literal-expression input::-webkit-outer-spin-button, .literal-expression input::-webkit-inner-spin-button {
+.literal-expression input::-webkit-outer-spin-button, .literal-expression input::-webkit-inner-spin-button
+{
     -webkit-appearance: none;
-    margin: 0;
+    margin: 0px;
 }
 
 .literal-expression input[type="text"]
 {
-    -moz-appearance: textfield;
+    -moz-appearance: none;
     font-size: 20px;
     background: #404040;
     color: white;
@@ -113,8 +130,16 @@
 
 .literal-expression select
 {
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8'><path d='M0 0l8 0l-4 6Z' fill='white'/></svg>");
+    background-color: #404040;
+    background-repeat: no-repeat;
+    background-position: right;
+
     font-size: 20px;
-    background: #404040;
     color: white;
     border: 2px solid black;
     padding: 4px;
@@ -133,4 +158,20 @@
 .literal-expression.nested
 {
     padding: 0px 10px;
+}
+
+.variable-name-input
+{
+    color: white;
+    background: #404040;
+    border: 2px solid black;
+    font-size: 20px;
+    padding: 4px;
+    outline: none;
+    width: 0px;
+}
+
+.variable-name-input ::placeholder
+{
+    color: #a8a8a8;
 }

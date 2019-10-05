@@ -20,3 +20,12 @@ class WhileStatement extends BlockBase
         super(parentNode, "While", ["boolean"]);
     }
 }
+
+class VariableDeclaration extends StatementBase
+{
+    constructor(parentNode)
+    {
+        super();
+        
+    }
+}

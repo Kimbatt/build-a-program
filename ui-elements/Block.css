@@ -5,7 +5,6 @@
     flex-direction: row;
     position: absolute;
     font-size: 20px;
-    margin: 10px;
 }
 
 .block .container
@@ -107,4 +106,9 @@
 .block .drop-normal
 {
     background: #404040;
+}
+
+.block.nested
+{
+    margin: 10px;
 }

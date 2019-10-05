@@ -7,7 +7,7 @@ class ExpressionBase extends ElementBase
 
 class BinaryExpression extends ExpressionBase
 {
-    constructor(parentNode, text, returnType, acceptsType)
+    constructor(parentNode, texts, acceptsType, returnType)
     {
         super();
         this.parentNode = parentNode;
@@ -40,9 +40,16 @@ class BinaryExpression extends ExpressionBase
         this.expression1PlaceholderPlus.innerText = "+";
         this.expression1.appendChild(this.expression1PlaceholderPlus);
 
-        const operatorText = document.createElement("div");
-        operatorText.innerText = text;
-        operatorText.className = "operator-text";
+        const operatorSelector = document.createElement("select");
+        for (let i = 0; i < texts.length; ++i)
+        {
+            const text = texts[i];
+            const option = document.createElement("option");
+            option.text = text;
+            option.value = text;
+            operatorSelector.appendChild(option);
+        }
+        operatorSelector.className = "operator-selector";
 
         // expression 2 drop area
         this.hasExpression2 = false;
@@ -70,22 +77,22 @@ class BinaryExpression extends ExpressionBase
         switch (acceptsType)
         {
             case "number":
-                    this.expression1.style.background = "var(--number-color)";
-                    this.expression2.style.background = "var(--number-color)";
+                    this.expression1.style.backgroundColor = "var(--number-color)";
+                    this.expression2.style.backgroundColor = "var(--number-color)";
                 break;
             case "boolean":
-                    this.expression1.style.background = "var(--boolean-color)";
-                    this.expression2.style.background = "var(--boolean-color)";
+                    this.expression1.style.backgroundColor = "var(--boolean-color)";
+                    this.expression2.style.backgroundColor = "var(--boolean-color)";
                 break;
             case "string":
-                    this.expression1.style.background = "var(--string-color)";
-                    this.expression2.style.background = "var(--string-color)";
+                    this.expression1.style.backgroundColor = "var(--string-color)";
+                    this.expression2.style.backgroundColor = "var(--string-color)";
                 break;
         }
 
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(this.expression1);
-        this.element.appendChild(operatorText);
+        this.element.appendChild(operatorSelector);
         this.element.appendChild(this.expression2);
 
         parentNode.appendChild(this.element);
@@ -149,19 +156,43 @@ class BinaryExpression extends ExpressionBase
     getType() { return this.returnType; }
 }
 
-class BooleanAndExpression extends BinaryExpression
+class BinaryBooleanExpression extends BinaryExpression
 {
     constructor(parentNode)
     {
-        super(parentNode, "And", "boolean", "boolean");
+        super(parentNode, ["&&", "||", "^", "==", "!="], "boolean", "boolean");
     }
 }
 
-class BooleanOrExpression extends BinaryExpression
+class BinaryNumericExpression extends BinaryExpression
 {
     constructor(parentNode)
     {
-        super(parentNode, "Or", "boolean", "boolean");
+        super(parentNode, ["+", "-", "*", "/", "%", "**", "&", "|", "^", "<<", ">>"], "number", "number");
+    }
+}
+
+class BinaryStringExpression extends BinaryExpression
+{
+    constructor(parentNode)
+    {
+        super(parentNode, ["+"], "string", "string");
+    }
+}
+
+class NumberComparison extends BinaryExpression
+{
+    constructor(parentNode)
+    {
+        super(parentNode, ["<", ">", "<=", ">=", "==", "!="], "number", "boolean");
+    }
+}
+
+class StringComparison extends BinaryExpression
+{
+    constructor(parentNode)
+    {
+        super(parentNode, ["==", "!="], "string", "boolean");
     }
 }
 
@@ -183,7 +214,7 @@ class LiteralExpression extends ExpressionBase
         {
             case "number":
                 this.inputField = document.createElement("input");
-                this.inputField.style.background = "var(--number-color)";
+                this.inputField.style.backgroundColor = "var(--number-color)";
                 this.inputField.type = "text";
                 this.inputField.value = "0";
                 this.inputField.style.minWidth = "80px";
@@ -205,7 +236,7 @@ class LiteralExpression extends ExpressionBase
                 break;
             case "boolean":
                 this.inputField = document.createElement("select");
-                this.inputField.style.background = "var(--boolean-color)";
+                this.inputField.style.backgroundColor = "var(--boolean-color)";
 
                 const falseOption = document.createElement("option");
                 falseOption.value = "false";
@@ -220,7 +251,7 @@ class LiteralExpression extends ExpressionBase
                 break;
             case "string":
                 this.inputField = document.createElement("input");
-                this.inputField.style.background = "var(--string-color)";
+                this.inputField.style.backgroundColor = "var(--string-color)";
                 this.inputField.type = "text";
                 this.inputField.placeholder = "(empty)";
                 this.inputField.style.minWidth = "120px";
@@ -281,4 +312,47 @@ class StringLiteralExpression extends LiteralExpression
     }
 
     getType() { return "string"; }
+}
+
+class VariableExpression extends ExpressionBase
+{
+    constructor(parentNode)
+    {
+        // TODO
+        super();
+        
+        this.parentNode = parentNode;
+    
+        // main element
+        this.element = document.createElement("div");
+        this.element.uiElementData = this;
+        this.element.className = "unary-expression";
+
+        // variable name input field
+        this.inputField = document.createElement("input");
+        this.inputField.type = "text";
+        this.inputField.placeholder = "Variable name";
+        this.inputField.className = "variable-name-input";
+        this.inputField.style.minWidth = "130px";
+        this.inputField.onkeydown = ev =>
+        {
+            if (ev.keyCode === 13)
+                this.inputField.blur();
+        }
+        this.inputField.oninput = () =>
+        {
+            this.inputField.style.width = (GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
+        }
+
+        // drag handle
+        this.dragHandle = document.createElement("div");
+        this.dragHandle.className = "drag-handle";
+
+        this.element.appendChild(this.dragHandle);
+        this.element.appendChild(this.inputField);
+
+        parentNode.appendChild(this.element);
+        draggable.AddElement(this.element, this.dragHandle);
+        draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
 }

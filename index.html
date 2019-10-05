@@ -14,9 +14,20 @@ body
     color: white;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
 }
+
+#search-box
+{
+    color: white;
+    background: #404040;
+    font-size: 20px;
+    border: 1px solid #8a8a8a;
+    outline: none;
+    padding: 6px;
+}
 </style>
 </head>
 <body>
+<input id="search-box" type="text">
 
 <div id="main-drag-area" style="position: relative; border: 2px solid red; margin: 20px; width: 1400px; height: 600px;">
 
@@ -31,7 +42,8 @@ body
 <script src="ui-elements/Statements.js"></script>
 <script src="ui-elements/FunctionBody.js"></script>
 
-<script src="build-elements.js"></script>
+<script src="ui-elements/AddElements.js"></script>
+
 
 <script src="runner/Expressions.js"></script>
 <script src="runner/Statements.js"></script>
@@ -39,20 +51,18 @@ body
 
 <script>
 const dragArea = document.getElementById("main-drag-area");
-for (let i = 0; i < 1; ++i)
-    new IfStatement(dragArea);
-
-for (let i = 0; i < 1; ++i)
-    new BooleanAndExpression(dragArea);
-
-for (let i = 0; i < 1; ++i)
-    new BooleanOrExpression(dragArea);
-
+new IfStatement(dragArea);
+new WhileStatement(dragArea);
 new FunctionBody(dragArea);
-
-new NumberLiteralExpression(dragArea);
 new BooleanLiteralExpression(dragArea);
+new NumberLiteralExpression(dragArea);
 new StringLiteralExpression(dragArea);
+new BinaryBooleanExpression(dragArea);
+new BinaryNumericExpression(dragArea);
+new BinaryStringExpression(dragArea);
+new NumberComparison(dragArea);
+new StringComparison(dragArea);
+new VariableExpression(dragArea);
 </script>
 </body>
 </html>

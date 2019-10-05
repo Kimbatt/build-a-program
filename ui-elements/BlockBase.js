@@ -48,13 +48,13 @@ class BlockBase extends ElementBase
             switch (expressionType)
             {
                 case "number":
-                    dropArea.style.background = "var(--number-color)";
+                    dropArea.style.backgroundColor = "var(--number-color)";
                     break;
                 case "boolean":
-                    dropArea.style.background = "var(--boolean-color)";
+                    dropArea.style.backgroundColor = "var(--boolean-color)";
                     break;
                 case "string":
-                    dropArea.style.background = "var(--string-color)";
+                    dropArea.style.backgroundColor = "var(--string-color)";
                     break;
             }
 
@@ -82,7 +82,7 @@ class BlockBase extends ElementBase
                 },
                 drop: element =>
                 {
-                    dropArea.isEmpty = false;
+                    headerElement.isEmpty = false;
                     dropAreaPlaceholder.style.display = "none";
                     dropAreaPlaceholder.style.minWidth = "";
                     dropArea.classList.add("not-empty");
@@ -95,7 +95,7 @@ class BlockBase extends ElementBase
                 },
                 detach: element =>
                 {
-                    dropArea.isEmpty = true;
+                    headerElement.isEmpty = true;
                     dropAreaPlaceholder.style.display = "";
                     dropArea.style.minWidth = this.headerDropAreaMinWidth;
                     dropArea.classList.remove("not-empty");
@@ -147,9 +147,7 @@ class BlockBase extends ElementBase
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, dragHandle);
-        const style = getComputedStyle(this.element);
-        draggable.ConstrainToElement(this.element, parentNode,
-            2 + Number(style.margin ? style.margin.match(/(\d+)/)[1] : 0) + Number(style.border ? style.border.match(/(\d+)/)[1] : 0));
+        draggable.ConstrainToElement(this.element, parentNode, 0);
     }
 
     recalculateDraggableSizes()
@@ -225,6 +223,7 @@ class BlockBase extends ElementBase
 
         console.log("drop");
         element.style.position = "static";
+        element.classList.add("nested");
         this.mainBlock.style.minWidth = "";
 
         this.recalculateDraggableSizes();
@@ -238,6 +237,7 @@ class BlockBase extends ElementBase
 
         console.log("detach");
         this.mainBlock.style.minWidth = this.mainBlockMinWidth;
+        element.classList.remove("nested");
         this.parentNode.appendChild(element);
 
         this.recalculateDraggableSizes();
