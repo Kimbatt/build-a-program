@@ -30,9 +30,9 @@ let GetTextSize;
         div.innerText = text;
         div.style.font = getComputedStyle(element).font;
         document.body.appendChild(div);
-        const rect = div.getBoundingClientRect();
+        const width = div.clientWidth;
         document.body.removeChild(div);
-        return rect.width;
+        return width;
     }
 })();
 
@@ -181,6 +181,16 @@ class StringMap
         }
 
         const ret = [];
+        const unique = new Set();
+
+        function Add(obj)
+        {
+            if (!unique.has(obj.str))
+            {
+                unique.add(obj.str);
+                ret.push(obj);
+            }
+        }
 
         while (stack.length !== 0 && ret.length < limit)
         {
@@ -192,10 +202,10 @@ class StringMap
                 {
                     const substrs = current["substr"];
                     for (let substr in substrs)
-                        ret.push(substrs[substr]);
+                        Add(substrs[substr]);
                 }
                 else if (char === "final")
-                    ret.push(current["final"]);
+                    Add(current["final"]);
                 else
                     stack.push(current[char]);
             }

@@ -7,13 +7,13 @@
     font-size: 20px;
 }
 
-.block .container
+.block > .container
 {
     display: flex;
     flex-direction: column;
 }
 
-.block .drag-handle
+.block > .drag-handle
 {
     display: inline-block;
     align-self: stretch;
@@ -24,49 +24,43 @@
     background: cyan;
 }
 
-.block .header
+.block > .container > .header
 {
     display: flex;
     justify-content: flex-start;
     width: 100%;
 }
 
-.block .header-text
+.block > .container > .header > .header-text
 {
     background: black;
     padding: 5px 10px;
 }
 
-.block .header-drop-area
-{
-    border: 2px solid black;
-    background: #404040;
-    display: inline-block;
-}
-
-.block .header-drop-area.not-empty
+.block > .container > .header > .header-drop-area.not-empty
 {
     border: 0px;
     background: black;
 }
 
-.block .header-drop-area-placeholder
+.block > .container > .mainblock-container
 {
-    height: 30px;
     display: flex;
-    align-self: stretch;
-    align-items: center;
-    justify-content: center;
+    justify-content: flex-start;
+    width: 100%;
 }
 
-.block .mainblock
+.block > .container > .mainblock-container > .mainblock
 {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
     background: #404040;
     border: 2px solid black;
     text-align: center;
 }
 
-.block .mainblock-placeholder
+.block > .container > .mainblock-container > .mainblock > .mainblock-placeholder
 {
     box-sizing: border-box;
     height: 60px;
@@ -76,14 +70,7 @@
     justify-content: center;
 }
 
-.block .mainblock-container
-{
-    display: flex;
-    justify-content: flex-start;
-    width: 100%;
-}
-
-.block .mainblock-borderleft
+.block > .container > .mainblock-container > .mainblock-borderleft
 {
     flex-shrink: 0;
     align-self: stretch;
@@ -91,19 +78,35 @@
     width: 33px;
 }
 
-.block .drop-highlight
+.drop-area
 {
-    border: 2px dashed black;
+    border: 2px solid black;
+    background: #404040;
+    display: inline-block;
+}
+
+.drop-placeholder
+{
+    height: 30px;
+    display: flex;
+    align-self: stretch;
+    align-items: center;
+    justify-content: center;
+}
+
+.drop-highlight
+{
+    border: 2px dashed black !important;
     background: white !important;
     color: black;
 }
 
-.block .header-drop-area.drop-highlight
+.block > .container > .header > .header-drop-area.drop-highlight
 {
     box-sizing: content-box;
 }
 
-.block .drop-normal
+.drop-normal
 {
     background: #404040;
 }

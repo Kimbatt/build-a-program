@@ -1,10 +1,4 @@
 
-class ExpressionBase extends ElementBase
-{
-    isStatement() { return false; }
-    isExpression() { return true; }
-}
-
 class BinaryExpression extends ExpressionBase
 {
     constructor(parentNode, texts, acceptsType, returnType)
@@ -27,7 +21,8 @@ class BinaryExpression extends ExpressionBase
         this.expression1.className = "expression";
         this.expression1.style.minWidth = this.expressionMinWidth;
         draggable.CreateDropArea(this.expression1, {
-            check: elem => elem.uiElementData && elem.uiElementData.isExpression() && elem.uiElementData.getType() === this.acceptsType && !this.hasExpression1,
+            check: elem => elem.uiElementData && elem.uiElementData.isExpression()
+                && (elem.uiElementData.getType() === this.acceptsType || elem.uiElementData.getType() === "any") && !this.hasExpression1,
             hoverenter: elem => this.onHoverEnterExpression(1, elem),
             hoverleave: elem => this.onHoverLeaveExpression(1, elem),
             drop: elem => this.onDropExpression(1, elem),
@@ -57,7 +52,8 @@ class BinaryExpression extends ExpressionBase
         this.expression2.className = "expression";
         this.expression2.style.minWidth = this.expressionMinWidth;
         draggable.CreateDropArea(this.expression2, {
-            check: elem => elem.uiElementData && elem.uiElementData.isExpression() && elem.uiElementData.getType() === this.acceptsType && !this.hasExpression2,
+            check: elem => elem.uiElementData && elem.uiElementData.isExpression()
+                && (elem.uiElementData.getType() === this.acceptsType || elem.uiElementData.getType() === "any") && !this.hasExpression2,
             hoverenter: elem => this.onHoverEnterExpression(2, elem),
             hoverleave: elem => this.onHoverLeaveExpression(2, elem),
             drop: elem => this.onDropExpression(2, elem),
@@ -318,22 +314,25 @@ class VariableExpression extends ExpressionBase
 {
     constructor(parentNode)
     {
-        // TODO
         super();
-        
         this.parentNode = parentNode;
-    
+
         // main element
         this.element = document.createElement("div");
         this.element.uiElementData = this;
         this.element.className = "unary-expression";
+
+        // header text
+        const header = document.createElement("div");
+        header.innerText = "Value of";
+        header.className = "inline-text";
 
         // variable name input field
         this.inputField = document.createElement("input");
         this.inputField.type = "text";
         this.inputField.placeholder = "Variable name";
         this.inputField.className = "variable-name-input";
-        this.inputField.style.minWidth = "130px";
+        this.inputField.style.width = "130px";
         this.inputField.onkeydown = ev =>
         {
             if (ev.keyCode === 13)
@@ -341,7 +340,8 @@ class VariableExpression extends ExpressionBase
         }
         this.inputField.oninput = () =>
         {
-            this.inputField.style.width = (GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
+            this.inputField.style.width = (this.inputField.value === "" ? 130 : GetTextSize(this.inputField.value, this.inputField)) + "px";
+            this.recalculateDraggableSizes();
         }
 
         // drag handle
@@ -349,6 +349,7 @@ class VariableExpression extends ExpressionBase
         this.dragHandle.className = "drag-handle";
 
         this.element.appendChild(this.dragHandle);
+        this.element.appendChild(header);
         this.element.appendChild(this.inputField);
 
         parentNode.appendChild(this.element);

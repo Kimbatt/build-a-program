@@ -4,6 +4,7 @@
     --number-color: #366339 /*#a6cea8*/;
     --string-color: #734726 /*#d69d85*/;
     --boolean-color: #1e517b /*#559cd6*/;
+    --dropdown-arrow: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8'><path d='M0 0l8 0l-4 6Z' fill='white'/></svg>");
 }
 
 .binary-expression, .unary-expression
@@ -15,21 +16,21 @@
     font-size: 20px;
 }
 
-.binary-expression .expression, .unary-expression .expression
+.binary-expression > .expression, .unary-expression > .expression
 {
     background: #404040;
     border: 2px solid black;
     display: inline-block;
-    width: 100%;
+    /*width: 100%;*/
 }
 
-.binary-expression .expression.not-empty, .unary-expression .expression.not-empty
+.binary-expression > .expression.not-empty, .unary-expression > .expression.not-empty
 {
     background: black;
     border: 0px;
 }
 
-.binary-expression .expression-placeholder, .unary-expression .expression-placeholder
+.binary-expression > .expression > .expression-placeholder, .unary-expression > .expression > .expression-placeholder
 {
     display: flex;
     justify-content: center;
@@ -37,7 +38,7 @@
     width: 100%;
 }
 
-.binary-expression .drag-handle, .unary-expression .drag-handle
+.binary-expression > .drag-handle, .unary-expression > .drag-handle
 {
     width: 20px;
     flex-shrink: 0;
@@ -45,13 +46,13 @@
     cursor: grab;
 }
 
-.binary-expression .operator-selector, .unary-expression .operator-selector
+.binary-expression > .operator-selector, .unary-expression > .operator-selector
 {
     -moz-appearance: none;
     -webkit-appearance: none;
     appearance: none;
 
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8'><path d='M0 0l8 0l-4 6Z' fill='white'/></svg>");
+    background-image: var(--dropdown-arrow);
     background-color: #404040;
     background-repeat: no-repeat;
     background-position: right;
@@ -67,25 +68,22 @@
     vertical-align: middle;
 }
 
-.binary-expression .drop-highlight, .unary-expression .drop-highlight
-{
-    border: 2px dashed black;
-    background: white !important;
-    color: black;
-}
-
-.binary-expression .drop-normal, .unary-expression .drop-normal
-{
-    border: 2px solid black;
-    background: #404040;
-}
-
 .binary-expression.nested
 {
     border-left: 4px solid white;
     border-right: 4px solid white;
     border-radius: 10px;
     padding: 0px 10px;
+    margin: 0px 10px;
+}
+
+.unary-expression .inline-text
+{
+    padding: 5px 10px;
+}
+
+.unary-expression.nested
+{
     margin: 0px 10px;
 }
 
@@ -134,7 +132,7 @@
     -webkit-appearance: none;
     appearance: none;
 
-    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='14' height='8'><path d='M0 0l8 0l-4 6Z' fill='white'/></svg>");
+    background-image: var(--dropdown-arrow);
     background-color: #404040;
     background-repeat: no-repeat;
     background-position: right;
@@ -162,13 +160,13 @@
 
 .variable-name-input
 {
+    flex-shrink: 0;
     color: white;
     background: #404040;
     border: 2px solid black;
     font-size: 20px;
-    padding: 4px;
+    padding: 3px 8px;
     outline: none;
-    width: 0px;
 }
 
 .variable-name-input ::placeholder

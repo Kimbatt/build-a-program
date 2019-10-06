@@ -1,9 +1,6 @@
 
-class BlockBase extends ElementBase
+class BlockBase extends StatementBase
 {
-    isStatement() { return true; }
-    isExpression() { return false; }
-
     constructor(parentNode, headerText, headerElements)
     {
         super();
@@ -42,7 +39,7 @@ class BlockBase extends ElementBase
             headerElement.isEmpty = true;
             
             const dropArea = document.createElement("div");
-            dropArea.className = "header-drop-area drop-normal";
+            dropArea.className = "drop-area drop-normal";
             dropArea.style.minWidth = this.headerDropAreaMinWidth;
             
             switch (expressionType)
@@ -62,14 +59,15 @@ class BlockBase extends ElementBase
 
             // placeholder while empty +
             const dropAreaPlaceholder = document.createElement("div");
-            dropAreaPlaceholder.className = "header-drop-area-placeholder";
+            dropAreaPlaceholder.className = "drop-placeholder";
             dropAreaPlaceholder.innerText = "+";
             dropArea.appendChild(dropAreaPlaceholder);
             headerElement.dropAreaPlaceholder = dropAreaPlaceholder;
 
             draggable.CreateDropArea(dropArea,
             {
-                check: elem => headerElement.isEmpty && elem.uiElementData && elem.uiElementData.getType() === expressionType,
+                check: elem => headerElement.isEmpty && elem.uiElementData
+                    && (elem.uiElementData.getType() === expressionType || elem.uiElementData.getType() === "any"),
                 hoverenter: element =>
                 {
                     dropArea.classList.remove("drop-normal");
@@ -148,18 +146,6 @@ class BlockBase extends ElementBase
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 0);
-    }
-
-    recalculateDraggableSizes()
-    {
-        let node = this.element;
-        while (node)
-        {
-            if (node.draggableData)
-                draggable.RecalculateSize(node);
-
-            node = node.parentNode;
-        }
     }
 
     onHoverEnterBlock(element)

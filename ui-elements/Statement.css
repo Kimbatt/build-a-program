@@ -1,0 +1,76 @@
+
+.variable-assignment
+{
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    background: black;
+    font-size: 20px;
+}
+
+.variable-assignment .expression
+{
+    background: #404040;
+    border: 2px solid black;
+    display: inline-block;
+}
+
+.variable-assignment .expression.not-empty
+{
+    background: black;
+    border: 0px;
+}
+
+/*
+.variable-assignment .expression-placeholder
+{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+}*/
+
+.variable-assignment > .drag-handle
+{
+    width: 20px;
+    flex-shrink: 0;
+    background: cyan;
+    cursor: grab;
+}
+
+.variable-assignment > .inline-text
+{
+    padding: 5px 10px;
+}
+
+.variable-assignment.nested
+{
+    margin: 10px;
+}
+
+.variable-assignment > .type-selector
+{
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    background-image: var(--dropdown-arrow);
+    background-color: #404040;
+    background-repeat: no-repeat;
+    background-position: right;
+
+    flex-shrink: 0;
+    font-size: 20px;
+    color: white;
+    border: 2px solid black;
+    padding: 4px 25px 4px 10px;
+    outline: none;
+    text-align-last: center;
+    height: 34px;
+    vertical-align: middle;
+}
+
+.inline-text
+{
+    white-space: nowrap;
+}

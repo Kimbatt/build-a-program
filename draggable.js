@@ -2,7 +2,7 @@ const draggable = {};
 
 (function()
 {
-    let elementStyle, handleStyle;
+    let elementStyle;
     const prevStyle = {};
     const appliedStyles =
     {
@@ -190,13 +190,13 @@ const draggable = {};
         constraintData.constraintElement = toElement;
         constraintData.borderSize = borderSize;
 
-        const thisRect = GetCoords(thisElement);
-        const otherRect = GetCoords(toElement);
+        //const thisRect = GetCoords(thisElement);
+        //const otherRect = GetCoords(toElement);
 
         constraintData.minX = 0; //otherRect.x - thisRect.x + borderSize;
         constraintData.minY = 0; //otherRect.y - thisRect.y + borderSize;
-        constraintData.maxX = otherRect.width - thisRect.width - borderSize * 2;//otherRect.x + otherRect.width - (thisRect.x + thisRect.width + borderSize);
-        constraintData.maxY = otherRect.height - thisRect.height - borderSize * 2;//otherRect.y + otherRect.height - (thisRect.y + thisRect.height + borderSize);
+        constraintData.maxX = Infinity; // otherRect.width - thisRect.width - borderSize * 2;//otherRect.x + otherRect.width - (thisRect.x + thisRect.width + borderSize);
+        constraintData.maxY = Infinity; // otherRect.height - thisRect.height - borderSize * 2;//otherRect.y + otherRect.height - (thisRect.y + thisRect.height + borderSize);
 
         // constraintData.left = otherRect.x + borderSize;
         // constraintData.top = otherRect.y + borderSize;

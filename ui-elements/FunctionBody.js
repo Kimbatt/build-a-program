@@ -1,9 +1,9 @@
 
 class FunctionBody extends BlockBase
 {
-    constructor(parentNode)
+    constructor(parentNode, functionName)
     {
-        super(parentNode, "Function", []);
+        super(parentNode, functionName + " (function)", []);
     }
 
     isExpression() { return false; }

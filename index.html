@@ -5,6 +5,7 @@
 <meta charset="utf-8">
 <title>Builder</title>
 <link rel="stylesheet" href="ui-elements/Block.css">
+<link rel="stylesheet" href="ui-elements/Statement.css">
 <link rel="stylesheet" href="ui-elements/Expression.css">
 
 <style>
@@ -24,26 +25,81 @@ body
     outline: none;
     padding: 6px;
 }
+
+.search-result-element
+{
+    display: table;
+    font-size: 20px;
+    padding: 4px;
+    border: 1px solid white;
+    border-radius: 0px;
+    background: #121316;
+    color: white;
+    width: 100%;
+    text-align: left;
+    transition: background 0.1s linear;
+    outline: none;
+}
+
+.search-result-element:enabled
+{
+    cursor: pointer;
+}
+
+.search-result-element:hover:enabled
+{
+    background: #404040;
+    transition: background 0.1s linear;
+}
+
+.search-result-element:disabled
+{
+    background: #121316;
+    cursor: initial;
+}
+
+#search-results
+{
+    position: absolute;
+    min-width: 200px;
+    top: 46px;
+    left: 12px;
+    border: 1px solid white;
+    background: #121316;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s linear;
+}
+
+.search-results-visible
+{
+    visibility: visible;
+    opacity: 1;
+}
+
+.search-results-hidden
+{
+    visibility: hidden;
+    opacity: 0;
+}
+
 </style>
 </head>
 <body>
-<input id="search-box" type="text">
+<input id="search-box" type="text" placeholder="Search for elements">
 
-<div id="main-drag-area" style="position: relative; border: 2px solid red; margin: 20px; width: 1400px; height: 600px;">
+<div id="main-drag-area" style="position: relative; border-top: 2px solid red; border-left: 2px solid red; margin: 20px; width: 1400px; height: 600px;"></div>
 
-</div>
+<div id="search-results" class="search-results-hidden"></div>
 
 <script src="helper.js"></script>
 <script src="draggable.js"></script>
 
 <script src="ui-elements/ElementBase.js"></script>
 <script src="ui-elements/BlockBase.js"></script>
-<script src="ui-elements/Expressions.js"></script>
 <script src="ui-elements/Statements.js"></script>
+<script src="ui-elements/Expressions.js"></script>
 <script src="ui-elements/FunctionBody.js"></script>
 
 <script src="ui-elements/AddElements.js"></script>
-
 
 <script src="runner/Expressions.js"></script>
 <script src="runner/Statements.js"></script>
@@ -51,18 +107,9 @@ body
 
 <script>
 const dragArea = document.getElementById("main-drag-area");
-new IfStatement(dragArea);
-new WhileStatement(dragArea);
-new FunctionBody(dragArea);
-new BooleanLiteralExpression(dragArea);
-new NumberLiteralExpression(dragArea);
-new StringLiteralExpression(dragArea);
-new BinaryBooleanExpression(dragArea);
-new BinaryNumericExpression(dragArea);
-new BinaryStringExpression(dragArea);
-new NumberComparison(dragArea);
-new StringComparison(dragArea);
-new VariableExpression(dragArea);
+const mainFunction = new FunctionBody(dragArea, "Main");
+mainFunction.element.style.left = "100px";
+mainFunction.element.style.top = "100px";
 </script>
 </body>
 </html>
