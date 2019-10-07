@@ -16,7 +16,8 @@
         "Number": d => new NumberLiteralExpression(d),
         "Boolean value": d => new BooleanLiteralExpression(d),
         "String": d => new StringLiteralExpression(d),
-        "Variable": d => new VariableExpression(d)
+        "Variable": d => new VariableExpression(d),
+        "Function call": d => new FunctionCall(d)
     };
 
     for (let keyword in searchKeywords)

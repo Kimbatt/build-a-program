@@ -16,9 +16,9 @@ function GetVariable(variableName, parentBlock)
     return null;
 }
 
-function RunProgram(mainFunction)
+function RunProgram(program)
 {
-    HandleBlockStatement(mainFunction.block, null);
+    HandleBlockStatement(program.mainFunction.block, null);
 }
 
 function CreateTestProgram()

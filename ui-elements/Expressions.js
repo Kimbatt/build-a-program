@@ -132,6 +132,7 @@ class BinaryExpression extends ExpressionBase
         element.style.position = "static";
         this["expression" + index].appendChild(element);
         element.classList.add("nested");
+        element.classList.add("nested-as-expression");
 
         this.recalculateDraggableSizes();
     }
@@ -145,6 +146,7 @@ class BinaryExpression extends ExpressionBase
         console.log("detach");
         this.parentNode.appendChild(element);
         element.classList.remove("nested");
+        element.classList.remove("nested-as-expression");
 
         this.recalculateDraggableSizes();
     }

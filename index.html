@@ -81,10 +81,41 @@ body
     opacity: 0;
 }
 
+.buttonbutton
+{
+    background-color: #146dff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    margin: 5px 0px;
+    padding: 12px 25px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.1s;
+    outline: none;
+}
+
+.buttonbutton:disabled
+{
+    background-color: #77abff;
+    cursor: not-allowed;
+}
+
+.buttonbutton:enabled:hover
+{
+    background-color: #54adff;
+}
+
+.buttonbutton:enabled:active
+{
+    background-color: #256cad;
+}
+
 </style>
 </head>
 <body>
 <input id="search-box" type="text" placeholder="Search for elements">
+<button onclick="CompileAndRun()" class="buttonbutton">Run</button>
 
 <div id="main-drag-area" style="position: relative; border-top: 2px solid red; border-left: 2px solid red; margin: 20px; width: 1400px; height: 600px;"></div>
 
@@ -101,6 +132,7 @@ body
 
 <script src="ui-elements/AddElements.js"></script>
 
+<script src="compiler/compiler.js"></script>
 <script src="runner/Expressions.js"></script>
 <script src="runner/Statements.js"></script>
 <script src="runner/Runner.js"></script>

@@ -88,6 +88,7 @@ class BlockBase extends StatementBase
                     element.style.position = "static";
                     dropArea.appendChild(element);
                     element.classList.add("nested");
+                    element.classList.add("nested-as-expression");
 
                     this.recalculateDraggableSizes();
                 },
@@ -100,6 +101,7 @@ class BlockBase extends StatementBase
                     console.log("detach");
                     this.parentNode.appendChild(element);
                     element.classList.remove("nested");
+                    element.classList.remove("nested-as-expression");
 
                     this.recalculateDraggableSizes();
                 }
@@ -210,6 +212,7 @@ class BlockBase extends StatementBase
         console.log("drop");
         element.style.position = "static";
         element.classList.add("nested");
+        element.classList.add("nested-as-statement");
         this.mainBlock.style.minWidth = "";
 
         this.recalculateDraggableSizes();
@@ -224,6 +227,7 @@ class BlockBase extends StatementBase
         console.log("detach");
         this.mainBlock.style.minWidth = this.mainBlockMinWidth;
         element.classList.remove("nested");
+        element.classList.remove("nested-as-statement");
         this.parentNode.appendChild(element);
 
         this.recalculateDraggableSizes();
