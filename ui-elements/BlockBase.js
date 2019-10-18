@@ -84,7 +84,7 @@ class BlockBase extends StatementBase
                     dropAreaPlaceholder.style.display = "none";
                     dropAreaPlaceholder.style.minWidth = "";
                     dropArea.classList.add("not-empty");
-                    console.log("drop");
+                    //console.log("drop");
                     element.style.position = "static";
                     dropArea.appendChild(element);
                     element.classList.add("nested");
@@ -98,7 +98,7 @@ class BlockBase extends StatementBase
                     dropAreaPlaceholder.style.display = "";
                     dropArea.style.minWidth = this.headerDropAreaMinWidth;
                     dropArea.classList.remove("not-empty");
-                    console.log("detach");
+                    //console.log("detach");
                     this.parentNode.appendChild(element);
                     element.classList.remove("nested");
                     element.classList.remove("nested-as-expression");
@@ -152,7 +152,7 @@ class BlockBase extends StatementBase
 
     onHoverEnterBlock(element)
     {
-        console.log("hover enter");
+        //console.log("hover enter");
         this.mainBlockPlaceholder.classList.remove("drop-normal");
         this.mainBlockPlaceholder.classList.add("drop-highlight");
 
@@ -193,7 +193,7 @@ class BlockBase extends StatementBase
             this.mainBlockPlaceholderActive = false;
         }
 
-        console.log("hover leave");
+        //console.log("hover leave");
         this.mainBlockPlaceholder.classList.add("drop-normal");
         this.mainBlockPlaceholder.classList.remove("drop-highlight");
     }
@@ -209,7 +209,7 @@ class BlockBase extends StatementBase
         else
             throw "ehh";
 
-        console.log("drop");
+        //console.log("drop");
         element.style.position = "static";
         element.classList.add("nested");
         element.classList.add("nested-as-statement");
@@ -224,12 +224,34 @@ class BlockBase extends StatementBase
         if (this.childCount === 0)
             this.mainBlock.appendChild(this.mainBlockPlaceholder);
 
-        console.log("detach");
+        //console.log("detach");
         this.mainBlock.style.minWidth = this.mainBlockMinWidth;
         element.classList.remove("nested");
         element.classList.remove("nested-as-statement");
         this.parentNode.appendChild(element);
 
         this.recalculateDraggableSizes();
+    }
+
+    getStatementsOfBlock()
+    {
+        const statements = [];
+        const statementNodes = this.mainBlock.children;
+        for (let node of statementNodes)
+        {
+            const data = node.uiElementData;
+            if (data && data instanceof ElementBase)
+                statements.push(data.compile());
+        }
+
+        return statements;
+    }
+
+    compile()
+    {
+        return {
+            statementType: "block",
+            statements: this.getStatementsOfBlock()
+        };
     }
 }

@@ -31,11 +31,7 @@ function CreateTestProgram()
                 {
                     statementType: "variableDeclaration", // only literals at declaration
                     variableName: "asd",
-                    variableValue: {
-                        expressionType: "literal",
-                        type: "number",
-                        value: 123
-                    }
+                    variableType: "number"
                 }, {
                     statementType: "ifStatement",
                     conditions: [

@@ -83,16 +83,30 @@ function HandleFunctionCall(data, parentBlock)
 
 function HandleVariableDeclaration(data, parentBlock)
 {
-    const { variableName, variableValue } = data;
+    const { variableName, variableType } = data;
 
-    parentBlock.variables[variableName] = {
+    const variable =  {
         variableValue: {
-            // copy
-            type: variableValue.type,
-            value: variableValue.value
+            type: variableType,
+            value: null
         },
         variableName: variableName
     };
+
+    switch (variableType)
+    {
+        case "number":
+            variable.variableValue.value = 0;
+            break;
+        case "string":
+            variable.variableValue.value = "";
+            break;
+        case "boolean":
+            variable.variableValue.value = false;
+            break;
+    }
+
+    parentBlock.variables[variableName] = variable;
 }
 
 function HandleVariableAssignment(data, parentBlock)

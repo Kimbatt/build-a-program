@@ -1,34 +1,34 @@
 
 function CompileAndRun()
 {
-    const result = CheckProgram();
-    if (typeof result === "string")
+    const compiled = GenerateProgramJSON();
+    const checkResult = CheckProgram();
+    if (typeof checkResult === "string")
     {
-        alert(result);
+        alert(checkResult);
         return;
     }
 
-    RunProgram(GenerateProgramJSON());
+    RunProgram({
+        mainFunction: compiled
+    });
 }
 
-function CheckProgram()
+function CheckProgram(programJSON)
 {
 
 }
-
-const elementDataCollector = {
-    "FunctionBody": () => {}
-};
 
 function GenerateProgramJSON()
 {
     const mainDragArea = document.getElementById("main-drag-area");
 
-    mainDragArea.childNodes.forEach(elem =>
+    const nodes = mainDragArea.childNodes;
+    for (let elem of nodes)
     {
-        if (elem.uiElementData)
+        if (elem.uiElementData instanceof FunctionBody && elem.uiElementData.functionName === "Main")
         {
-            elementDataCollector[elem.uiElementData.constructor.name](elem);
+            return elem.uiElementData.compile();
         }
-    });
+    }
 }

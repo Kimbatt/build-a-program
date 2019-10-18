@@ -17,6 +17,8 @@ class ElementBase
             node = node.parentNode;
         }
     }
+
+    compile() {}
 }
 
 class StatementBase extends ElementBase

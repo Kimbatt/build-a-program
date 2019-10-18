@@ -35,16 +35,16 @@ class BinaryExpression extends ExpressionBase
         this.expression1PlaceholderPlus.innerText = "+";
         this.expression1.appendChild(this.expression1PlaceholderPlus);
 
-        const operatorSelector = document.createElement("select");
+        this.operatorSelector = document.createElement("select");
         for (let i = 0; i < texts.length; ++i)
         {
             const text = texts[i];
             const option = document.createElement("option");
             option.text = text;
             option.value = text;
-            operatorSelector.appendChild(option);
+            this.operatorSelector.appendChild(option);
         }
-        operatorSelector.className = "operator-selector";
+        this.operatorSelector.className = "operator-selector";
 
         // expression 2 drop area
         this.hasExpression2 = false;
@@ -88,7 +88,7 @@ class BinaryExpression extends ExpressionBase
 
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(this.expression1);
-        this.element.appendChild(operatorSelector);
+        this.element.appendChild(this.operatorSelector);
         this.element.appendChild(this.expression2);
 
         parentNode.appendChild(this.element);
@@ -152,6 +152,31 @@ class BinaryExpression extends ExpressionBase
     }
 
     getType() { return this.returnType; }
+
+    getExpressionCompiled(exp)
+    {
+        const expressionNodes = exp.children;
+        for (let expression of expressionNodes)
+        {
+            if (expression.uiElementData && expression.uiElementData instanceof ElementBase)
+                return expression.uiElementData.compile();
+        }
+    }
+
+    getOperator()
+    {
+        return this.operatorSelector.value;
+    }
+
+    getFirstExpressionUIElementCompiled()
+    {
+        return this.getExpressionCompiled(this.expression1);
+    }
+
+    getSecondExpressionUIElementCompiled()
+    {
+        return this.getExpressionCompiled(this.expression2);
+    }
 }
 
 class BinaryBooleanExpression extends BinaryExpression
@@ -159,6 +184,16 @@ class BinaryBooleanExpression extends BinaryExpression
     constructor(parentNode)
     {
         super(parentNode, ["&&", "||", "^", "==", "!="], "boolean", "boolean");
+    }
+
+    compile()
+    {
+        return {
+            expressionType: "binaryBooleanExpression",
+            first: this.getFirstExpressionUIElementCompiled(),
+            second: this.getSecondExpressionUIElementCompiled(),
+            operator: this.getOperator()
+        };
     }
 }
 
@@ -168,6 +203,16 @@ class BinaryNumericExpression extends BinaryExpression
     {
         super(parentNode, ["+", "-", "*", "/", "%", "**", "&", "|", "^", "<<", ">>"], "number", "number");
     }
+
+    compile()
+    {
+        return {
+            expressionType: "binaryNumericExpression",
+            first: this.getFirstExpressionUIElementCompiled(),
+            second: this.getSecondExpressionUIElementCompiled(),
+            operator: this.getOperator()
+        };
+    }
 }
 
 class BinaryStringExpression extends BinaryExpression
@@ -175,6 +220,16 @@ class BinaryStringExpression extends BinaryExpression
     constructor(parentNode)
     {
         super(parentNode, ["+"], "string", "string");
+    }
+
+    compile()
+    {
+        return {
+            expressionType: "binaryStringExpression",
+            first: this.getFirstExpressionUIElementCompiled(),
+            second: this.getSecondExpressionUIElementCompiled(),
+            operator: this.getOperator()
+        };
     }
 }
 
@@ -184,6 +239,16 @@ class NumberComparison extends BinaryExpression
     {
         super(parentNode, ["<", ">", "<=", ">=", "==", "!="], "number", "boolean");
     }
+
+    compile()
+    {
+        return {
+            expressionType: "numberComparison",
+            first: this.getFirstExpressionUIElementCompiled(),
+            second: this.getSecondExpressionUIElementCompiled(),
+            operator: this.getOperator()
+        };
+    }
 }
 
 class StringComparison extends BinaryExpression
@@ -191,6 +256,16 @@ class StringComparison extends BinaryExpression
     constructor(parentNode)
     {
         super(parentNode, ["==", "!="], "string", "boolean");
+    }
+
+    compile()
+    {
+        return {
+            expressionType: "stringComparison",
+            first: this.getFirstExpressionUIElementCompiled(),
+            second: this.getSecondExpressionUIElementCompiled(),
+            operator: this.getOperator()
+        };
     }
 }
 
@@ -290,6 +365,15 @@ class NumberLiteralExpression extends LiteralExpression
     }
 
     getType() { return "number"; }
+
+    compile()
+    {
+        return {
+            expressionType: "literal",
+            value: Number(this.inputField.value),
+            type: "number"
+        };
+    }
 }
 
 class BooleanLiteralExpression extends LiteralExpression
@@ -300,6 +384,15 @@ class BooleanLiteralExpression extends LiteralExpression
     }
 
     getType() { return "boolean"; }
+
+    compile()
+    {
+        return {
+            expressionType: "literal",
+            value: this.inputField.value === "true",
+            type: "boolean"
+        };
+    }
 }
 
 class StringLiteralExpression extends LiteralExpression
@@ -310,6 +403,15 @@ class StringLiteralExpression extends LiteralExpression
     }
 
     getType() { return "string"; }
+
+    compile()
+    {
+        return {
+            expressionType: "literal",
+            value: this.inputField.value,
+            type: "string"
+        };
+    }
 }
 
 class VariableExpression extends ExpressionBase
@@ -330,19 +432,19 @@ class VariableExpression extends ExpressionBase
         header.className = "inline-text";
 
         // variable name input field
-        this.inputField = document.createElement("input");
-        this.inputField.type = "text";
-        this.inputField.placeholder = "Variable name";
-        this.inputField.className = "variable-name-input";
-        this.inputField.style.width = "130px";
-        this.inputField.onkeydown = ev =>
+        this.variableNameInputField = document.createElement("input");
+        this.variableNameInputField.type = "text";
+        this.variableNameInputField.placeholder = "Variable name";
+        this.variableNameInputField.className = "variable-name-input";
+        this.variableNameInputField.style.width = "130px";
+        this.variableNameInputField.onkeydown = ev =>
         {
             if (ev.keyCode === 13)
-                this.inputField.blur();
+                this.variableNameInputField.blur();
         }
-        this.inputField.oninput = () =>
+        this.variableNameInputField.oninput = () =>
         {
-            this.inputField.style.width = (this.inputField.value === "" ? 130 : GetTextSize(this.inputField.value, this.inputField)) + "px";
+            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
             this.recalculateDraggableSizes();
         }
 
@@ -352,10 +454,18 @@ class VariableExpression extends ExpressionBase
 
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(header);
-        this.element.appendChild(this.inputField);
+        this.element.appendChild(this.variableNameInputField);
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, this.dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+
+    compile()
+    {
+        return {
+            expressionType: "variable",
+            variableName: this.variableNameInputField.value
+        }
     }
 }

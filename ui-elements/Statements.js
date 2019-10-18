@@ -5,6 +5,28 @@ class IfStatement extends BlockBase
     {
         super(parentNode, "If", ["boolean"]);
     }
+
+    compile()
+    {
+        const mainConditionNodes = this.headerDropAreas[0].dropArea.children;
+        let mainCondition = null;
+        for (let node of mainConditionNodes)
+        {
+            if (node.uiElementData && node.uiElementData instanceof ElementBase)
+            {
+                mainCondition = node.uiElementData.compile();
+                break;
+            }
+        }
+
+        // todo: else blocks
+        return {
+            statementType: "ifStatement",
+            conditions: [mainCondition],
+            blocks: [super.compile()],
+            elseBlock: null
+        };
+    }
 }
 
 class WhileStatement extends BlockBase
@@ -12,6 +34,26 @@ class WhileStatement extends BlockBase
     constructor(parentNode)
     {
         super(parentNode, "While", ["boolean"]);
+    }
+
+    compile()
+    {
+        const mainConditionNodes = this.headerDropAreas[0].dropArea.children;
+        let mainCondition = null;
+        for (let node of mainConditionNodes)
+        {
+            if (node.uiElementData && node.uiElementData instanceof ElementBase)
+            {
+                mainCondition = node.uiElementData.compile();
+                break;
+            }
+        }
+
+        return {
+            statementType: "whileStatement",
+            condition: mainCondition,
+            block: super.compile()
+        };
     }
 }
 
@@ -33,19 +75,19 @@ class VariableDeclaration extends StatementBase
         header.className = "inline-text";
 
         // variable name input field
-        this.inputField = document.createElement("input");
-        this.inputField.type = "text";
-        this.inputField.placeholder = "Variable name";
-        this.inputField.className = "variable-name-input";
-        this.inputField.style.width = "130px";
-        this.inputField.onkeydown = ev =>
+        this.variableNameInputField = document.createElement("input");
+        this.variableNameInputField.type = "text";
+        this.variableNameInputField.placeholder = "Variable name";
+        this.variableNameInputField.className = "variable-name-input";
+        this.variableNameInputField.style.width = "130px";
+        this.variableNameInputField.onkeydown = ev =>
         {
             if (ev.keyCode === 13)
-                this.inputField.blur();
+                this.variableNameInputField.blur();
         }
-        this.inputField.oninput = () =>
+        this.variableNameInputField.oninput = () =>
         {
-            this.inputField.style.width = (this.inputField.value === "" ? 130 : GetTextSize(this.inputField.value, this.inputField)) + "px";
+            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
         }
 
         // another text
@@ -55,14 +97,14 @@ class VariableDeclaration extends StatementBase
 
         // type selector
         const types = ["Number", "Boolean", "String"];
-        const typeSelector = document.createElement("select");
-        typeSelector.className = "type-selector";
+        this.typeSelector = document.createElement("select");
+        this.typeSelector.className = "type-selector";
         for (let i = 0; i < types.length; ++i)
         {
             const option = document.createElement("option");
             option.innerText = types[i];
             option.value = types[i];
-            typeSelector.appendChild(option);
+            this.typeSelector.appendChild(option);
         }
 
         // drag handle
@@ -71,13 +113,22 @@ class VariableDeclaration extends StatementBase
 
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(header);
-        this.element.appendChild(this.inputField);
+        this.element.appendChild(this.variableNameInputField);
         this.element.appendChild(typeText);
-        this.element.appendChild(typeSelector);
+        this.element.appendChild(this.typeSelector);
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, this.dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+
+    compile()
+    {
+        return {
+            statementType: "variableDeclaration",
+            variableName: this.variableNameInputField.value,
+            variableType: this.typeSelector.value.toLowerCase()
+        };
     }
 }
 
@@ -99,19 +150,19 @@ class VariableAssignment extends StatementBase
         header.className = "inline-text";
 
         // variable name input field
-        this.inputField = document.createElement("input");
-        this.inputField.type = "text";
-        this.inputField.placeholder = "Variable name";
-        this.inputField.className = "variable-name-input";
-        this.inputField.style.width = "130px";
-        this.inputField.onkeydown = ev =>
+        this.variableNameInputField = document.createElement("input");
+        this.variableNameInputField.type = "text";
+        this.variableNameInputField.placeholder = "Variable name";
+        this.variableNameInputField.className = "variable-name-input";
+        this.variableNameInputField.style.width = "130px";
+        this.variableNameInputField.onkeydown = ev =>
         {
             if (ev.keyCode === 13)
-                this.inputField.blur();
+                this.variableNameInputField.blur();
         }
-        this.inputField.oninput = () =>
+        this.variableNameInputField.oninput = () =>
         {
-            this.inputField.style.width = (this.inputField.value === "" ? 130 : GetTextSize(this.inputField.value, this.inputField)) + "px";
+            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
         }
 
         // another text
@@ -121,6 +172,7 @@ class VariableAssignment extends StatementBase
 
         // expression drop area
         const dropArea = document.createElement("div");
+        this.expressionDropArea = dropArea;
         dropArea.className = "drop-area drop-normal";
 
         const headerDropAreaMinWidth = "150px";
@@ -154,7 +206,7 @@ class VariableAssignment extends StatementBase
                 dropAreaPlaceholder.style.display = "none";
                 dropAreaPlaceholder.style.minWidth = "";
                 dropArea.classList.add("not-empty");
-                console.log("drop");
+                //console.log("drop");
                 element.style.position = "static";
                 dropArea.appendChild(element);
                 element.classList.add("nested");
@@ -168,7 +220,7 @@ class VariableAssignment extends StatementBase
                 dropAreaPlaceholder.style.display = "";
                 dropArea.style.minWidth = headerDropAreaMinWidth;
                 dropArea.classList.remove("not-empty");
-                console.log("detach");
+                //console.log("detach");
                 this.parentNode.appendChild(element);
                 element.classList.remove("nested");
                 element.classList.remove("nested-as-expression");
@@ -183,13 +235,33 @@ class VariableAssignment extends StatementBase
 
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(header);
-        this.element.appendChild(this.inputField);
+        this.element.appendChild(this.variableNameInputField);
         this.element.appendChild(toText);
         this.element.appendChild(dropArea);
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, this.dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+
+    compile()
+    {
+        const expressionNodes = this.expressionDropArea.children;
+        let expression = null;
+        for (let node of expressionNodes)
+        {
+            if (node.uiElementData && node.uiElementData instanceof ElementBase)
+            {
+                expression = node.uiElementData;
+                break;
+            }
+        }
+
+        return {
+            statementType: "variableAssignment",
+            variableName: this.variableNameInputField.value,
+            newVariableValue: expression.compile()
+        }
     }
 }
 
@@ -215,19 +287,20 @@ class FunctionCall extends ElementBase
         header.className = "inline-text function-call-inline-text";
 
         // function name input field
-        this.inputField = document.createElement("input");
-        this.inputField.type = "text";
-        this.inputField.placeholder = "Function name";
-        this.inputField.className = "variable-name-input"; // reuse style
-        this.inputField.style.width = "140px";
-        this.inputField.onkeydown = ev =>
+        this.functionNameInputField = document.createElement("input");
+        this.functionNameInputField.type = "text";
+        this.functionNameInputField.placeholder = "Function name";
+        this.functionNameInputField.className = "variable-name-input"; // reuse style
+        this.functionNameInputField.style.width = "140px";
+        this.functionNameInputField.onkeydown = ev =>
         {
             if (ev.keyCode === 13)
-                this.inputField.blur();
+                this.functionNameInputField.blur();
         }
-        this.inputField.oninput = () =>
+        this.functionNameInputField.oninput = () =>
         {
-            this.inputField.style.width = (this.inputField.value === "" ? 140 : GetTextSize(this.inputField.value, this.inputField)) + "px";
+            this.functionNameInputField.style.width = (this.functionNameInputField.value === "" ? 140
+                : GetTextSize(this.functionNameInputField.value, this.functionNameInputField)) + "px";
         }
 
         // another text
@@ -238,6 +311,7 @@ class FunctionCall extends ElementBase
         // todo: multiple expressions depending on function signature
         // expression drop area
         const dropArea = document.createElement("div");
+        this.expressionDropArea = dropArea;
         dropArea.className = "drop-area drop-normal";
 
         const headerDropAreaMinWidth = "150px";
@@ -271,7 +345,7 @@ class FunctionCall extends ElementBase
                 dropAreaPlaceholder.style.display = "none";
                 dropAreaPlaceholder.style.minWidth = "";
                 dropArea.classList.add("not-empty");
-                console.log("drop");
+                //console.log("drop");
                 element.style.position = "static";
                 dropArea.appendChild(element);
                 element.classList.add("nested");
@@ -285,7 +359,7 @@ class FunctionCall extends ElementBase
                 dropAreaPlaceholder.style.display = "";
                 dropArea.style.minWidth = headerDropAreaMinWidth;
                 dropArea.classList.remove("not-empty");
-                console.log("detach");
+                //console.log("detach");
                 this.parentNode.appendChild(element);
                 element.classList.remove("nested");
                 element.classList.remove("nested-as-expression");
@@ -300,12 +374,33 @@ class FunctionCall extends ElementBase
 
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(header);
-        this.element.appendChild(this.inputField);
+        this.element.appendChild(this.functionNameInputField);
         this.element.appendChild(paramsText);
         this.element.appendChild(dropArea);
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, this.dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+
+    compile()
+    {
+        // todo multiple parameters
+        let expressionCompiled = null;
+        const expressionNodes = this.expressionDropArea.children;
+        for (let expression of expressionNodes)
+        {
+            if (expression.uiElementData && expression.uiElementData instanceof ExpressionBase)
+            {
+                expressionCompiled = expression.uiElementData.compile();
+                break;
+            }
+        }
+
+        return {
+            statementType: "functionCall",
+            functionName: this.functionNameInputField.value,
+            parameters: [expressionCompiled]
+        };
     }
 }
