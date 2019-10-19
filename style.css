@@ -1,0 +1,283 @@
+:root
+{
+    --delete-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' width='1000' height='1000' viewbox='0 0 1000 1000'><g><path d='M925.7,125.4h-141h-49.2c0-0.9,0.1-1.8,0.1-2.7V74.1c0-35.4-30-64.1-66.9-64.1H342.4c-36.9,0-66.9,28.8-66.9,64.1v48.6c0,0.9,0,1.8,0.1,2.7h-56H74.3c-17,0-30.7,13.7-30.7,30.7c0,17,13.7,30.7,30.7,30.7h76.2c-0.3,2.4-0.4,4.9-0.4,7.4v726.9c0,38,31.1,68.8,69.4,68.8h565.3c38.3,0,69.4-30.9,69.4-68.8V194.3c0-2.5-0.1-5-0.4-7.4h72c17,0,30.7-13.7,30.7-30.7C956.5,139.2,942.7,125.4,925.7,125.4z M336.8,122.7V74.1c0-0.5,1.8-2.7,5.5-2.7h326.3c3.8,0,5.5,2.2,5.5,2.7v48.6c0,0.5-1.8,2.7-5.5,2.7H342.4C338.6,125.4,336.8,123.3,336.8,122.7z M792.7,194.3v726.9c0,4.1-3.6,7.4-8,7.4H219.4c-4.4,0-8-3.3-8-7.4V194.3c0-4.1,3.6-7.4,8-7.4h122.9h326.3h116C789.2,186.8,792.7,190.2,792.7,194.3z'/><path d='M341.1,261.9c-17,0-30.7,13.7-30.7,30.7v536.3c0,17,13.7,30.7,30.7,30.7c17,0,30.7-13.7,30.7-30.7V292.6C371.8,275.6,358,261.9,341.1,261.9z'/><path d='M505.5,258.2c-17,0-30.7,13.7-30.7,30.7v536.3c0,17,13.7,30.7,30.7,30.7c17,0,30.7-13.7,30.7-30.7V288.9C536.2,272,522.5,258.2,505.5,258.2z'/><path d='M639.3,283.9v536.3c0,17,13.7,30.7,30.7,30.7c17,0,30.7-13.7,30.7-30.7V283.9c0-17-13.7-30.7-30.7-30.7C653.1,253.2,639.3,266.9,639.3,283.9z'/></g></svg>");
+    --down-arrow-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' width='330' height='330' viewbox='0 0 330 330'><path d='M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z'/></svg>");
+}
+
+
+body
+{
+    background: #323639;
+    color: white;
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#search-box
+{
+    color: white;
+    background: #404040;
+    font-size: 20px;
+    border: 1px solid #8a8a8a;
+    outline: none;
+    padding: 6px;
+}
+
+.search-result-element
+{
+    display: table;
+    font-size: 20px;
+    padding: 4px;
+    border: 1px solid white;
+    border-radius: 0px;
+    background: #121316;
+    color: white;
+    width: 100%;
+    text-align: left;
+    transition: background 0.1s linear;
+    outline: none;
+}
+
+.search-result-element:enabled
+{
+    cursor: pointer;
+}
+
+.search-result-element:hover:enabled
+{
+    background: #404040;
+    transition: background 0.1s linear;
+}
+
+.search-result-element:disabled
+{
+    background: #121316;
+    cursor: initial;
+}
+
+#search-results
+{
+    position: absolute;
+    min-width: 200px;
+    top: 46px;
+    left: 12px;
+    border: 1px solid white;
+    background: #121316;
+    transition: opacity 0.2s ease-in-out, visibility 0.2s linear;
+}
+
+.search-results-visible
+{
+    visibility: visible;
+    opacity: 1;
+}
+
+.search-results-hidden
+{
+    visibility: hidden;
+    opacity: 0;
+}
+
+.buttonbutton
+{
+    background-color: #146dff;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    margin: 5px 0px;
+    padding: 12px 25px;
+    font-size: 20px;
+    cursor: pointer;
+    transition: 0.1s;
+    outline: none;
+}
+
+.buttonbutton:disabled
+{
+    background-color: #77abff;
+    cursor: not-allowed;
+}
+
+.buttonbutton:enabled:hover
+{
+    background-color: #54adff;
+}
+
+.buttonbutton:enabled:active
+{
+    background-color: #256cad;
+}
+
+#console
+{
+    display: flex;
+    flex-direction: column;
+    background: black;
+    position: fixed;
+    left: 0px;
+    width: 100%;
+    height: 400px;
+
+    border: 2px solid #161616;
+}
+
+@font-face
+{
+    font-family: Consolas;
+    src: url(consola.woff2);
+}
+
+#console-lines-div
+{
+    overflow-y: scroll;
+    background: #0e0e0e;
+    height: 100%;
+}
+
+.console-line
+{
+    font-family: Consolas;
+    font-size: 20px;
+    padding: 10px 10px;
+}
+
+.console-line:nth-child(2n)
+{
+    background: #222222;
+}
+
+.console-line:nth-child(2n+1)
+{
+    background: #181818;
+}
+
+#console-input-div
+{
+    display: flex;
+    align-items: center;
+    color: white;
+    background: black;
+    outline: none;
+}
+
+#console-input
+{
+    font-family: Consolas;
+    outline: none;
+    color: white;
+    background: black;
+    border: 0px;
+    padding: 6px;
+    font-size: 24px;
+    width: 100%;
+}
+
+#console-input-arrow
+{
+    padding-left: 8px;
+    font-family: Consolas;
+    user-select: none;
+    font-size: 24px;
+}
+
+#console-header
+{
+    display: flex;
+    align-items: center;
+    margin: 0px 5px;
+}
+
+#console-header > label
+{
+    background: #222222;
+    font-size: 19px;
+    padding: 5px 6px;
+    border-radius: 5px;
+}
+
+.console-header-button
+{
+    cursor: pointer;
+    outline: none;
+    border: none;
+    border-radius: 5px;
+    margin: 5px 5px 5px 0px;
+    width: 32px;
+    height: 32px;
+    background-color: #222222;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: 80% 80%;
+    transition: background 0.1s linear;
+}
+
+.console-header-button:hover
+{
+    background-color: #636363;
+}
+
+.console-header-button:active
+{
+    background-color: #3a3a3a;
+}
+
+#console-clear-button
+{
+    background-image: var(--delete-icon);
+}
+
+#console-hide-button
+{
+    background-image: var(--down-arrow-icon);
+}
+
+#console-show-button
+{
+    background-image: var(--down-arrow-icon);
+    transform: rotate(180deg);
+}
+
+#console-hidden
+{
+    display: flex;
+    flex-direction: column;
+    background: black;
+    position: fixed;
+    left: 0px;
+    width: 200px;
+    height: 40px;
+    padding: 0px 5px;
+
+    border: 2px solid #161616;
+}
+
+.console-visible /*hidden -> visible*/
+{
+    visibility: visible;
+    bottom: 0px;
+
+    transition: bottom 0.25s ease-out 0.1s, visibility 0.25s 0.1s;
+}
+
+.console-hidden /*visible -> hidden*/
+{
+    visibility: hidden;
+    bottom: -400px;
+
+    transition: bottom 0.25s ease-in, visibility 0.25s;
+}
+
+.console-hidden-visible /*hidden -> visible*/
+{
+    visibility: visible;
+    bottom: 0px;
+
+    transition: bottom 0.1s linear 0.25s, visibility 0.1s 0.25s;
+}
+
+.console-hidden-hidden /*visible -> hidden*/
+{
+    visibility: hidden;
+    bottom: -40px;
+
+    transition: bottom 0.1s linear, visibility 0.1s;
+}

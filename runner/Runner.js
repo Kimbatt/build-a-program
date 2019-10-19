@@ -16,8 +16,16 @@ function GetVariable(variableName, parentBlock)
     return null;
 }
 
-function RunProgram(program)
+async function RunProgram(program)
 {
+    if (document.getElementById("clear-console-on-run-checkbox").checked)
+        ConsoleClear();
+
+    if (!consoleIsVisible)
+    {
+        ConsoleShow();
+        await new Promise(resolve => setTimeout(resolve, 350));
+    }
     HandleBlockStatement(program.mainFunction.block, null);
 }
 

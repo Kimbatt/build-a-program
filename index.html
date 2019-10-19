@@ -4,114 +4,11 @@
 <head>
 <meta charset="utf-8">
 <title>Builder</title>
+<link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="ui-elements/Block.css">
 <link rel="stylesheet" href="ui-elements/Statement.css">
 <link rel="stylesheet" href="ui-elements/Expression.css">
 
-<style>
-body
-{
-    background: #323639;
-    color: white;
-    font-family: Verdana, Geneva, Tahoma, sans-serif;
-}
-
-#search-box
-{
-    color: white;
-    background: #404040;
-    font-size: 20px;
-    border: 1px solid #8a8a8a;
-    outline: none;
-    padding: 6px;
-}
-
-.search-result-element
-{
-    display: table;
-    font-size: 20px;
-    padding: 4px;
-    border: 1px solid white;
-    border-radius: 0px;
-    background: #121316;
-    color: white;
-    width: 100%;
-    text-align: left;
-    transition: background 0.1s linear;
-    outline: none;
-}
-
-.search-result-element:enabled
-{
-    cursor: pointer;
-}
-
-.search-result-element:hover:enabled
-{
-    background: #404040;
-    transition: background 0.1s linear;
-}
-
-.search-result-element:disabled
-{
-    background: #121316;
-    cursor: initial;
-}
-
-#search-results
-{
-    position: absolute;
-    min-width: 200px;
-    top: 46px;
-    left: 12px;
-    border: 1px solid white;
-    background: #121316;
-    transition: opacity 0.2s ease-in-out, visibility 0.2s linear;
-}
-
-.search-results-visible
-{
-    visibility: visible;
-    opacity: 1;
-}
-
-.search-results-hidden
-{
-    visibility: hidden;
-    opacity: 0;
-}
-
-.buttonbutton
-{
-    background-color: #146dff;
-    border: none;
-    border-radius: 5px;
-    color: white;
-    margin: 5px 0px;
-    padding: 12px 25px;
-    font-size: 20px;
-    cursor: pointer;
-    transition: 0.1s;
-    outline: none;
-}
-
-.buttonbutton:disabled
-{
-    background-color: #77abff;
-    cursor: not-allowed;
-}
-
-.buttonbutton:enabled:hover
-{
-    background-color: #54adff;
-}
-
-.buttonbutton:enabled:active
-{
-    background-color: #256cad;
-}
-
-</style>
 </head>
 <body>
 <input id="search-box" type="text" placeholder="Search for elements">
@@ -120,6 +17,23 @@ body
 <div id="main-drag-area" style="position: relative; border-top: 2px solid red; border-left: 2px solid red; margin: 20px; width: 1400px; height: 600px;"></div>
 
 <div id="search-results" class="search-results-hidden"></div>
+
+<div id="console" class="console-hidden">
+    <div id="console-header">
+        <button id="console-hide-button" class="console-header-button" title="Hide the console" onclick="ConsoleHide()"></button>
+        <button id="console-clear-button" class="console-header-button" title="Clear the console" onclick="ConsoleClear()"></button>
+        <label><input id="clear-console-on-run-checkbox" type="checkbox" checked> Clear console on run</label>
+    </div>
+    <div id="console-lines-div"></div>
+    <div id="console-input-div">
+        <div id="console-input-arrow">&gt;</div>
+        <input id="console-input" type="text">
+    </div>
+</div>
+
+<div id="console-hidden" class="console-hidden-visible">
+    <button id="console-show-button" class="console-header-button" title="Show console" onclick="ConsoleShow()"></button>
+</div>
 
 <script src="helper.js"></script>
 <script src="draggable.js"></script>
@@ -142,6 +56,51 @@ const dragArea = document.getElementById("main-drag-area");
 const mainFunction = new FunctionBody(dragArea, "Main");
 mainFunction.element.style.left = "100px";
 mainFunction.element.style.top = "100px";
+
+let consoleIsVisible = false;
+function ConsoleShow()
+{
+    consoleIsVisible = true;
+
+    const consoleHidden = document.getElementById("console-hidden");
+    consoleHidden.classList.remove("console-hidden-visible");
+    consoleHidden.classList.add("console-hidden-hidden");
+
+    const consoleDiv = document.getElementById("console");
+    consoleDiv.classList.remove("console-hidden");
+    consoleDiv.classList.add("console-visible");
+}
+
+function ConsoleHide()
+{
+    consoleIsVisible = false;
+
+    const consoleHidden = document.getElementById("console-hidden");
+    consoleHidden.classList.remove("console-hidden-hidden");
+    consoleHidden.classList.add("console-hidden-visible");
+
+    const consoleDiv = document.getElementById("console");
+    consoleDiv.classList.remove("console-visible");
+    consoleDiv.classList.add("console-hidden");
+}
+
+function ConsoleWrite(...args)
+{
+    const consoleLines = document.getElementById("console-lines-div");
+    const newConsoleLine = document.createElement("div");
+    newConsoleLine.innerText = args.join(" ");
+    newConsoleLine.className = "console-line";
+    consoleLines.appendChild(newConsoleLine);
+
+    consoleLines.scrollTo(0, consoleLines.scrollHeight);
+}
+
+function ConsoleClear()
+{
+    const consoleLines = document.getElementById("console-lines-div");
+    while (consoleLines.lastChild)
+        consoleLines.removeChild(consoleLines.lastChild)
+}
 </script>
 </body>
 </html>

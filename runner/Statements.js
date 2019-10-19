@@ -56,7 +56,7 @@ function HandleWhileStatement(data, parentBlock)
 const builtInFunctions = {
     write: (...params) =>
     {
-        console.log(...params.map(param => param.value));
+        ConsoleWrite(...params.map(param => param.value));
     }
 };
 
