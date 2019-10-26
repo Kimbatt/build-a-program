@@ -1,22 +1,29 @@
 
-function CompileAndRun()
+async function CompileAndRun()
 {
-    const compiled = GenerateProgramJSON();
-    const checkResult = CheckProgram();
-    if (typeof checkResult === "string")
+    if (document.getElementById("clear-console-on-run-checkbox").checked)
+        ConsoleClear();
+
+    if (!consoleIsVisible)
     {
-        alert(checkResult);
+        ConsoleShow();
+        await new Promise(resolve => setTimeout(resolve, 350));
+    }
+
+    let compiled;
+    try
+    {
+        compiled = GenerateProgramJSON();
+    }
+    catch (errorData)
+    {
+        ConsoleError("Compile error: " + errorData.message);
         return;
     }
 
     RunProgram({
         mainFunction: compiled
     });
-}
-
-function CheckProgram(programJSON)
-{
-
 }
 
 function GenerateProgramJSON()

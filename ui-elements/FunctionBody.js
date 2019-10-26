@@ -3,7 +3,7 @@ class FunctionBody extends BlockBase
 {
     constructor(parentNode, functionName)
     {
-        super(parentNode, functionName + " (function)", []);
+        super(parentNode, functionName + " (function)", [], true);
         this.functionName = functionName;
     }
 

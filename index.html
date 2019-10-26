@@ -56,6 +56,9 @@ const dragArea = document.getElementById("main-drag-area");
 const mainFunction = new FunctionBody(dragArea, "Main");
 mainFunction.element.style.left = "100px";
 mainFunction.element.style.top = "100px";
+const tempTestIfStatement = new IfStatement(dragArea);
+tempTestIfStatement.element.style.left = "400px";
+tempTestIfStatement.element.style.top = "100px";
 
 let consoleIsVisible = false;
 function ConsoleShow()
@@ -90,6 +93,17 @@ function ConsoleWrite(...args)
     const newConsoleLine = document.createElement("div");
     newConsoleLine.innerText = args.join(" ");
     newConsoleLine.className = "console-line";
+    consoleLines.appendChild(newConsoleLine);
+
+    consoleLines.scrollTo(0, consoleLines.scrollHeight);
+}
+
+function ConsoleError(...args)
+{
+    const consoleLines = document.getElementById("console-lines-div");
+    const newConsoleLine = document.createElement("div");
+    newConsoleLine.innerText = args.join(" ");
+    newConsoleLine.className = "console-line console-line-error";
     consoleLines.appendChild(newConsoleLine);
 
     consoleLines.scrollTo(0, consoleLines.scrollHeight);

@@ -1,7 +1,7 @@
 
 class BlockBase extends StatementBase
 {
-    constructor(parentNode, headerText, headerElements)
+    constructor(parentNode, headerText, headerElements, createDragHandle)
     {
         super();
         this.parentNode = parentNode;
@@ -16,9 +16,13 @@ class BlockBase extends StatementBase
         this.header = document.createElement("div");
         this.header.className = "header";
 
-        const dragHandle = document.createElement("div");
-        dragHandle.className = "drag-handle";
-        this.element.appendChild(dragHandle);
+        let dragHandle;
+        if (createDragHandle)
+        {
+            dragHandle = document.createElement("div");
+            dragHandle.className = "drag-handle";
+            this.element.appendChild(dragHandle);
+        }
 
         const container = document.createElement("div");
         container.className = "container";
@@ -129,9 +133,9 @@ class BlockBase extends StatementBase
         this.mainBlock.appendChild(this.mainBlockPlaceholder);
         this.mainBlockPlaceholderActive = true;
 
-        const mainBlockBorderLeft = document.createElement("div");
-        mainBlockBorderLeft.className = "mainblock-borderleft";
-        this.mainBlockContainer.appendChild(mainBlockBorderLeft);
+        this.mainBlockBorderLeft = document.createElement("div");
+        this.mainBlockBorderLeft.className = "mainblock-borderleft";
+        this.mainBlockContainer.appendChild(this.mainBlockBorderLeft);
         draggable.CreateDropArea(this.mainBlock, {
             check: elem => elem.uiElementData && elem.uiElementData.isStatement(),
             hoverenter: this.onHoverEnterBlock.bind(this),
@@ -146,8 +150,12 @@ class BlockBase extends StatementBase
         container.appendChild(this.mainBlockContainer);
 
         parentNode.appendChild(this.element);
-        draggable.AddElement(this.element, dragHandle);
-        draggable.ConstrainToElement(this.element, parentNode, 0);
+
+        if (createDragHandle)
+        {
+            draggable.AddElement(this.element, dragHandle);
+            draggable.ConstrainToElement(this.element, parentNode, 0);
+        }
     }
 
     onHoverEnterBlock(element)
@@ -253,5 +261,205 @@ class BlockBase extends StatementBase
             statementType: "block",
             statements: this.getStatementsOfBlock()
         };
+    }
+}
+
+class MultiBlockBase extends StatementBase
+{
+    /**
+     * @param {string} secondaryHeaderText 
+     * @param {string} finalHeaderText 
+     */
+    constructor(parentNode, mainHeaderText, mainHeaderElements, secondaryHeaderText, secondaryHeaderElements, finalHeaderText, finalHeaderElements)
+    {
+        super();
+        this.parentNode = parentNode;
+        this.childCount = 0;
+
+        this.secondaryHeaderText = secondaryHeaderText;
+        this.secondaryHeaderElements = secondaryHeaderElements;
+
+        // main element
+        this.element = document.createElement("div");
+        this.element.uiElementData = this;
+        this.element.className = "block multi-block";
+
+        const dragHandle = document.createElement("div");
+        dragHandle.className = "drag-handle";
+        this.element.appendChild(dragHandle);
+
+        const container = document.createElement("div");
+        container.className = "bigger-container";
+        this.element.appendChild(container);
+
+        // main block
+        this.mainBlock = new BlockBase(parentNode, mainHeaderText, mainHeaderElements, false);
+        this.mainBlock.element.style.position = "initial";
+        container.appendChild(this.mainBlock.element);
+
+        const mainBlockContainer = this.mainBlock.mainBlockContainer;
+        const mainBlockMainBorderLeft = this.mainBlock.mainBlockBorderLeft;
+
+        const finalBlockShowButton = document.createElement("button");
+        finalBlockShowButton.innerText = finalHeaderText.split(" ").map(s => s[0]).join("").toUpperCase();
+        finalBlockShowButton.title = "Add " + finalHeaderText + " block";
+        finalBlockShowButton.className = "multi-block-button general-button hidden";
+        mainBlockMainBorderLeft.appendChild(finalBlockShowButton);
+        
+        finalBlockShowButton.addEventListener("click", () =>
+        {
+            finalBlockShowButton.style.display = "none";
+            this.showFinalBlock();
+        });
+        
+        // secondary blocks
+        this.addSecondaryBlockButtonText = secondaryHeaderText.split(" ").map(s => s[0]).join("").toUpperCase();
+        const addSecondaryBlockButton = document.createElement("button");
+        addSecondaryBlockButton.innerText = this.addSecondaryBlockButtonText;
+        addSecondaryBlockButton.title = "Add " + secondaryHeaderText + " block below";
+        addSecondaryBlockButton.className = "multi-block-button general-button hidden";
+        mainBlockMainBorderLeft.appendChild(addSecondaryBlockButton);
+
+        mainBlockContainer.addEventListener("mouseover", () =>
+        {
+            addSecondaryBlockButton.classList.remove("hidden");
+            addSecondaryBlockButton.classList.add("visible");
+            finalBlockShowButton.classList.remove("hidden");
+            finalBlockShowButton.classList.add("visible");
+        });
+
+        mainBlockContainer.addEventListener("mouseout", () =>
+        {
+            addSecondaryBlockButton.classList.remove("visible");
+            addSecondaryBlockButton.classList.add("hidden");
+            finalBlockShowButton.classList.remove("visible");
+            finalBlockShowButton.classList.add("hidden");
+        });
+        
+        this.secondaryBlocksContainer = document.createElement("div");
+        container.appendChild(this.secondaryBlocksContainer);
+        addSecondaryBlockButton.addEventListener("click", () => this.addNewSecondaryBlock()); // <- arrow function needed because of this
+
+        // final block
+        this.finalBlock = new BlockBase(parentNode, finalHeaderText, finalHeaderElements, false);
+        this.finalBlock.element.style.position = "initial";
+        container.appendChild(this.finalBlock.element);
+        this.deleteFinalBlock();
+        this.hasFinalBlock = false;
+
+        const finalBlockMainBlockContainer = this.finalBlock.mainBlockContainer;
+        const finalBlockBorderLeft = this.finalBlock.mainBlockBorderLeft;
+        const finalBlockHideButton = document.createElement("button");
+        finalBlockHideButton.title = "Delete this block";
+        finalBlockHideButton.className = "multi-block-button delete-button hidden";
+        finalBlockBorderLeft.appendChild(finalBlockHideButton);
+
+        finalBlockMainBlockContainer.addEventListener("mouseover", () =>
+        {
+            finalBlockHideButton.classList.remove("hidden");
+            finalBlockHideButton.classList.add("visible");
+        });
+
+        finalBlockMainBlockContainer.addEventListener("mouseout", () =>
+        {
+            finalBlockHideButton.classList.remove("visible");
+            finalBlockHideButton.classList.add("hidden");
+        });
+
+        finalBlockHideButton.addEventListener("click", () =>
+        {
+            finalBlockShowButton.style.display = "";
+            this.deleteFinalBlock();
+        });
+
+        parentNode.appendChild(this.element);
+
+        draggable.AddElement(this.element, dragHandle);
+        draggable.ConstrainToElement(this.element, parentNode, 0);
+    }
+
+    addNewSecondaryBlock(afterBlock)
+    {
+        const newSecondaryBlock = this.createSecondaryBlock();
+        
+        if (afterBlock)
+        {
+            // add after afterBlock
+            this.secondaryBlocksContainer.insertBefore(newSecondaryBlock, afterBlock.nextSibling);
+        }
+        else
+        {
+            // add as first block
+            this.secondaryBlocksContainer.prepend(newSecondaryBlock);
+        }
+    }
+
+    createSecondaryBlock()
+    {
+        const newBlock = new BlockBase(this.parentNode, this.secondaryHeaderText, this.secondaryHeaderElements, false);
+        newBlock.element.style.position = "initial";
+
+        const newBlockContainer = newBlock.mainBlockContainer;
+        const newBlockMainBorderLeft = newBlock.mainBlockBorderLeft;
+
+        const deleteThisBlockButton = document.createElement("button");
+        deleteThisBlockButton.title = "Delete this block";
+        deleteThisBlockButton.className = "multi-block-button delete-button hidden";
+        newBlockMainBorderLeft.appendChild(deleteThisBlockButton);
+
+        deleteThisBlockButton.addEventListener("click", () =>
+        {
+            this.secondaryBlocksContainer.removeChild(newBlock.element);
+        });
+
+        const addSecondaryBlockButton = document.createElement("button");
+        addSecondaryBlockButton.innerText = this.addSecondaryBlockButtonText;
+        addSecondaryBlockButton.title = "Add " + this.secondaryHeaderText + " block below";
+        addSecondaryBlockButton.className = "multi-block-button general-button hidden";
+
+        addSecondaryBlockButton.addEventListener("click", () => this.addNewSecondaryBlock(newBlock.element));
+        
+        newBlockMainBorderLeft.appendChild(addSecondaryBlockButton);
+
+        newBlockContainer.addEventListener("mouseover", () =>
+        {
+            deleteThisBlockButton.classList.remove("hidden");
+            deleteThisBlockButton.classList.add("visible");
+            addSecondaryBlockButton.classList.remove("hidden");
+            addSecondaryBlockButton.classList.add("visible");
+        });
+
+        newBlockContainer.addEventListener("mouseout", () =>
+        {
+            deleteThisBlockButton.classList.remove("visible");
+            deleteThisBlockButton.classList.add("hidden");
+            addSecondaryBlockButton.classList.remove("visible");
+            addSecondaryBlockButton.classList.add("hidden");
+        });
+
+        return newBlock.element;
+    }
+
+    showFinalBlock()
+    {
+        this.finalBlock.element.style.display = "";
+        this.hasFinalBlock = true;
+    }
+
+    deleteFinalBlock()
+    {
+        this.finalBlock.element.style.display = "none";
+        const finalBlockMainBlock = this.finalBlock.mainBlock;
+        const finalBlockMainBlockchildren = finalBlockMainBlock.children;
+        for (let element of finalBlockMainBlockchildren)
+        {
+            if (element.uiElementData && element.uiElementData instanceof ElementBase)
+            {
+                this.finalBlock.onDetachBlock(element);
+                this.finalBlock.parentNode.removeChild(element);
+            }
+        }
+
+        this.hasFinalBlock = false;
     }
 }

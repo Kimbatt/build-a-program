@@ -1,30 +1,73 @@
 
-class IfStatement extends BlockBase
+class IfStatement extends MultiBlockBase
 {
     constructor(parentNode)
     {
-        super(parentNode, "If", ["boolean"]);
+        super(parentNode, "If", ["boolean"], "Else If", ["boolean"], "Else", []);
     }
 
     compile()
     {
-        const mainConditionNodes = this.headerDropAreas[0].dropArea.children;
-        let mainCondition = null;
+        const conditions = [];
+        const blocks = [];
+
+        let hasMainCondition = false;
+        const mainConditionNodes = this.mainBlock.headerDropAreas[0].dropArea.children;
         for (let node of mainConditionNodes)
         {
             if (node.uiElementData && node.uiElementData instanceof ElementBase)
             {
-                mainCondition = node.uiElementData.compile();
+                hasMainCondition = true;
+                conditions.push(node.uiElementData.compile());
                 break;
             }
         }
 
-        // todo: else blocks
+        if (!hasMainCondition)
+        {
+            throw {
+                message: "Condition missing from If Statement",
+                data: [mainConditionNodes]
+            };
+        }
+
+        blocks.push(this.mainBlock.compile());
+
+        const secondaryBlockNodes = this.secondaryBlocksContainer.children;
+        for (let node of secondaryBlockNodes)
+        {
+            if (node.uiElementData && node.uiElementData instanceof ElementBase)
+            {
+                const secondaryBlock = node.uiElementData;
+                let secondaryBlockHasCondition = false;
+                const secondaryConditionNodes = secondaryBlock.headerDropAreas[0].dropArea.children;
+                for (let secondaryConditionNode of secondaryConditionNodes)
+                {
+                    if (secondaryConditionNode.uiElementData && secondaryConditionNode.uiElementData instanceof ElementBase)
+                    {
+                        secondaryBlockHasCondition = true;
+                        conditions.push(secondaryConditionNode.uiElementData.compile());
+                        break;
+                    }
+                }
+
+                if (!secondaryBlockHasCondition)
+                {
+                    throw {
+                        message: "Condition missing from If Statement",
+                        data: [secondaryConditionNodes]
+                    };
+                }
+        
+                blocks.push(secondaryBlock.compile());
+            }
+        }
+
         return {
             statementType: "ifStatement",
-            conditions: [mainCondition],
-            blocks: [super.compile()],
-            elseBlock: null
+            conditions: conditions,
+            blocks: blocks,
+            elseBlock: this.finalBlock.compile()
         };
     }
 }
@@ -33,7 +76,7 @@ class WhileStatement extends BlockBase
 {
     constructor(parentNode)
     {
-        super(parentNode, "While", ["boolean"]);
+        super(parentNode, "While", ["boolean"], true);
     }
 
     compile()

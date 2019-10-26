@@ -110,14 +110,14 @@ class BinaryExpression extends ExpressionBase
 
     onHoverEnterExpression(index, element)
     {
-        console.log("hover enter");
+        //console.log("hover enter");
         this["expression" + index].classList.remove("drop-normal");
         this["expression" + index].classList.add("drop-highlight");
     }
 
     onHoverLeaveExpression(index, element)
     {
-        console.log("hover leave");
+        //console.log("hover leave");
         this["expression" + index].classList.add("drop-normal");
         this["expression" + index].classList.remove("drop-highlight");
     }
@@ -128,7 +128,7 @@ class BinaryExpression extends ExpressionBase
         this["expression" + index + "PlaceholderPlus"].style.display = "none";
         this["expression" + index].style.minWidth = "";
         this["expression" + index].classList.add("not-empty");
-        console.log("drop");
+        //console.log("drop");
         element.style.position = "static";
         this["expression" + index].appendChild(element);
         element.classList.add("nested");
@@ -143,7 +143,7 @@ class BinaryExpression extends ExpressionBase
         this["expression" + index + "PlaceholderPlus"].style.display = "";
         this["expression" + index].style.minWidth = this.expressionMinWidth;
         this["expression" + index].classList.remove("not-empty");
-        console.log("detach");
+        //console.log("detach");
         this.parentNode.appendChild(element);
         element.classList.remove("nested");
         element.classList.remove("nested-as-expression");
