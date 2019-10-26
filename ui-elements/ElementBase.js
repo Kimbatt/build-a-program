@@ -18,7 +18,7 @@ class ElementBase
         }
     }
 
-    compile() {}
+    compile(errors) {}
 }
 
 class StatementBase extends ElementBase

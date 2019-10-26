@@ -153,13 +153,13 @@ class BinaryExpression extends ExpressionBase
 
     getType() { return this.returnType; }
 
-    getExpressionCompiled(exp)
+    getExpressionCompiled(exp, errors)
     {
         const expressionNodes = exp.children;
         for (let expression of expressionNodes)
         {
             if (expression.uiElementData && expression.uiElementData instanceof ElementBase)
-                return expression.uiElementData.compile();
+                return expression.uiElementData.compile(errors);
         }
     }
 
@@ -168,14 +168,14 @@ class BinaryExpression extends ExpressionBase
         return this.operatorSelector.value;
     }
 
-    getFirstExpressionUIElementCompiled()
+    getFirstExpressionUIElementCompiled(errors)
     {
-        return this.getExpressionCompiled(this.expression1);
+        return this.getExpressionCompiled(this.expression1, errors);
     }
 
-    getSecondExpressionUIElementCompiled()
+    getSecondExpressionUIElementCompiled(errors)
     {
-        return this.getExpressionCompiled(this.expression2);
+        return this.getExpressionCompiled(this.expression2, errors);
     }
 }
 
@@ -186,14 +186,32 @@ class BinaryBooleanExpression extends BinaryExpression
         super(parentNode, ["&&", "||", "^", "==", "!="], "boolean", "boolean");
     }
 
-    compile()
+    compile(errors)
     {
-        return {
+        const compiled = {
             expressionType: "binaryBooleanExpression",
-            first: this.getFirstExpressionUIElementCompiled(),
-            second: this.getSecondExpressionUIElementCompiled(),
+            first: this.getFirstExpressionUIElementCompiled(errors),
+            second: this.getSecondExpressionUIElementCompiled(errors),
             operator: this.getOperator()
         };
+
+        if (!compiled.first)
+        {
+            errors.push({
+                message: "Missing first expression from binary boolean expression",
+                data: []
+            });
+        }
+
+        if (!compiled.second)
+        {
+            errors.push({
+                message: "Missing second expression from binary boolean expression",
+                data: []
+            });
+        }
+
+        return compiled;
     }
 }
 
@@ -204,14 +222,32 @@ class BinaryNumericExpression extends BinaryExpression
         super(parentNode, ["+", "-", "*", "/", "%", "**", "&", "|", "^", "<<", ">>"], "number", "number");
     }
 
-    compile()
+    compile(errors)
     {
-        return {
+        const compiled =  {
             expressionType: "binaryNumericExpression",
-            first: this.getFirstExpressionUIElementCompiled(),
-            second: this.getSecondExpressionUIElementCompiled(),
+            first: this.getFirstExpressionUIElementCompiled(errors),
+            second: this.getSecondExpressionUIElementCompiled(errors),
             operator: this.getOperator()
         };
+
+        if (!compiled.first)
+        {
+            errors.push({
+                message: "Missing first expression from binary numeric expression",
+                data: []
+            });
+        }
+
+        if (!compiled.second)
+        {
+            errors.push({
+                message: "Missing second expression from binary numeric expression",
+                data: []
+            });
+        }
+
+        return compiled;
     }
 }
 
@@ -222,14 +258,32 @@ class BinaryStringExpression extends BinaryExpression
         super(parentNode, ["+"], "string", "string");
     }
 
-    compile()
+    compile(errors)
     {
-        return {
+        const compiled = {
             expressionType: "binaryStringExpression",
-            first: this.getFirstExpressionUIElementCompiled(),
-            second: this.getSecondExpressionUIElementCompiled(),
+            first: this.getFirstExpressionUIElementCompiled(errors),
+            second: this.getSecondExpressionUIElementCompiled(errors),
             operator: this.getOperator()
         };
+
+        if (!compiled.first)
+        {
+            errors.push({
+                message: "Missing first expression from binary string expression",
+                data: []
+            });
+        }
+
+        if (!compiled.second)
+        {
+            errors.push({
+                message: "Missing second expression from binary string expression",
+                data: []
+            });
+        }
+
+        return compiled;
     }
 }
 
@@ -240,14 +294,32 @@ class NumberComparison extends BinaryExpression
         super(parentNode, ["<", ">", "<=", ">=", "==", "!="], "number", "boolean");
     }
 
-    compile()
+    compile(errors)
     {
-        return {
+        const compiled = {
             expressionType: "numberComparison",
-            first: this.getFirstExpressionUIElementCompiled(),
-            second: this.getSecondExpressionUIElementCompiled(),
+            first: this.getFirstExpressionUIElementCompiled(errors),
+            second: this.getSecondExpressionUIElementCompiled(errors),
             operator: this.getOperator()
         };
+
+        if (!compiled.first)
+        {
+            errors.push({
+                message: "Missing first expression from number comparison",
+                data: []
+            });
+        }
+
+        if (!compiled.second)
+        {
+            errors.push({
+                message: "Missing second expression from number comparison",
+                data: []
+            });
+        }
+
+        return compiled;
     }
 }
 
@@ -258,14 +330,32 @@ class StringComparison extends BinaryExpression
         super(parentNode, ["==", "!="], "string", "boolean");
     }
 
-    compile()
+    compile(errors)
     {
-        return {
+        const compiled = {
             expressionType: "stringComparison",
-            first: this.getFirstExpressionUIElementCompiled(),
-            second: this.getSecondExpressionUIElementCompiled(),
+            first: this.getFirstExpressionUIElementCompiled(errors),
+            second: this.getSecondExpressionUIElementCompiled(errors),
             operator: this.getOperator()
         };
+
+        if (!compiled.first)
+        {
+            errors.push({
+                message: "Missing first expression from string comparison",
+                data: []
+            });
+        }
+
+        if (!compiled.second)
+        {
+            errors.push({
+                message: "Missing second expression from string comparison",
+                data: []
+            });
+        }
+
+        return compiled;
     }
 }
 
@@ -366,7 +456,7 @@ class NumberLiteralExpression extends LiteralExpression
 
     getType() { return "number"; }
 
-    compile()
+    compile(errors)
     {
         return {
             expressionType: "literal",
@@ -385,7 +475,7 @@ class BooleanLiteralExpression extends LiteralExpression
 
     getType() { return "boolean"; }
 
-    compile()
+    compile(errors)
     {
         return {
             expressionType: "literal",
@@ -404,7 +494,7 @@ class StringLiteralExpression extends LiteralExpression
 
     getType() { return "string"; }
 
-    compile()
+    compile(errors)
     {
         return {
             expressionType: "literal",
@@ -461,7 +551,7 @@ class VariableExpression extends ExpressionBase
         draggable.ConstrainToElement(this.element, parentNode, 2);
     }
 
-    compile()
+    compile(errors)
     {
         return {
             expressionType: "variable",

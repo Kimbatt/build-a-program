@@ -6,7 +6,7 @@ class IfStatement extends MultiBlockBase
         super(parentNode, "If", ["boolean"], "Else If", ["boolean"], "Else", []);
     }
 
-    compile()
+    compile(errors)
     {
         const conditions = [];
         const blocks = [];
@@ -18,20 +18,20 @@ class IfStatement extends MultiBlockBase
             if (node.uiElementData && node.uiElementData instanceof ElementBase)
             {
                 hasMainCondition = true;
-                conditions.push(node.uiElementData.compile());
+                conditions.push(node.uiElementData.compile(errors));
                 break;
             }
         }
 
         if (!hasMainCondition)
         {
-            throw {
-                message: "Condition missing from If Statement",
+            errors.push({
+                message: "Condition missing from If statement",
                 data: [mainConditionNodes]
-            };
+            });
         }
 
-        blocks.push(this.mainBlock.compile());
+        blocks.push(this.mainBlock.compile(errors));
 
         const secondaryBlockNodes = this.secondaryBlocksContainer.children;
         for (let node of secondaryBlockNodes)
@@ -46,20 +46,20 @@ class IfStatement extends MultiBlockBase
                     if (secondaryConditionNode.uiElementData && secondaryConditionNode.uiElementData instanceof ElementBase)
                     {
                         secondaryBlockHasCondition = true;
-                        conditions.push(secondaryConditionNode.uiElementData.compile());
+                        conditions.push(secondaryConditionNode.uiElementData.compile(errors));
                         break;
                     }
                 }
 
                 if (!secondaryBlockHasCondition)
                 {
-                    throw {
-                        message: "Condition missing from If Statement",
+                    errors.push({
+                        message: "Condition missing from If statement",
                         data: [secondaryConditionNodes]
-                    };
+                    });
                 }
         
-                blocks.push(secondaryBlock.compile());
+                blocks.push(secondaryBlock.compile(errors));
             }
         }
 
@@ -67,7 +67,7 @@ class IfStatement extends MultiBlockBase
             statementType: "ifStatement",
             conditions: conditions,
             blocks: blocks,
-            elseBlock: this.finalBlock.compile()
+            elseBlock: this.finalBlock.compile(errors)
         };
     }
 }
@@ -79,23 +79,32 @@ class WhileStatement extends BlockBase
         super(parentNode, "While", ["boolean"], true);
     }
 
-    compile()
+    compile(errors)
     {
-        const mainConditionNodes = this.headerDropAreas[0].dropArea.children;
-        let mainCondition = null;
+        let hasMainCondition = false;
+        const mainConditionNodes = this.mainBlock.headerDropAreas[0].dropArea.children;
         for (let node of mainConditionNodes)
         {
             if (node.uiElementData && node.uiElementData instanceof ElementBase)
             {
-                mainCondition = node.uiElementData.compile();
+                hasMainCondition = true;
+                conditions.push(node.uiElementData.compile(errors));
                 break;
             }
+        }
+
+        if (!hasMainCondition)
+        {
+            errors.push({
+                message: "Condition missing from While statement",
+                data: [mainConditionNodes]
+            });
         }
 
         return {
             statementType: "whileStatement",
             condition: mainCondition,
-            block: super.compile()
+            block: super.compile(errors)
         };
     }
 }
@@ -165,7 +174,7 @@ class VariableDeclaration extends StatementBase
         draggable.ConstrainToElement(this.element, parentNode, 2);
     }
 
-    compile()
+    compile(errors)
     {
         return {
             statementType: "variableDeclaration",
@@ -287,7 +296,7 @@ class VariableAssignment extends StatementBase
         draggable.ConstrainToElement(this.element, parentNode, 2);
     }
 
-    compile()
+    compile(errors)
     {
         const expressionNodes = this.expressionDropArea.children;
         let expression = null;
@@ -303,7 +312,7 @@ class VariableAssignment extends StatementBase
         return {
             statementType: "variableAssignment",
             variableName: this.variableNameInputField.value,
-            newVariableValue: expression.compile()
+            newVariableValue: expression ? expression.compile(errors) : null
         }
     }
 }
@@ -426,7 +435,7 @@ class FunctionCall extends ElementBase
         draggable.ConstrainToElement(this.element, parentNode, 2);
     }
 
-    compile()
+    compile(errors)
     {
         // todo multiple parameters
         let expressionCompiled = null;
@@ -435,7 +444,7 @@ class FunctionCall extends ElementBase
         {
             if (expression.uiElementData && expression.uiElementData instanceof ExpressionBase)
             {
-                expressionCompiled = expression.uiElementData.compile();
+                expressionCompiled = expression.uiElementData.compile(errors);
                 break;
             }
         }

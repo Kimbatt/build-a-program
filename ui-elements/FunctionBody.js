@@ -10,11 +10,11 @@ class FunctionBody extends BlockBase
     isExpression() { return false; }
     isStatement() { return false; }
 
-    compile()
+    compile(errors)
     {
         return {
             parameters: [],
-            block: super.compile()
+            block: super.compile(errors)
         };
     }
 }

@@ -241,7 +241,7 @@ class BlockBase extends StatementBase
         this.recalculateDraggableSizes();
     }
 
-    getStatementsOfBlock()
+    getStatementsOfBlock(errors)
     {
         const statements = [];
         const statementNodes = this.mainBlock.children;
@@ -249,17 +249,17 @@ class BlockBase extends StatementBase
         {
             const data = node.uiElementData;
             if (data && data instanceof ElementBase)
-                statements.push(data.compile());
+                statements.push(data.compile(errors));
         }
 
         return statements;
     }
 
-    compile()
+    compile(errors)
     {
         return {
             statementType: "block",
-            statements: this.getStatementsOfBlock()
+            statements: this.getStatementsOfBlock(errors)
         };
     }
 }
