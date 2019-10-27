@@ -35,6 +35,58 @@
     <button id="console-show-button" class="console-header-button" title="Show console" onclick="ConsoleShow()"></button>
 </div>
 
+<!-- TODO -->
+<div id="function-selector-overlay" style="display: none;">
+    <div id="function-selector">
+        <div style="font-size: 24px; margin-bottom: 10px;">Built-in functions</div>
+        <div id="builtin-function-list" class="function-list">
+            <div class="function-selector-line">
+                <div class="function-info" title="Click for more information">
+                    <div class="function-name">Write : (string) → void</div>
+                    <div class="function-description">Writes a string to the console.</div>
+                </div>
+                <button class="select-function-button buttonbutton">Select</button>
+            </div>
+        </div>
+        <div style="font-size: 24px; margin: 30px 0px 10px 0px;">Custom functions</div>
+        <div id="custom-function-list" class="function-list">
+            <div class="function-selector-line">
+                <div class="function-info" title="Click for more information">
+                    <div class="function-name">Write : (string) → void</div>
+                    <div class="function-description">Writes a string to the console.</div>
+                </div>
+                <button class="select-function-button buttonbutton">Select</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- also TODO -->
+<div id="function-viewer-overlay" style="display: none;">
+    <div id="function-viewer">
+        <div style="font-size: 36px; font-weight: bold; margin-bottom: 40px;">Write</div>
+        <div class="header-text">Description:</div>
+        <div class="normal-text">Writes a string to the console.</div>
+        <div class="header-text">Return type:</div>
+        <div class="normal-text">void</div>
+        <div class="header-text">Parameters:</div>
+        <table class="function-viewer-parameters-table">
+            <tbody>
+                <tr>
+                    <th style="width: 250px;">Name</th>
+                    <th style="width: 150px;">Type</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>text</td>
+                    <td>string</td>
+                    <td>Text to write to the console</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
 <script src="helper.js"></script>
 <script src="draggable.js"></script>
 
