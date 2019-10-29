@@ -28,7 +28,12 @@ let GetTextSize;
     GetTextSize = function(text, element)
     {
         div.innerText = text;
-        div.style.font = getComputedStyle(element).font;
+        const elementStyle = getComputedStyle(element);
+        div.style.fontFamily = elementStyle.fontFamily;
+        div.style.fontSize = elementStyle.fontSize;
+        div.style.fontWeight = elementStyle.fontWeight;
+        div.style.fontStyle = elementStyle.fontStyle;
+
         document.body.appendChild(div);
         const width = div.clientWidth;
         document.body.removeChild(div);
