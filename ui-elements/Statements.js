@@ -82,13 +82,14 @@ class WhileStatement extends BlockBase
     compile(errors)
     {
         let hasMainCondition = false;
-        const mainConditionNodes = this.mainBlock.headerDropAreas[0].dropArea.children;
+        let mainCondition;
+        const mainConditionNodes = this.headerDropAreas[0].dropArea.children;
         for (let node of mainConditionNodes)
         {
             if (node.uiElementData && node.uiElementData instanceof ElementBase)
             {
                 hasMainCondition = true;
-                conditions.push(node.uiElementData.compile(errors));
+                mainCondition = node.uiElementData.compile(errors);
                 break;
             }
         }

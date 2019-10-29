@@ -219,3 +219,16 @@ class StringMap
         return ret.slice(0, limit);
     }
 }
+
+// polyfills for edge (y tho)
+if (!document.elementsFromPoint)
+    document.elementsFromPoint = document.msElementsFromPoint;
+
+if (!window.HTMLDivElement.prototype.scrollTo)
+{
+    window.HTMLDivElement.prototype.scrollTo = function(x, y)
+    {
+        this.scrollLeft = x;
+        this.scrollTop = y;
+    };
+}
