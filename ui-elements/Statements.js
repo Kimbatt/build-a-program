@@ -451,6 +451,7 @@ class FunctionCall extends ElementBase
 
         return {
             statementType: "functionCall",
+            expressionType: "functionCall",
             functionName: this.functionNameInputField.value,
             parameters: [expressionCompiled]
         };

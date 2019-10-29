@@ -252,6 +252,11 @@ function EvaluateBinaryStringExpression(data, parentBlock) // string operator st
     return ret;
 }
 
+function EvaluateFunctionCall(data, parentBlock)
+{
+    return HandleFunctionCall(data, parentBlock);
+}
+
 const expressionEvaluators = {
     literal: EvaluateLiteral,
     variable: EvaluateVariable,
@@ -261,5 +266,6 @@ const expressionEvaluators = {
     binaryNumericExpression: EvaluateBinaryNumericExpression,
     numberComparison: EvaluateNumberComparison,
     binaryStringExpression: EvaluateBinaryStringExpression,
-    stringComparison: EvaluateStringComparison
+    stringComparison: EvaluateStringComparison,
+    functionCall: EvaluateFunctionCall
 };

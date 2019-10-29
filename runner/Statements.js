@@ -53,13 +53,6 @@ function HandleWhileStatement(data, parentBlock)
     }
 }
 
-const builtInFunctions = {
-    write: (...params) =>
-    {
-        ConsoleWrite(...params.map(param => param.value));
-    }
-};
-
 function HandleFunctionCall(data, parentBlock)
 {
     const { functionName, parameters } = data;
@@ -73,10 +66,7 @@ function HandleFunctionCall(data, parentBlock)
 
     const builtInFunction = builtInFunctions[functionName];
     if (builtInFunction)
-    {
-        builtInFunction(...parameterValues);
-        return;
-    }
+        return builtInFunction.func(...parameterValues);
 
     // NYI
 }
