@@ -11,7 +11,7 @@ const builtInFunctions = {
                 description: "Text to write to the console"
             }
         ],
-        func: text => ConsoleWrite(text.value)
+        func: params => ConsoleWrite(params[0].value)
     },
     Read: {
         name: "Read",

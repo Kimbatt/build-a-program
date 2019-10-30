@@ -37,7 +37,9 @@
         {
             if (ev.button === 0)
             {
-                searchKeywords[searchResultButtons[index].innerHTML](mainDragArea);
+                const newElement = searchKeywords[searchResultButtons[index].innerHTML](mainDragArea);
+                newElement.element.style.top = "20px";
+                newElement.element.style.left = "20px";
                 searchBox.value = "";
             }
         };

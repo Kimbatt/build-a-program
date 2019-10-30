@@ -55,20 +55,11 @@ function HandleWhileStatement(data, parentBlock)
 
 function HandleFunctionCall(data, parentBlock)
 {
-    const { functionName, parameters } = data;
-
     const parameterValues = [];
-    for (let i = 0; i < parameters.length; ++i)
-    {
-        const param = parameters[i];
+    for (let param of data.parameters)
         parameterValues.push(EvaluateExpression(param, parentBlock));
-    }
 
-    const builtInFunction = builtInFunctions[functionName];
-    if (builtInFunction)
-        return builtInFunction.func(...parameterValues);
-
-    // NYI
+    return data.functionData.func(parameterValues);
 }
 
 function HandleVariableDeclaration(data, parentBlock)

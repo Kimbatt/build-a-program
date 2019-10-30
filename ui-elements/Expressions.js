@@ -198,7 +198,7 @@ class BinaryBooleanExpression extends BinaryExpression
         if (!compiled.first)
         {
             errors.push({
-                message: "Missing first expression from binary boolean expression",
+                message: "Missing first expression from boolean expression",
                 data: []
             });
         }
@@ -206,7 +206,7 @@ class BinaryBooleanExpression extends BinaryExpression
         if (!compiled.second)
         {
             errors.push({
-                message: "Missing second expression from binary boolean expression",
+                message: "Missing second expression from boolean expression",
                 data: []
             });
         }
@@ -234,7 +234,7 @@ class BinaryNumericExpression extends BinaryExpression
         if (!compiled.first)
         {
             errors.push({
-                message: "Missing first expression from binary numeric expression",
+                message: "Missing first expression from numeric expression",
                 data: []
             });
         }
@@ -242,7 +242,7 @@ class BinaryNumericExpression extends BinaryExpression
         if (!compiled.second)
         {
             errors.push({
-                message: "Missing second expression from binary numeric expression",
+                message: "Missing second expression from numeric expression",
                 data: []
             });
         }
@@ -270,7 +270,7 @@ class BinaryStringExpression extends BinaryExpression
         if (!compiled.first)
         {
             errors.push({
-                message: "Missing first expression from binary string expression",
+                message: "Missing first expression from string expression",
                 data: []
             });
         }
@@ -278,7 +278,7 @@ class BinaryStringExpression extends BinaryExpression
         if (!compiled.second)
         {
             errors.push({
-                message: "Missing second expression from binary string expression",
+                message: "Missing second expression from string expression",
                 data: []
             });
         }

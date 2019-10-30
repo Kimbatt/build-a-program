@@ -339,39 +339,91 @@ class FunctionCall extends ElementBase
         header.innerText = ""; // set from css, different text for statement and expression
         header.className = "inline-text function-call-inline-text";
 
-        // function name input field
-        this.functionNameInputField = document.createElement("input");
-        this.functionNameInputField.type = "text";
-        this.functionNameInputField.placeholder = "Function name";
-        this.functionNameInputField.className = "variable-name-input"; // reuse style
-        this.functionNameInputField.style.width = "140px";
-        this.functionNameInputField.onkeydown = ev =>
-        {
-            if (ev.keyCode === 13)
-                this.functionNameInputField.blur();
-        }
-        this.functionNameInputField.oninput = () =>
-        {
-            this.functionNameInputField.style.width = (this.functionNameInputField.value === "" ? 140
-                : GetTextSize(this.functionNameInputField.value, this.functionNameInputField)) + "px";
-        }
-
-        // another text
+        // parameters text
         const paramsText = document.createElement("div");
         paramsText.innerText = "Parameters:";
         paramsText.className = "inline-text";
+        paramsText.style.display = "none";
 
-        // todo: multiple expressions depending on function signature
-        // expression drop area
+        // function selector
+        this.selectedFunction = null;
+        
+        this.functionSelector = document.createElement("div");
+        this.functionSelector.className = "function-selector-button";
+        this.functionSelector.innerText = "(none selected)";
+        this.functionSelector.title = "Click to select a function";
+
+        let waitingForFunctionSelection = false;
+        this.functionSelector.onclick = async () =>
+        {
+            if (waitingForFunctionSelection)
+                return;
+
+            waitingForFunctionSelection = true;
+            ShowAvailableFunctions(true);
+
+            const selectedFunction = await new Promise(resolve => functionSelectedCallback = resolve);
+            waitingForFunctionSelection = false;
+            functionSelectedCallback = undefined;
+
+            if (selectedFunction && selectedFunction != this.selectedFunction)
+            {
+                this.selectedFunction = selectedFunction;
+                this.functionSelector.innerText = selectedFunction ? selectedFunction.name : "(none selected)";
+
+                while (this.parameterDropAreasContainer.lastChild)
+                    this.parameterDropAreasContainer.removeChild(this.parameterDropAreasContainer.lastChild);
+        
+                if (this.selectedFunction.parameters.length === 0)
+                    paramsText.style.display = "none";
+                else
+                {
+                    paramsText.style.display = "";
+                    for (let param of this.selectedFunction.parameters)
+                        this.createParameterDropArea(param.type);
+                }
+            }
+        };
+
+        // container for parameter drop areas
+        this.parameterDropAreasContainer = document.createElement("div");
+
+        // drag handle
+        this.dragHandle = document.createElement("div");
+        this.dragHandle.className = "drag-handle";
+
+        this.element.appendChild(this.dragHandle);
+        this.element.appendChild(header);
+        this.element.appendChild(this.functionSelector);
+        this.element.appendChild(paramsText);
+        this.element.appendChild(this.parameterDropAreasContainer);
+
+        parentNode.appendChild(this.element);
+        draggable.AddElement(this.element, this.dragHandle);
+        draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+
+    createParameterDropArea(requiredType)
+    {
         const dropArea = document.createElement("div");
-        this.expressionDropArea = dropArea;
         dropArea.className = "drop-area drop-normal";
+        
+        switch (requiredType)
+        {
+            case "number":
+                dropArea.style.backgroundColor = "var(--number-color)";
+                break;
+            case "boolean":
+                dropArea.style.backgroundColor = "var(--boolean-color)";
+                break;
+            case "string":
+                dropArea.style.backgroundColor = "var(--string-color)";
+                break;
+        }
 
         const headerDropAreaMinWidth = "150px";
-
         dropArea.style.minWidth = headerDropAreaMinWidth;
 
-        // placeholder
         const dropAreaPlaceholder = document.createElement("div");
         dropAreaPlaceholder.className = "drop-placeholder";
         dropAreaPlaceholder.innerText = "+";
@@ -381,7 +433,8 @@ class FunctionCall extends ElementBase
 
         draggable.CreateDropArea(dropArea,
         {
-            check: element => expressionIsEmpty && element.uiElementData.isExpression(),
+            check: element => expressionIsEmpty && element.uiElementData.isExpression()
+                && (element.uiElementData.getType() === requiredType || element.uiElementData.getType() === "any"),
             hoverenter: element =>
             {
                 dropArea.classList.remove("drop-normal");
@@ -421,40 +474,48 @@ class FunctionCall extends ElementBase
             }
         });
 
-        // drag handle
-        this.dragHandle = document.createElement("div");
-        this.dragHandle.className = "drag-handle";
-
-        this.element.appendChild(this.dragHandle);
-        this.element.appendChild(header);
-        this.element.appendChild(this.functionNameInputField);
-        this.element.appendChild(paramsText);
-        this.element.appendChild(dropArea);
-
-        parentNode.appendChild(this.element);
-        draggable.AddElement(this.element, this.dragHandle);
-        draggable.ConstrainToElement(this.element, parentNode, 2);
+        this.parameterDropAreasContainer.appendChild(dropArea);
     }
 
     compile(errors)
     {
-        // todo multiple parameters
-        let expressionCompiled = null;
-        const expressionNodes = this.expressionDropArea.children;
-        for (let expression of expressionNodes)
+        const dropAreaNodes = this.parameterDropAreasContainer.children;
+        const compiledExpressions = [];
+        for (let node of dropAreaNodes)
         {
-            if (expression.uiElementData && expression.uiElementData instanceof ExpressionBase)
+            let found = false;
+            for (let expression of node.children)
             {
-                expressionCompiled = expression.uiElementData.compile(errors);
-                break;
+                if (expression.uiElementData && expression.uiElementData instanceof ElementBase)
+                {
+                    compiledExpressions.push(expression.uiElementData.compile(errors));
+                    found = true;
+                    break;
+                }
             }
+
+            if (!found)
+            {
+                errors.push({
+                    message: "Missing function parameter",
+                    data: []
+                });
+            }
+        }
+
+        if (!this.selectedFunction)
+        {
+            errors.push({
+                message: "No function selected",
+                data: []
+            });
         }
 
         return {
             statementType: "functionCall",
             expressionType: "functionCall",
-            functionName: this.functionNameInputField.value,
-            parameters: [expressionCompiled]
+            functionData: this.selectedFunction,
+            parameters: compiledExpressions
         };
     }
 }

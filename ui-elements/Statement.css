@@ -62,3 +62,23 @@
 {
     content: "Return value of";
 }
+
+.function-selector-button
+{
+    background: #404040;
+    border: 2px solid black;
+    padding: 3px 8px;
+    cursor: pointer;
+    transition: background 0.1s linear;
+    white-space: nowrap;
+}
+
+.function-selector-button:hover
+{
+    background: #606060;
+}
+
+.function-selector-button:active
+{
+    background: #303030;
+}

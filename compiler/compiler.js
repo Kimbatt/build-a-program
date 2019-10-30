@@ -152,6 +152,33 @@ function CheckVariables(functionBlock, errors)
                 return CheckBinaryExpression("a string comparison", expression, "string");
             case "binaryStringExpression":
                 return CheckBinaryExpression("a binary string expression", expression, "string");
+            case "functionCall":
+            {
+                if (!expression.functionData)
+                    return false; // if no function selected
+
+                let allParamsOk = true;
+                for (let i = 0; i < expression.functionData.parameters.length; ++i)
+                {
+                    const requiredParameter = expression.functionData.parameters[i];
+                    const currentParameter = expression.parameters[i];
+                    if (CheckExpression(currentParameter))
+                    {
+                        const currentParameterType = GetExpressionType(currentParameter);
+                        if (currentParameterType !== requiredParameter.type)
+                        {
+                            errors.push({
+                                message: "Function parameter type is wrong, it should be " + AnOrA(requiredParameter.type) + " " + requiredParameter.type
+                                    + " (currently: " + currentParameterType + ")",
+                                data: []
+                            });
+                            allParamsOk = false;
+                        }
+                    }
+                }
+
+                return allParamsOk;
+            }
         }
 
         return false;
@@ -178,6 +205,8 @@ function CheckVariables(functionBlock, errors)
                 return "number";
             case "binaryStringExpression":
                 return "string";
+            case "functionCall":
+                return expression.functionData.returnType;
         }
 
         return "unknown";
@@ -315,28 +344,7 @@ function CheckVariables(functionBlock, errors)
                 }
                 case "functionCall":
                 {
-                    // todo
-                    if (statement.functionName === "")
-                    {
-                        errors.push({
-                            message: "Missing function name",
-                            data: []
-                        });
-                    }
-
-                    for (let parameter of statement.parameters)
-                    {
-                        if (parameter)
-                            CheckExpression(parameter);
-                        else
-                        {
-                            errors.push({
-                                message: "Missing function parameter",
-                                data: []
-                            });
-                        }
-                    }
-
+                    CheckExpression(statement);
                     break;
                 }
             }

@@ -112,11 +112,7 @@ function ShowFunctionInfo(show, func)
     document.getElementById("function-viewer-overlay").style.display = "flex";
 }
 
-function FunctionSelected(func)
-{
-    console.log("function selected:", func);
-}
-
+let functionSelectedCallback;
 function PrepareBuiltInFunctionsList()
 {
     const functionsListDiv = document.getElementById("function-selector").querySelector("#builtin-function-list");
@@ -124,9 +120,17 @@ function PrepareBuiltInFunctionsList()
     {
         const func = builtInFunctions[functionName];
 
+        const container = document.createElement("div");
+        container.style.position = "relative";
+
         const line = document.createElement("div");
         line.className = "function-selector-line";
-        line.onclick = () => ShowFunctionInfo(true, func);
+        line.onclick = ev =>
+        {
+            ev.stopPropagation();
+            document.getElementById("function-selector-overlay").style.display = "none";
+            functionSelectedCallback && functionSelectedCallback(func);
+        };
 
         const functionInfoDiv = document.createElement("div");
         functionInfoDiv.className = "function-info";
@@ -142,20 +146,20 @@ function PrepareBuiltInFunctionsList()
         functionInfoDiv.appendChild(functionNameDiv);
         functionInfoDiv.appendChild(functionDescriptionDiv);
 
-        const selectButton = document.createElement("button");
-        selectButton.className = "select-function-button buttonbutton";
-        selectButton.innerText = "Select";
-        selectButton.onclick = ev =>
+        const detailsButton = document.createElement("button");
+        detailsButton.className = "function-details-button buttonbutton";
+        detailsButton.innerText = "Details";
+        detailsButton.onclick = ev =>
         {
             ev.stopPropagation();
-            ShowAvailableFunctions(false);
-            FunctionSelected(func);
+            ShowFunctionInfo(true, func);
         };
 
         line.appendChild(functionInfoDiv);
-        line.appendChild(selectButton);
 
-        functionsListDiv.appendChild(line);
+        container.appendChild(line);
+        container.appendChild(detailsButton);
+        functionsListDiv.appendChild(container);
     }
 }
 
@@ -164,5 +168,8 @@ PrepareBuiltInFunctionsList();
 const customFunctions = {};
 function ShowAvailableFunctions(show)
 {
+    if (!show)
+        functionSelectedCallback && functionSelectedCallback(null);
+
     document.getElementById("function-selector-overlay").style.display = show ? "flex" : "none";
 }

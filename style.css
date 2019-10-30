@@ -4,11 +4,33 @@
     --down-arrow-icon: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' fill='white' width='330' height='330' viewbox='0 0 330 330'><path d='M325.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001l-139.39,139.393L25.607,79.393c-5.857-5.857-15.355-5.858-21.213,0.001c-5.858,5.858-5.858,15.355,0,21.213l150.004,150c2.813,2.813,6.628,4.393,10.606,4.393s7.794-1.581,10.606-4.394l149.996-150C331.465,94.749,331.465,85.251,325.607,79.393z'/></svg>");
 }
 
+html
+{
+    width: 100%;
+}
+
 body
 {
     background: #323639;
     color: white;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+#main-drag-area
+{
+    position: relative;
+    margin-top: 12px;
+    width: 100%;
+    height: 0px;
+}
+
+#main-drag-area-top-border
+{
+    position: fixed;
+    left: 8px;
+    right: 8px;
+    margin-top: 10px;
+    border-bottom: 2px solid black;
 }
 
 #search-box
@@ -57,7 +79,7 @@ body
 {
     position: absolute;
     min-width: 200px;
-    top: 46px;
+    top: 55px;
     left: 12px;
     border: 1px solid white;
     background: #121316;
@@ -356,9 +378,14 @@ body
     white-space: nowrap;
 }
 
-.function-selector-line .select-function-button
+.function-details-button
 {
-    justify-self: flex-end;
+    position: absolute;
+    top: 0px;
+    bottom: 2px;
+    right: 0px;
+    margin: auto 10px;
+    height: 50px;
 }
 
 #function-viewer-overlay
