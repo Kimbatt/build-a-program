@@ -44,6 +44,7 @@ function GetConsoleLineDiv(text, className)
 }
 
 const consoleLinesDiv = document.getElementById("console-lines-div");
+const consoleDiv = document.getElementById("console");
 function CheckConsoleMaxSize()
 {
     while (consoleLinesDiv.children.length >= 1000)
