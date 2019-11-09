@@ -128,6 +128,39 @@ body
     background-color: #256cad;
 }
 
+#run-button
+{
+    width: 130px;
+    margin-right: 60px;
+}
+
+.loading-spinner
+{
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewbox='0 0 50 50'><circle cx='25' cy='25' r='20' fill='none' stroke-width='5' stroke-linecap='round' stroke-dasharray='90' stroke='white'></circle></svg>");
+    display: inline-block;
+    width: 50px;
+    height: 50px;
+    transform-origin: 50% 50%;
+    animation: loading-spin 0.618s linear infinite;
+    transition: opacity 0.1s linear, visibility 0.1s linear;
+    vertical-align: top;
+}
+
+@keyframes loading-spin
+{
+    100%
+    {
+        transform: rotate(360deg);
+    }
+}
+
+#spinner
+{
+    position: absolute;
+    top: 12px;
+    left: 412px;
+}
+
 #console
 {
     display: flex;
@@ -308,7 +341,7 @@ body
     transition: bottom 0.1s linear, visibility 0.1s;
 }
 
-#function-selector-overlay
+#function-selector-overlay, #function-editor-list-overlay
 {
     position: fixed;
     display: flex;
@@ -322,9 +355,10 @@ body
     background: rgba(0, 0, 0, 0.5);
 }
 
-#function-selector
+#function-selector, #function-editor-list
 {
-    width: 800px;
+    position: relative;
+    width: 1000px;
     height: calc(100% - 80px);
     padding: 16px;
 
@@ -334,7 +368,7 @@ body
 
 #function-selector .function-list
 {
-    height: 42%;
+    height: calc(50% - 58px);
     overflow-y: scroll;
     border: 2px solid #2c2c2c;
 }
@@ -451,4 +485,36 @@ body
 .function-viewer-parameters-table td
 {
     padding: 4px;
+}
+
+.function-editor .hidden-in-function-editor
+{
+    display: none;
+}
+
+.not-function-editor .visible-in-function-editor
+{
+    display: none;
+}
+
+.custom-functions-title
+{
+    margin: 30px 0px 10px 0px;
+}
+
+.function-editor .custom-functions-title
+{
+    margin: 10px 0px 20px 0px;
+}
+
+.function-editor #custom-function-list
+{
+    height: calc(100% - 62px);
+}
+
+#function-editor-list .function-list
+{
+    height: calc(100% - 62px);
+    overflow-y: scroll;
+    border: 2px solid #2c2c2c;
 }

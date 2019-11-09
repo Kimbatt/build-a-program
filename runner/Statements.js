@@ -1,5 +1,9 @@
 
-function HandleBlockStatement(data, parentBlock)
+var blockStatementCounter = 0;
+var blockStatementMaxCount = 100; // check time every 100 block statements
+var lastFrameCheckTime = 0;
+var maxFrameTime = 1000 / 60;
+async function HandleBlockStatement(data, parentBlock)
 {
     const { statements } = data;
     const thisBlock = {
@@ -7,6 +11,21 @@ function HandleBlockStatement(data, parentBlock)
         childBlocks: [],
         variables: {}
     };
+
+    // blocks statements are common in most programs, so we can check here if we should pause for a little, so the browser won't freeze
+    if (++blockStatementCounter === blockStatementMaxCount)
+    {
+        blockStatementCounter = 0;
+        const now = performance.now();
+        if (now > lastFrameCheckTime + maxFrameTime)
+        {
+            lastFrameCheckTime = now;
+            consoleDiv.style.display = "";
+            consoleLinesDiv.scrollTo(0, consoleLinesDiv.scrollHeight);
+            await WaitImmediate();
+            consoleDiv.style.display = "none";
+        }
+    }
 
     for (let i = 0; i < statements.length; ++i)
     {
@@ -19,20 +38,20 @@ function HandleBlockStatement(data, parentBlock)
             continue;
         }
 
-        handler(statement, thisBlock);
+        await handler(statement, thisBlock);
     }
 }
 
-function HandleIfStatement(data, parentBlock)
+async function HandleIfStatement(data, parentBlock)
 {
     const { conditions, blocks, elseBlock } = data;
 
     for (let i = 0; i < conditions.length; ++i)
     {
-        const conditionValue = EvaluateExpression(conditions[i], parentBlock);
+        const conditionValue = await EvaluateExpression(conditions[i], parentBlock);
         if (conditionValue.value /* === true */)
         {
-            HandleBlockStatement(blocks[i], parentBlock);
+            await HandleBlockStatement(blocks[i], parentBlock);
             return;
         }
     }
@@ -40,29 +59,35 @@ function HandleIfStatement(data, parentBlock)
     // no conditions met, handle else block if any
     if (elseBlock)
     {
-        HandleBlockStatement(elseBlock, parentBlock);
+        await HandleBlockStatement(elseBlock, parentBlock);
     }
 }
 
-function HandleWhileStatement(data, parentBlock)
+async function HandleWhileStatement(data, parentBlock)
 {
     const { condition, block } = data;
-    while (EvaluateExpression(condition, parentBlock).value /* === true */)
+    while ((await EvaluateExpression(condition, parentBlock)).value /* === true */)
     {
-        HandleBlockStatement(block, parentBlock);
+        await HandleBlockStatement(block, parentBlock);
     }
 }
 
-function HandleFunctionCall(data, parentBlock)
+async function HandleFunctionCall(data, parentBlock)
 {
     const parameterValues = [];
     for (let param of data.parameters)
-        parameterValues.push(EvaluateExpression(param, parentBlock));
+        parameterValues.push(await EvaluateExpression(param, parentBlock));
 
-    return data.functionData.func(parameterValues);
+    const func = data.functionData.func;
+
+    // only await if the function is async (builtin functions are not)
+    if (func.constructor.name === "AsyncFunction")
+        return await func(parameterValues);
+    else
+        return func(parameterValues);
 }
 
-function HandleVariableDeclaration(data, parentBlock)
+async function HandleVariableDeclaration(data, parentBlock)
 {
     const { variableName, variableType } = data;
 
@@ -90,12 +115,12 @@ function HandleVariableDeclaration(data, parentBlock)
     parentBlock.variables[variableName] = variable;
 }
 
-function HandleVariableAssignment(data, parentBlock)
+async function HandleVariableAssignment(data, parentBlock)
 {
     const { variableName, newVariableValue } = data;
     let variable = GetVariable(variableName, parentBlock);
 
-    variable.variableValue = EvaluateExpression(newVariableValue, parentBlock);
+    variable.variableValue = await EvaluateExpression(newVariableValue, parentBlock);
 }
 
 const statementHandlers = {

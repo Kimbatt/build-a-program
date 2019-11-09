@@ -1,10 +1,10 @@
 
-function EvaluateExpression(data, parentBlock)
+async function EvaluateExpression(data, parentBlock)
 {
-    return expressionEvaluators[data.expressionType](data, parentBlock);
+    return await expressionEvaluators[data.expressionType](data, parentBlock);
 }
 
-function EvaluateLiteral(data, parentBlock)
+async function EvaluateLiteral(data, parentBlock)
 {
     return {
         type: data.type,
@@ -12,7 +12,7 @@ function EvaluateLiteral(data, parentBlock)
     };
 }
 
-function EvaluateVariable(data, parentBlock)
+async function EvaluateVariable(data, parentBlock)
 {
     const variableValue = GetVariable(data.variableName, parentBlock).variableValue;
     return {
@@ -21,7 +21,7 @@ function EvaluateVariable(data, parentBlock)
     }
 }
 
-function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boolean -> boolean
+async function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boolean -> boolean
 {
     const { value, operator } = data;
 
@@ -29,7 +29,7 @@ function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boolean -
         type: "boolean"
     }
 
-    const jsBooleanValue = EvaluateExpression(value, parentBlock).value;
+    const jsBooleanValue = (await EvaluateExpression(value, parentBlock)).value;
 
     switch (operator)
     {
@@ -44,7 +44,7 @@ function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boolean -
     return ret;
 }
 
-function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean operator boolean -> boolean
+async function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean operator boolean -> boolean
 {
     const { first, second, operator } = data;
 
@@ -52,8 +52,8 @@ function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean operator 
         type: "boolean"
     }
 
-    const jsBooleanValueFirst = EvaluateExpression(first, parentBlock).value;
-    const jsBooleanValueSecond = EvaluateExpression(second, parentBlock).value;
+    const jsBooleanValueFirst = (await EvaluateExpression(first, parentBlock)).value;
+    const jsBooleanValueSecond = (await EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -80,7 +80,7 @@ function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean operator 
     return ret;
 }
 
-function EvaluateUnaryNumericExpression(data, parentBlock) // operator number -> number
+async function EvaluateUnaryNumericExpression(data, parentBlock) // operator number -> number
 {
     const { value, operator } = data;
 
@@ -88,7 +88,7 @@ function EvaluateUnaryNumericExpression(data, parentBlock) // operator number ->
         type: "number"
     }
 
-    const jsNumberValue = EvaluateExpression(value, parentBlock).value;
+    const jsNumberValue = (await EvaluateExpression(value, parentBlock)).value;
     switch (operator)
     {
         case "+":
@@ -108,7 +108,7 @@ function EvaluateUnaryNumericExpression(data, parentBlock) // operator number ->
     return ret;
 }
 
-function EvaluateBinaryNumericExpression(data, parentBlock) // number operator number -> number
+async function EvaluateBinaryNumericExpression(data, parentBlock) // number operator number -> number
 {
     const { first, second, operator } = data;
 
@@ -116,8 +116,8 @@ function EvaluateBinaryNumericExpression(data, parentBlock) // number operator n
         type: "number"
     }
 
-    const jsNumberValueFirst = EvaluateExpression(first, parentBlock).value;
-    const jsNumberValueSecond = EvaluateExpression(second, parentBlock).value;
+    const jsNumberValueFirst = (await EvaluateExpression(first, parentBlock)).value;
+    const jsNumberValueSecond = (await EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -162,7 +162,7 @@ function EvaluateBinaryNumericExpression(data, parentBlock) // number operator n
     return ret;
 }
 
-function EvaluateNumberComparison(data, parentBlock) // number operator number -> boolean
+async function EvaluateNumberComparison(data, parentBlock) // number operator number -> boolean
 {
     const { first, second, operator } = data;
 
@@ -170,8 +170,8 @@ function EvaluateNumberComparison(data, parentBlock) // number operator number -
         type: "boolean"
     }
 
-    const jsNumberValueFirst = EvaluateExpression(first, parentBlock).value;
-    const jsNumberValueSecond = EvaluateExpression(second, parentBlock).value;
+    const jsNumberValueFirst = (await EvaluateExpression(first, parentBlock)).value;
+    const jsNumberValueSecond = (await EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -201,7 +201,7 @@ function EvaluateNumberComparison(data, parentBlock) // number operator number -
     return ret;
 }
 
-function EvaluateStringComparison(data, parentBlock) // string operator string -> boolean
+async function EvaluateStringComparison(data, parentBlock) // string operator string -> boolean
 {
     const { first, second, operator } = data;
 
@@ -209,8 +209,8 @@ function EvaluateStringComparison(data, parentBlock) // string operator string -
         type: "boolean"
     }
 
-    const jsStringValueFirst = EvaluateExpression(first, parentBlock).value;
-    const jsStringValueSecond = EvaluateExpression(second, parentBlock).value;
+    const jsStringValueFirst = (await EvaluateExpression(first, parentBlock)).value;
+    const jsStringValueSecond = (await EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -228,7 +228,7 @@ function EvaluateStringComparison(data, parentBlock) // string operator string -
     return ret;
 }
 
-function EvaluateBinaryStringExpression(data, parentBlock) // string operator string -> string
+async function EvaluateBinaryStringExpression(data, parentBlock) // string operator string -> string
 {
     const { first, second, operator } = data;
 
@@ -236,8 +236,8 @@ function EvaluateBinaryStringExpression(data, parentBlock) // string operator st
         type: "string"
     }
 
-    const jsStringValueFirst = EvaluateExpression(first, parentBlock).value;
-    const jsStringValueSecond = EvaluateExpression(second, parentBlock).value;
+    const jsStringValueFirst = (await EvaluateExpression(first, parentBlock)).value;
+    const jsStringValueSecond = (await EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -252,9 +252,9 @@ function EvaluateBinaryStringExpression(data, parentBlock) // string operator st
     return ret;
 }
 
-function EvaluateFunctionCall(data, parentBlock)
+async function EvaluateFunctionCall(data, parentBlock)
 {
-    return HandleFunctionCall(data, parentBlock);
+    return await HandleFunctionCall(data, parentBlock);
 }
 
 const expressionEvaluators = {

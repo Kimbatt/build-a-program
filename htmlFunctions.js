@@ -13,7 +13,6 @@ function ConsoleShow()
     consoleHidden.classList.remove("console-hidden-visible");
     consoleHidden.classList.add("console-hidden-hidden");
 
-    const consoleDiv = document.getElementById("console");
     consoleDiv.classList.remove("console-hidden");
     consoleDiv.classList.add("console-visible");
 }
@@ -26,38 +25,55 @@ function ConsoleHide()
     consoleHidden.classList.remove("console-hidden-hidden");
     consoleHidden.classList.add("console-hidden-visible");
 
-    const consoleDiv = document.getElementById("console");
     consoleDiv.classList.remove("console-visible");
     consoleDiv.classList.add("console-hidden");
 }
 
+const consoleLinesPool = []; // reuse console lines for better performance
+function GetConsoleLineDiv(text, className)
+{
+    let div;
+    if (consoleLinesPool.length === 0)
+        div = document.createElement("div");
+    else
+        div = consoleLinesPool.pop();
+
+    div.innerText = text;
+    div.className = className;
+    return div;
+}
+
+const consoleLinesDiv = document.getElementById("console-lines-div");
+function CheckConsoleMaxSize()
+{
+    while (consoleLinesDiv.children.length >= 1000)
+    {
+        const line = consoleLinesDiv.firstChild;
+        consoleLinesPool.push(line);
+        consoleLinesDiv.removeChild(line);
+    }
+}
+
 function ConsoleWrite(...args)
 {
-    const consoleLines = document.getElementById("console-lines-div");
-    const newConsoleLine = document.createElement("div");
-    newConsoleLine.innerText = args.join(" ");
-    newConsoleLine.className = "console-line";
-    consoleLines.appendChild(newConsoleLine);
-
-    consoleLines.scrollTo(0, consoleLines.scrollHeight);
+    consoleLinesDiv.appendChild(GetConsoleLineDiv(args.join(" "), "console-line"));
+    CheckConsoleMaxSize();
 }
 
 function ConsoleError(...args)
 {
-    const consoleLines = document.getElementById("console-lines-div");
-    const newConsoleLine = document.createElement("div");
-    newConsoleLine.innerText = args.join(" ");
-    newConsoleLine.className = "console-line console-line-error";
-    consoleLines.appendChild(newConsoleLine);
-
-    consoleLines.scrollTo(0, consoleLines.scrollHeight);
+    consoleLinesDiv.appendChild(GetConsoleLineDiv(args.join(" "), "console-line console-line-error"));
+    CheckConsoleMaxSize();
 }
 
 function ConsoleClear()
 {
-    const consoleLines = document.getElementById("console-lines-div");
-    while (consoleLines.lastChild)
-        consoleLines.removeChild(consoleLines.lastChild)
+    while (consoleLinesDiv.lastChild)
+    {
+        const line = consoleLinesDiv.lastChild;
+        consoleLinesPool.push(line);
+        consoleLinesDiv.removeChild(line);
+    }
 }
 
 function ShowFunctionInfo(show, func)
@@ -112,6 +128,51 @@ function ShowFunctionInfo(show, func)
     document.getElementById("function-viewer-overlay").style.display = "flex";
 }
 
+function CreateFunctionInfoLine(func)
+{
+    const container = document.createElement("div");
+    container.style.position = "relative";
+
+    const line = document.createElement("div");
+    line.className = "function-selector-line";
+    line.onclick = ev =>
+    {
+        ev.stopPropagation();
+        document.getElementById("function-selector-overlay").style.display = "none";
+        functionSelectedCallback && functionSelectedCallback(func);
+    };
+
+    const functionInfoDiv = document.createElement("div");
+    functionInfoDiv.className = "function-info";
+
+    const functionNameDiv = document.createElement("div");
+    functionNameDiv.className = "function-name";
+    functionNameDiv.innerText = func.name + " : (" + func.parameters.map(param => param.type).join(", ") + ") → " + func.returnType;
+
+    const functionDescriptionDiv = document.createElement("div");
+    functionDescriptionDiv.className = "function-description";
+    functionDescriptionDiv.innerText = func.description;
+
+    functionInfoDiv.appendChild(functionNameDiv);
+    functionInfoDiv.appendChild(functionDescriptionDiv);
+
+    const detailsButton = document.createElement("button");
+    detailsButton.className = "function-details-button buttonbutton";
+    detailsButton.innerText = "Details";
+    detailsButton.onclick = ev =>
+    {
+        ev.stopPropagation();
+        ShowFunctionInfo(true, func);
+    };
+
+    line.appendChild(functionInfoDiv);
+
+    container.appendChild(line);
+    container.appendChild(detailsButton);
+
+    return container;
+}
+
 let functionSelectedCallback;
 function PrepareBuiltInFunctionsList()
 {
@@ -119,57 +180,112 @@ function PrepareBuiltInFunctionsList()
     for (let functionName in builtInFunctions)
     {
         const func = builtInFunctions[functionName];
-
-        const container = document.createElement("div");
-        container.style.position = "relative";
-
-        const line = document.createElement("div");
-        line.className = "function-selector-line";
-        line.onclick = ev =>
-        {
-            ev.stopPropagation();
-            document.getElementById("function-selector-overlay").style.display = "none";
-            functionSelectedCallback && functionSelectedCallback(func);
-        };
-
-        const functionInfoDiv = document.createElement("div");
-        functionInfoDiv.className = "function-info";
-
-        const functionNameDiv = document.createElement("div");
-        functionNameDiv.className = "function-name";
-        functionNameDiv.innerText = func.name + " : (" + func.parameters.map(param => param.type).join(", ") + ") → " + func.returnType;
-
-        const functionDescriptionDiv = document.createElement("div");
-        functionDescriptionDiv.className = "function-description";
-        functionDescriptionDiv.innerText = func.description;
-
-        functionInfoDiv.appendChild(functionNameDiv);
-        functionInfoDiv.appendChild(functionDescriptionDiv);
-
-        const detailsButton = document.createElement("button");
-        detailsButton.className = "function-details-button buttonbutton";
-        detailsButton.innerText = "Details";
-        detailsButton.onclick = ev =>
-        {
-            ev.stopPropagation();
-            ShowFunctionInfo(true, func);
-        };
-
-        line.appendChild(functionInfoDiv);
-
-        container.appendChild(line);
-        container.appendChild(detailsButton);
-        functionsListDiv.appendChild(container);
+        const functionLineDiv = CreateFunctionInfoLine(func);
+        functionsListDiv.appendChild(functionLineDiv);
     }
 }
 
 PrepareBuiltInFunctionsList();
 
-const customFunctions = {};
+const customFunctions = {
+    
+    Test123: {
+        name: "Test123",
+        description: "test description",
+        returnType: "void",
+        parameters: [
+            {
+                name: "str",
+                type: "string",
+                description: "test string"
+            }
+        ],
+        func: params =>
+        {
+            console.log("test function", params[0].value);
+        }
+    }
+};
+
+const customFunctionsInfoLines = {};
+function UpdateCustomFunctionLines()
+{
+    const functionsListDiv = document.getElementById("function-selector").querySelector("#custom-function-list");
+
+    // remove deleted functions
+    for (let customFunctionName in customFunctionsInfoLines)
+    {
+        const func = customFunctions[customFunctionName];
+        if (!func)
+        {
+            // this function has a line, but the function was deleted
+            const functionLineDiv = customFunctionsInfoLines[customFunctionName];
+            functionsListDiv.removeChild(functionLineDiv);
+            delete customFunctionsInfoLines[customFunctionName];
+        }
+    }
+
+    // look for new functions
+    for (let customFunctionName in customFunctions)
+    {
+        let functionLineDiv = customFunctionsInfoLines[customFunctionName];
+        if (!functionLineDiv)
+        {
+            // this function does not have a line yet
+            const func = customFunctions[customFunctionName];
+            functionLineDiv = CreateFunctionInfoLine(func);
+            functionsListDiv.appendChild(functionLineDiv);
+            customFunctionsInfoLines[customFunctionName] = functionLineDiv;
+        }
+    }
+}
+
 function ShowAvailableFunctions(show)
 {
-    if (!show)
+    if (show)
+        UpdateCustomFunctionLines();
+    else
         functionSelectedCallback && functionSelectedCallback(null);
 
-    document.getElementById("function-selector-overlay").style.display = show ? "flex" : "none";
+    const funcitonSelector = document.getElementById("function-selector-overlay");
+    funcitonSelector.style.display = show ? "flex" : "none";
+    funcitonSelector.classList.add("not-function-editor");
+    funcitonSelector.classList.remove("function-editor");
+}
+
+function ShowFunctionEditorList(show)
+{
+    if (show)
+        UpdateCustomFunctionLines();
+
+    const funcitonSelector = document.getElementById("function-selector-overlay");
+    funcitonSelector.style.display = show ? "flex" : "none";
+    funcitonSelector.classList.remove("not-function-editor");
+    funcitonSelector.classList.add("function-editor");
+}
+
+function ShowFunctionEditor(show)
+{
+    
+}
+
+function ProgramStartedRunning()
+{
+    const runButton = document.getElementById("run-button");
+    const spinner = document.getElementById("spinner");
+    consoleDiv.style.display = "none";
+    runButton.disabled = true;
+    runButton.innerText = "Running";
+    spinner.style.visibility = "";
+    spinner.style.opacity = 1;
+}
+
+function ProgramFinishedRunning()
+{
+    const runButton = document.getElementById("run-button");
+    consoleDiv.style.display = "";
+    runButton.disabled = false;
+    runButton.innerText = "Run";
+    spinner.style.visibility = "hidden";
+    spinner.style.opacity = 0;
 }

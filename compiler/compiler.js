@@ -39,9 +39,15 @@ async function CompileAndRun()
         return;
     }
 
-    RunProgram({
+    ProgramStartedRunning();
+
+    await RunProgram({
         mainFunction: compiled
     });
+
+    ProgramFinishedRunning();
+
+    consoleLinesDiv.scrollTo(0, consoleLinesDiv.scrollHeight);
 }
 
 /**

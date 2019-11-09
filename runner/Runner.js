@@ -18,7 +18,7 @@ function GetVariable(variableName, parentBlock)
 
 async function RunProgram(program)
 {
-    HandleBlockStatement(program.mainFunction.block, null);
+    await HandleBlockStatement(program.mainFunction.block, null);
 }
 
 function CreateTestProgram()
