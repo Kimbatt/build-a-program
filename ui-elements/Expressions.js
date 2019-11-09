@@ -380,7 +380,7 @@ class LiteralExpression extends ExpressionBase
                 this.inputField.style.backgroundColor = "var(--number-color)";
                 this.inputField.type = "text";
                 this.inputField.value = "0";
-                this.inputField.style.minWidth = "80px";
+                this.inputField.style.minWidth = "100px";
                 this.inputField.onchange = () =>
                 {
                     const num = Number(this.inputField.value);

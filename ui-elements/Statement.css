@@ -48,6 +48,12 @@
     vertical-align: middle;
 }
 
+.variable-assignment > .drop-area.not-empty
+{
+    border: 0px;
+    background: black;
+}
+
 .inline-text
 {
     white-space: nowrap;
@@ -61,6 +67,18 @@
 .function-call.nested-as-expression > .function-call-inline-text::before
 {
     content: "Return value of";
+}
+
+.function-call > .parameters-drop-area > .drop-area.not-empty
+{
+    border: 0px;
+    background: black;
+}
+
+.function-call > .parameters-drop-area
+{
+    display: flex;
+    height: 34px;
 }
 
 .function-selector-button

@@ -387,6 +387,7 @@ class FunctionCall extends ElementBase
 
         // container for parameter drop areas
         this.parameterDropAreasContainer = document.createElement("div");
+        this.parameterDropAreasContainer.className = "parameters-drop-area";
 
         // drag handle
         this.dragHandle = document.createElement("div");

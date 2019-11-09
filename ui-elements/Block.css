@@ -37,7 +37,7 @@
     padding: 5px 10px;
 }
 
-.block > .container > .header > .header-drop-area.not-empty
+.block > .container > .header > .header-drop-area.not-empty, .block > .container > .header > .drop-area.not-empty
 {
     border: 0px;
     background: black;

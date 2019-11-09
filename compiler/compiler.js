@@ -327,7 +327,7 @@ function CheckVariables(functionBlock, errors)
                             if (conditionExpressionType !== "boolean")
                             {
                                 errors.push({
-                                    message: "All conditions of an If statement must be boolean expressions (currently: " + conditionExpressionType + ")",
+                                    message: "The condition of an If statement must be boolean expressions (currently: " + conditionExpressionType + ")",
                                     data: []
                                 });
                             }
