@@ -49,7 +49,7 @@ const builtInFunctions = {
     },
     StringToNumber: {
         name: "StringToNumber",
-        description: "Converts a string to a number. Returns NaN if it isn't a number.",
+        description: "Converts a string to a number. Returns NaN if it cannot be converted.",
         returnType: "number",
         parameters: [
             {

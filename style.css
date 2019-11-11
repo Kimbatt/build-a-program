@@ -33,7 +33,7 @@ body
     border-bottom: 2px solid black;
 }
 
-#search-box
+.text-input
 {
     color: white;
     background: #404040;
@@ -422,7 +422,7 @@ body
     height: 50px;
 }
 
-#function-viewer-overlay
+#function-viewer-overlay, #function-editor-overlay
 {
     position: fixed;
     top: 0px;
@@ -434,7 +434,7 @@ body
     background: rgba(0, 0, 0, 0.5);
 }
 
-#function-viewer
+#function-viewer, #function-editor
 {
     display: table;
     position: relative;
@@ -447,7 +447,7 @@ body
     border-radius: 10px;
 }
 
-#function-viewer .header-text
+#function-viewer .header-text, #function-editor .header-text
 {
     font-size: 24px;
     border-bottom: 2px solid #747474;
@@ -455,7 +455,7 @@ body
     margin-bottom: 10px;
 }
 
-#function-viewer .normal-text
+#function-viewer .normal-text, #function-editor .normal-text
 {
     font-size: 20px;
     margin-bottom: 40px;
@@ -517,4 +517,26 @@ body
     height: calc(100% - 62px);
     overflow-y: scroll;
     border: 2px solid #2c2c2c;
+}
+
+#function-editor .type-selector
+{
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    background-image: var(--dropdown-arrow);
+    background-color: #404040;
+    background-repeat: no-repeat;
+    background-position: right;
+
+    flex-shrink: 0;
+    font-size: 20px;
+    color: white;
+    border: 2px solid black;
+    padding: 4px 25px 4px 10px;
+    outline: none;
+    text-align-last: center;
+    height: 34px;
+    vertical-align: middle;
 }

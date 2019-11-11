@@ -380,7 +380,7 @@ class FunctionCall extends ElementBase
                 {
                     paramsText.style.display = "";
                     for (let param of this.selectedFunction.parameters)
-                        this.createParameterDropArea(param.type);
+                        this.createParameterDropArea(param.type, param.name);
                 }
             }
         };
@@ -404,7 +404,7 @@ class FunctionCall extends ElementBase
         draggable.ConstrainToElement(this.element, parentNode, 2);
     }
 
-    createParameterDropArea(requiredType)
+    createParameterDropArea(requiredType, paramName)
     {
         const dropArea = document.createElement("div");
         dropArea.className = "drop-area drop-normal";
@@ -427,7 +427,7 @@ class FunctionCall extends ElementBase
 
         const dropAreaPlaceholder = document.createElement("div");
         dropAreaPlaceholder.className = "drop-placeholder";
-        dropAreaPlaceholder.innerText = "+";
+        dropAreaPlaceholder.innerHTML = "+&nbsp;<span style=\"font-style: italic;\">" + paramName + "</span>";
         dropArea.appendChild(dropAreaPlaceholder);
 
         let expressionIsEmpty = true;
@@ -501,6 +501,8 @@ class FunctionCall extends ElementBase
                     message: "Missing function parameter",
                     data: []
                 });
+
+                compiledExpressions.push(null); // add empty data to match the count of required function parameters 
             }
         }
 

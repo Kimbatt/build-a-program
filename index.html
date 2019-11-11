@@ -11,7 +11,7 @@
 
 </head>
 <body>
-<input id="search-box" type="text" placeholder="Search for elements">
+<input id="search-box" class="text-input" type="text" placeholder="Search for elements">
 <button onclick="CompileAndRun()" class="buttonbutton" id="run-button">Run</button>
 <div id="spinner" class="loading-spinner" style="visibility: hidden; opacity: 0;"></div>
 <button onclick="ShowFunctionEditorList(true)" class="buttonbutton">Function Editor</button>
@@ -57,6 +57,27 @@
         <div id="function-viewer-function-return-type" class="normal-text"></div>
         <div class="header-text">Parameters:</div>
         <div id="function-viewer-no-parameters-text" class="normal-text" style="display: none;">None</div>
+        <table class="function-viewer-parameters-table">
+            <tbody>
+                <tr>
+                    <th style="width: 250px;">Name</th>
+                    <th style="width: 150px;">Type</th>
+                    <th>Description</th>
+                </tr>
+            </tbody>
+        </table>
+        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="ShowFunctionInfo(false)">Back</button>
+    </div>
+</div>
+
+<div id="function-editor-overlay" style="display: none;" onclick="ShowFunctionEditor(false)">
+    <div id="function-editor" onclick="event.stopPropagation()">
+        <input class="text-input" id="function-editor-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;" placeholder="Function Name">
+        <div class="header-text">Description:</div>
+        <input class="text-input normal-text" id="function-editor-function-description">
+        <div class="header-text">Return type:</div>
+        <select id="function-editor-function-return-type" class="type-selector normal-text"></select>
+        <div class="header-text">Parameters:</div>
         <table class="function-viewer-parameters-table">
             <tbody>
                 <tr>

@@ -53,28 +53,28 @@ async function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean ope
     }
 
     const jsBooleanValueFirst = (await EvaluateExpression(first, parentBlock)).value;
-    const jsBooleanValueSecond = (await EvaluateExpression(second, parentBlock)).value;
-
-    switch (operator)
+    if (operator === "&&") // boolean short-circuit for && and ||
+        ret.value = jsBooleanValueFirst && (await EvaluateExpression(first, parentBlock)).value;
+    else if (operator === "||")
+        ret.value = jsBooleanValueFirst || (await EvaluateExpression(first, parentBlock)).value;
+    else
     {
-        case "&&":
-            ret.value = jsBooleanValueFirst && jsBooleanValueSecond;
-            break;
-        case "||":
-            ret.value = jsBooleanValueFirst || jsBooleanValueSecond;
-            break;
-        case "^":
-            ret.value = jsBooleanValueFirst ^ jsBooleanValueSecond;
-            break;
-        case "==":
-            ret.value = jsBooleanValueFirst === jsBooleanValueSecond;
-            break;
-        case "!=":
-            ret.value = jsBooleanValueFirst !== jsBooleanValueSecond;
-            break;
-        default:
-            console.error("unknown binary boolean operator: " + operator);
-            break;
+        const jsBooleanValueSecond = (await EvaluateExpression(second, parentBlock)).value;
+        switch (operator)
+        {
+            case "^":
+                ret.value = jsBooleanValueFirst ^ jsBooleanValueSecond;
+                break;
+            case "==":
+                ret.value = jsBooleanValueFirst === jsBooleanValueSecond;
+                break;
+            case "!=":
+                ret.value = jsBooleanValueFirst !== jsBooleanValueSecond;
+                break;
+            default:
+                console.error("unknown binary boolean operator: " + operator);
+                break;
+        }
     }
 
     return ret;
