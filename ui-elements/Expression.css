@@ -80,6 +80,7 @@
 .unary-expression .inline-text
 {
     padding: 5px 10px;
+    user-select: none;
 }
 
 .unary-expression.nested

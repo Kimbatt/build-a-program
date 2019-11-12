@@ -44,7 +44,7 @@
         <div id="builtin-function-list" class="function-list hidden-in-function-editor"></div>
         <div style="font-size: 24px;" class="custom-functions-title">Custom functions</div>
         <div id="custom-function-list" class="function-list"></div>
-        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor">New function</button>
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true)">New function</button>
     </div>
 </div>
 
@@ -70,15 +70,16 @@
     </div>
 </div>
 
-<div id="function-editor-overlay" style="display: none;" onclick="ShowFunctionEditor(false)">
-    <div id="function-editor" onclick="event.stopPropagation()">
-        <input class="text-input" id="function-editor-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;" placeholder="Function Name">
+<div id="function-editor-overlay" style="display: none;">
+    <div id="function-editor">
+        <input class="text-input" id="function-editor-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;"
+            placeholder="Function Name" onchange="FunctionEditorParameterChanged(true)">
         <div class="header-text">Description:</div>
-        <input class="text-input normal-text" id="function-editor-function-description">
+        <input class="text-input normal-text" id="function-editor-function-description" placeholder="Function description" onchange="FunctionEditorParameterChanged(true)">
         <div class="header-text">Return type:</div>
-        <select id="function-editor-function-return-type" class="type-selector normal-text"></select>
+        <select id="function-editor-function-return-type" class="type-selector normal-text" onchange="FunctionEditorParameterChanged(true)"></select>
         <div class="header-text">Parameters:</div>
-        <table class="function-viewer-parameters-table">
+        <table id="function-editor-parameters-table" class="function-viewer-parameters-table">
             <tbody>
                 <tr>
                     <th style="width: 250px;">Name</th>
@@ -87,7 +88,9 @@
                 </tr>
             </tbody>
         </table>
-        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="ShowFunctionInfo(false)">Back</button>
+        <div id="function-editor-error-text" style="display: none;"></div>
+        <button class="buttonbutton" style="position: absolute; top: 10px; right: 140px;" onclick="ExitFunctionEditor(true)">Save</button>
+        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="ExitFunctionEditor(false)">Cancel</button>
     </div>
 </div>
 
@@ -109,6 +112,7 @@
 <script src="runner/BuiltInFunctions.js"></script>
 
 <script src="htmlFunctions.js"></script>
+<script src="functionEditor.js"></script>
 
 </body>
 </html>

@@ -254,50 +254,6 @@ function ShowAvailableFunctions(show)
     funcitonSelector.classList.remove("function-editor");
 }
 
-function ShowFunctionEditorList(show)
-{
-    if (show)
-        UpdateCustomFunctionLines();
-
-    const funcitonSelector = document.getElementById("function-selector-overlay");
-    funcitonSelector.style.display = show ? "flex" : "none";
-    funcitonSelector.classList.remove("not-function-editor");
-    funcitonSelector.classList.add("function-editor");
-}
-
-function ShowFunctionEditor(show)
-{
-    if (show)
-    {
-        const allTypes = new Set(["number", "boolean", "string"]);
-
-        const availableTypesSelector = document.getElementById("function-editor").querySelector("#function-editor-function-return-type");
-        const availableTypes = availableTypesSelector.children;
-
-        const currentTypes = new Set();
-        for (let typeDiv of availableTypes)
-        {
-            currentTypes.add(typeDiv.value);
-
-            if (!allTypes.has(typeDiv.value))
-                availableTypesSelector.removeChild(typeDiv);
-        }
-
-        for (let type of allTypes)
-        {
-            if (!currentTypes.has(type))
-            {
-                const typeOption = document.createElement("option");
-                typeOption.value = type;
-                typeOption.innerText = type[0].toUpperCase() + type.substr(1);
-                availableTypesSelector.appendChild(typeOption);
-            }
-        }
-    }
-
-    document.getElementById("function-editor-overlay").style.display = show ? "flex" : "none";
-}
-
 function ProgramStartedRunning()
 {
     const runButton = document.getElementById("run-button");

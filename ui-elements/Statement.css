@@ -19,6 +19,7 @@
 .variable-assignment > .inline-text, .function-call > .inline-text
 {
     padding: 5px 10px;
+    user-select: none;
 }
 
 .variable-assignment.nested, .function-call.nested-as-statement
@@ -57,6 +58,7 @@
 .inline-text
 {
     white-space: nowrap;
+    user-select: none;
 }
 
 .function-call > .function-call-inline-text::before

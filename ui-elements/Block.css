@@ -35,6 +35,7 @@
 {
     background: black;
     padding: 5px 10px;
+    user-select: none;
 }
 
 .block > .container > .header > .header-drop-area.not-empty, .block > .container > .header > .drop-area.not-empty
@@ -68,6 +69,7 @@
     align-self: stretch;
     align-items: center;
     justify-content: center;
+    user-select: none;
 }
 
 .block > .container > .mainblock-container > .mainblock-borderleft
@@ -97,6 +99,7 @@
     align-self: stretch;
     align-items: center;
     justify-content: center;
+    user-select: none;
 }
 
 .drop-highlight
