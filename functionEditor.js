@@ -11,10 +11,15 @@ function ShowFunctionEditorList(show)
 }
 
 let functionEditorHasChanged = false;
-function ShowFunctionEditor(show)
+function ShowFunctionEditor(show, functionData)
 {
     if (show)
     {
+        if (!functionData)
+        {
+
+        }
+
         FunctionEditorParameterChanged(false); // add an empty line if needed
         functionEditorHasChanged = false;
 
@@ -107,6 +112,8 @@ const functionEditorParametersTable = document.getElementById("function-editor-p
  */
 function FunctionEditorParameterChanged(setChangedOnly)
 {
+    //setChangedOnly: don't check if we need to add a new row, just set functionEditorHasChanged to true
+
     functionEditorHasChanged = true;
 
     if (!setChangedOnly)
@@ -144,11 +151,11 @@ function FunctionEditorParameterChanged(setChangedOnly)
     }
 }
 
-function ExitFunctionEditor(save)
+async function ExitFunctionEditor(save)
 {
     if (!save)
     {
-        if (!functionEditorHasChanged || confirm("Exit without saving?"))
+        if (!functionEditorHasChanged || await Confirm("Exit without saving?", "Yes", "Cancel"))
             document.getElementById("function-editor-overlay").style.display = "none";
 
         return;

@@ -250,7 +250,6 @@ const draggable = {};
         elementStyle = element.style;
         handleStyle = draggableData.handle.style;
         dragging = true;
-        const elementComputedStyle = getComputedStyle(element);
 
         const borderSize = (draggableData.constraintData && draggableData.constraintData.borderSize) ||
             (draggableData2.constraintData && draggableData2.constraintData.borderSize) || 0;

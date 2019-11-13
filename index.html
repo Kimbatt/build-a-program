@@ -13,7 +13,7 @@
 <body>
 <input id="search-box" class="text-input" type="text" placeholder="Search for elements">
 <button onclick="CompileAndRun()" class="buttonbutton" id="run-button">Run</button>
-<div id="spinner" class="loading-spinner" style="visibility: hidden; opacity: 0;"></div>
+<div id="spinner" class="loading-spinner loading-spinner-hidden"></div>
 <button onclick="ShowFunctionEditorList(true)" class="buttonbutton">Function Editor</button>
 
 <div id="main-drag-area-top-border"></div>
@@ -25,7 +25,7 @@
     <div id="console-header">
         <button id="console-hide-button" class="console-header-button" title="Hide the console" onclick="ConsoleHide()"></button>
         <button id="console-clear-button" class="console-header-button" title="Clear the console" onclick="ConsoleClear()"></button>
-        <label><input id="clear-console-on-run-checkbox" type="checkbox" checked> Clear console on run</label>
+        <label style="user-select: none;"><input id="clear-console-on-run-checkbox" type="checkbox" checked> Clear console on run</label>
     </div>
     <div id="console-lines-div"></div>
     <div id="console-input-div">
@@ -38,17 +38,17 @@
     <button id="console-show-button" class="console-header-button" title="Show console" onclick="ConsoleShow()"></button>
 </div>
 
-<div id="function-selector-overlay" style="display: none;" onclick="ShowAvailableFunctions(false)">
+<div id="function-selector-overlay" class="fullscreen-overlay" style="display: none;" onclick="ShowAvailableFunctions(false)">
     <div id="function-selector" onclick="event.stopPropagation()">
         <div style="font-size: 24px; margin-bottom: 10px;" class="hidden-in-function-editor">Built-in functions</div>
         <div id="builtin-function-list" class="function-list hidden-in-function-editor"></div>
         <div style="font-size: 24px;" class="custom-functions-title">Custom functions</div>
         <div id="custom-function-list" class="function-list"></div>
-        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true)">New function</button>
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true, null)">New function</button>
     </div>
 </div>
 
-<div id="function-viewer-overlay" style="display: none;" onclick="ShowFunctionInfo(false)">
+<div id="function-viewer-overlay" class="fullscreen-overlay" style="display: none;" onclick="ShowFunctionInfo(false)">
     <div id="function-viewer" onclick="event.stopPropagation()">
         <div id="function-viewer-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;"></div>
         <div class="header-text">Description:</div>
@@ -70,7 +70,7 @@
     </div>
 </div>
 
-<div id="function-editor-overlay" style="display: none;">
+<div id="function-editor-overlay" class="fullscreen-overlay" style="display: none;">
     <div id="function-editor">
         <input class="text-input" id="function-editor-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;"
             placeholder="Function Name" onchange="FunctionEditorParameterChanged(true)">
@@ -91,6 +91,17 @@
         <div id="function-editor-error-text" style="display: none;"></div>
         <button class="buttonbutton" style="position: absolute; top: 10px; right: 140px;" onclick="ExitFunctionEditor(true)">Save</button>
         <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="ExitFunctionEditor(false)">Cancel</button>
+    </div>
+</div>
+
+<div id="alert-overlay" class="fullscreen-overlay" style="display: none;">
+    <div id="alert-box" style="background: black; border-radius: 10px; font-size: 24px; border: 2px solid #4e4e4e;">
+        <div id="alert-text" style="margin: 18px 0px 30px 18px; width: 600px;"></div>
+        <div style="margin: 10px; display: flex; justify-content: flex-end;">
+            <button id="alert-button-yes" class="buttonbutton" style="margin-left: 10px;">Yes</button>
+            <button id="alert-button-no" class="buttonbutton" style="margin-left: 10px;">No</button>
+            <button id="alert-button-cancel" class="buttonbutton" style="margin-left: 10px;">Cancel</button>
+        </div>
     </div>
 </div>
 

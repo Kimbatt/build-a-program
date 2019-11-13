@@ -77,6 +77,51 @@ function ConsoleClear()
     }
 }
 
+async function ShowPopupAlert(text, yesText, noText, cancelText)
+{
+    const alertOverlay = document.getElementById("alert-overlay");
+    alertOverlay.style.display = "";
+
+    const alertBox = document.getElementById("alert-box");
+    alertBox.querySelector("#alert-text").innerText = text;
+
+    const yesButton = alertBox.querySelector("#alert-button-yes");
+    const noButton = alertBox.querySelector("#alert-button-no");
+    const cancelButton = alertBox.querySelector("#alert-button-cancel");
+
+    yesButton.style.display = yesText ? "" : "none";
+    yesButton.innerText = yesText || "";
+    
+    noButton.style.display = noText ? "" : "none";
+    noButton.innerText = noText || "";
+    
+    cancelButton.style.display = cancelText ? "" : "none";
+    cancelButton.innerText = cancelText || "";
+
+    return await new Promise(resolve =>
+    {
+        function ButtonClicked(result)
+        {
+            alertOverlay.style.display = "none";
+            resolve(result);
+        }
+
+        yesButton.onclick = () => ButtonClicked("yes");
+        noButton.onclick = () => ButtonClicked("no");
+        cancelButton.onclick = () => ButtonClicked("cancel");
+    });
+}
+
+async function Alert(text, okText)
+{
+    await ShowPopupAlert(text, okText || "OK");
+}
+
+async function Confirm(text, yesText, noText)
+{
+    return (await ShowPopupAlert(text, yesText || "Yes", noText || "No")) === "yes";
+}
+
 function ShowFunctionInfo(show, func)
 {
     if (!show)
@@ -158,18 +203,42 @@ function CreateFunctionInfoLine(func)
     functionInfoDiv.appendChild(functionDescriptionDiv);
 
     const detailsButton = document.createElement("button");
-    detailsButton.className = "function-details-button buttonbutton";
+    detailsButton.className = "function-details-button buttonbutton hidden-in-function-editor";
     detailsButton.innerText = "Details";
+    detailsButton.style.margin = "auto 10px";
     detailsButton.onclick = ev =>
     {
         ev.stopPropagation();
         ShowFunctionInfo(true, func);
     };
 
+    // for function editor
+    const editButton = document.createElement("button");
+    editButton.className = "function-details-button buttonbutton visible-in-function-editor";
+    editButton.innerText = "Edit";
+    editButton.style.width = "120px";
+    editButton.style.margin = "auto 10px";
+    editButton.onclick = ev =>
+    {
+        // TODO
+    };
+
+    const deleteButton = document.createElement("button");
+    deleteButton.className = "function-details-button buttonbutton visible-in-function-editor";
+    deleteButton.innerText = "Delete";
+    deleteButton.style.width = "120px";
+    deleteButton.style.margin = "auto 140px";
+    deleteButton.onclick = ev =>
+    {
+        // TODO
+    };
+
     line.appendChild(functionInfoDiv);
 
     container.appendChild(line);
     container.appendChild(detailsButton);
+    container.appendChild(editButton);
+    container.appendChild(deleteButton);
 
     return container;
 }
@@ -261,8 +330,8 @@ function ProgramStartedRunning()
     consoleDiv.style.display = "none";
     runButton.disabled = true;
     runButton.innerText = "Running";
-    spinner.style.visibility = "";
-    spinner.style.opacity = 1;
+    spinner.classList.remove("loading-spinner-hidden");
+    spinner.classList.add("loading-spinner-visible");
 }
 
 function ProgramFinishedRunning()
@@ -271,6 +340,6 @@ function ProgramFinishedRunning()
     consoleDiv.style.display = "";
     runButton.disabled = false;
     runButton.innerText = "Run";
-    spinner.style.visibility = "hidden";
-    spinner.style.opacity = 0;
+    spinner.classList.remove("loading-spinner-visible");
+    spinner.classList.add("loading-spinner-hidden");
 }
