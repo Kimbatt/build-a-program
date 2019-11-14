@@ -4,7 +4,7 @@ function GetVariable(variableName, parentBlock)
     let currentBlock = parentBlock;
     while (currentBlock)
     {
-        variable = currentBlock.variables[variableName];
+        variable = currentBlock.variables.getOwnProperty(variableName);
         if (variable)
             return variable;
 

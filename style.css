@@ -356,12 +356,11 @@ body
 {
     position: fixed;
     display: flex;
-    justify-content: center;
-    align-items: center;
     top: 0px;
     left: 0px;
     width: 100%;
     height: 100%;
+    overflow-y: auto;
 
     background: rgba(0, 0, 0, 0.75);
 }
@@ -416,11 +415,14 @@ body
     font-size: 20px;
     font-weight: bold;
     margin-bottom: 12px;
+    max-width: 650px;
+    overflow-wrap: break-word;
 }
 
 .function-selector-line .function-description
 {
-    white-space: nowrap;
+    max-width: 650px;
+    overflow-wrap: break-word;
 }
 
 .function-details-button
@@ -444,12 +446,12 @@ body
     background: rgba(0, 0, 0, 0.5);
 }
 
-#function-viewer, #function-editor
+#function-viewer, #function-editor, #function-selector
 {
     display: table;
     position: relative;
     border: 2px solid #4e4e4e;
-    margin: 40px auto;
+    margin: auto;
     width: 1000px;
     padding: 16px;
 

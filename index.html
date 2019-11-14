@@ -44,7 +44,7 @@
         <div id="builtin-function-list" class="function-list hidden-in-function-editor"></div>
         <div style="font-size: 24px;" class="custom-functions-title">Custom functions</div>
         <div id="custom-function-list" class="function-list"></div>
-        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true, null)">New function</button>
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true, null, false)">New function</button>
     </div>
 </div>
 
@@ -95,8 +95,8 @@
 </div>
 
 <div id="alert-overlay" class="fullscreen-overlay" style="display: none;">
-    <div id="alert-box" style="background: black; border-radius: 10px; font-size: 24px; border: 2px solid #4e4e4e;">
-        <div id="alert-text" style="margin: 18px 0px 30px 18px; width: 600px;"></div>
+    <div id="alert-box" style="background: black; border-radius: 10px; font-size: 24px; border: 2px solid #4e4e4e; margin: auto;">
+        <div id="alert-text" style="margin: 18px 0px 30px 18px; width: 600px; overflow-wrap: break-word;"></div>
         <div style="margin: 10px; display: flex; justify-content: flex-end;">
             <button id="alert-button-yes" class="buttonbutton" style="margin-left: 10px;">Yes</button>
             <button id="alert-button-no" class="buttonbutton" style="margin-left: 10px;">No</button>

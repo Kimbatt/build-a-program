@@ -171,7 +171,7 @@ function ShowFunctionInfo(show, func)
         functionViewerDiv.querySelector(".function-viewer-parameters-table").style.display = "";
     }
 
-    document.getElementById("function-viewer-overlay").style.display = "flex";
+    document.getElementById("function-viewer-overlay").style.display = "";
 }
 
 function CreateFunctionInfoLine(func)
@@ -197,7 +197,10 @@ function CreateFunctionInfoLine(func)
 
     const functionDescriptionDiv = document.createElement("div");
     functionDescriptionDiv.className = "function-description";
-    functionDescriptionDiv.innerText = func.description;
+    if (func.description)
+        functionDescriptionDiv.innerText = func.description;
+    else
+        functionDescriptionDiv.innerHTML = "<span style=\"font-style: italic; color: #808080;\">No description provided</span>";
 
     functionInfoDiv.appendChild(functionNameDiv);
     functionInfoDiv.appendChild(functionDescriptionDiv);
@@ -206,11 +209,7 @@ function CreateFunctionInfoLine(func)
     detailsButton.className = "function-details-button buttonbutton hidden-in-function-editor";
     detailsButton.innerText = "Details";
     detailsButton.style.margin = "auto 10px";
-    detailsButton.onclick = ev =>
-    {
-        ev.stopPropagation();
-        ShowFunctionInfo(true, func);
-    };
+    detailsButton.onclick = () => ShowFunctionInfo(true, func);
 
     // for function editor
     const editButton = document.createElement("button");
@@ -218,19 +217,20 @@ function CreateFunctionInfoLine(func)
     editButton.innerText = "Edit";
     editButton.style.width = "120px";
     editButton.style.margin = "auto 10px";
-    editButton.onclick = ev =>
-    {
-        // TODO
-    };
+    editButton.onclick = () => ShowFunctionEditor(true, func, true);
 
     const deleteButton = document.createElement("button");
     deleteButton.className = "function-details-button buttonbutton visible-in-function-editor";
     deleteButton.innerText = "Delete";
     deleteButton.style.width = "120px";
     deleteButton.style.margin = "auto 140px";
-    deleteButton.onclick = ev =>
+    deleteButton.onclick = async () =>
     {
-        // TODO
+        if (await Confirm("Do you really want to delete the function \"" + func.name + "\"?"))
+        {
+            delete customFunctions[func.name];
+            UpdateCustomFunctionLines();
+        }
     };
 
     line.appendChild(functionInfoDiv);
@@ -308,6 +308,18 @@ function UpdateCustomFunctionLines()
             customFunctionsInfoLines[customFunctionName] = functionLineDiv;
         }
     }
+
+    if (currentEditedFunction)
+    {
+        // update the line of the edited function
+        const functionLineDiv = customFunctionsInfoLines[currentEditedFunction.name];
+        const nextSibling = functionLineDiv.nextSibling;
+        functionsListDiv.removeChild(functionLineDiv);
+
+        const newFunctionLineDiv = CreateFunctionInfoLine(currentEditedFunction);
+        customFunctionsInfoLines[currentEditedFunction.name] = newFunctionLineDiv;
+        functionsListDiv.insertBefore(newFunctionLineDiv, nextSibling);
+    }
 }
 
 function ShowAvailableFunctions(show)
@@ -318,7 +330,7 @@ function ShowAvailableFunctions(show)
         functionSelectedCallback && functionSelectedCallback(null);
 
     const funcitonSelector = document.getElementById("function-selector-overlay");
-    funcitonSelector.style.display = show ? "flex" : "none";
+    funcitonSelector.style.display = show ? "" : "none";
     funcitonSelector.classList.add("not-function-editor");
     funcitonSelector.classList.remove("function-editor");
 }

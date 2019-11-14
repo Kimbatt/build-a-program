@@ -426,3 +426,11 @@ async function WaitImmediate()
 {
     return new Promise(resolve => setImmediate(resolve));
 }
+
+Object.defineProperty(Object.prototype, "getOwnProperty", {
+    value: function(propertyName)
+    {
+        if (this.hasOwnProperty(propertyName)) return this[propertyName];
+        return undefined;
+    }
+});
