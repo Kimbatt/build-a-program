@@ -1,9 +1,4 @@
 
-const dragArea = document.getElementById("main-drag-area");
-const mainFunction = new FunctionBody(dragArea, "Main");
-mainFunction.element.style.left = "100px";
-mainFunction.element.style.top = "100px";
-
 let consoleIsVisible = false;
 function ConsoleShow()
 {
@@ -181,11 +176,17 @@ function CreateFunctionInfoLine(func)
 
     const line = document.createElement("div");
     line.className = "function-selector-line";
-    line.onclick = ev =>
+    line.onclick = () =>
     {
-        ev.stopPropagation();
-        document.getElementById("function-selector-overlay").style.display = "none";
-        functionSelectedCallback && functionSelectedCallback(func);
+        // if in function editor, then switch to the clicked function
+        const isFunctionEditor = document.getElementById("function-selector-overlay").classList.contains("function-editor");
+        if (isFunctionEditor)
+            SwitchToFunction(func.name);
+        else
+        {
+            document.getElementById("function-selector-overlay").style.display = "none";
+            functionSelectedCallback && functionSelectedCallback(func);
+        }
     };
 
     const functionInfoDiv = document.createElement("div");
@@ -214,8 +215,8 @@ function CreateFunctionInfoLine(func)
     // for function editor
     const editButton = document.createElement("button");
     editButton.className = "function-details-button buttonbutton visible-in-function-editor";
-    editButton.innerText = "Edit";
-    editButton.style.width = "120px";
+    editButton.innerText = "Edit definition";
+    editButton.style.width = "180px";
     editButton.style.margin = "auto 10px";
     editButton.onclick = () => ShowFunctionEditor(true, func, true);
 
@@ -223,7 +224,7 @@ function CreateFunctionInfoLine(func)
     deleteButton.className = "function-details-button buttonbutton visible-in-function-editor";
     deleteButton.innerText = "Delete";
     deleteButton.style.width = "120px";
-    deleteButton.style.margin = "auto 140px";
+    deleteButton.style.margin = "auto 200px";
     deleteButton.onclick = async () =>
     {
         if (await Confirm("Do you really want to delete the function \"" + func.name + "\"?"))
@@ -257,25 +258,7 @@ function PrepareBuiltInFunctionsList()
 
 PrepareBuiltInFunctionsList();
 
-const customFunctions = {
-    
-    Test123: {
-        name: "Test123",
-        description: "test description",
-        returnType: "void",
-        parameters: [
-            {
-                name: "str",
-                type: "string",
-                description: "test string"
-            }
-        ],
-        func: params =>
-        {
-            console.log("test function", params[0].value);
-        }
-    }
-};
+const customFunctions = {};
 
 const customFunctionsInfoLines = {};
 function UpdateCustomFunctionLines()

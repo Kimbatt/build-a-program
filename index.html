@@ -14,7 +14,7 @@
 <input id="search-box" class="text-input" type="text" placeholder="Search for elements">
 <button onclick="CompileAndRun()" class="buttonbutton" id="run-button">Run</button>
 <div id="spinner" class="loading-spinner loading-spinner-hidden"></div>
-<button onclick="ShowFunctionEditorList(true)" class="buttonbutton">Function Editor</button>
+<button onclick="ShowFunctionEditorList(true)" class="buttonbutton">Functions</button>
 
 <div id="main-drag-area-top-border"></div>
 <div id="main-drag-area"></div>
@@ -44,6 +44,7 @@
         <div id="builtin-function-list" class="function-list hidden-in-function-editor"></div>
         <div style="font-size: 24px;" class="custom-functions-title">Custom functions</div>
         <div id="custom-function-list" class="function-list"></div>
+        <button style="position: absolute; top: 11px; right: 190px;" class="buttonbutton visible-in-function-editor" onclick="SwitchToFunction('Main')">Switch to Main function</button>
         <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true, null, false)">New function</button>
     </div>
 </div>

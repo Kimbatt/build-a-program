@@ -28,10 +28,10 @@ class BlockBase extends StatementBase
         container.className = "container";
         this.element.appendChild(container);
 
-        const headerTextDiv = document.createElement("div");
-        headerTextDiv.innerText = headerText;
-        headerTextDiv.className = "header-text";
-        this.header.appendChild(headerTextDiv);
+        this.headerTextDiv = document.createElement("div");
+        this.headerTextDiv.innerText = headerText;
+        this.headerTextDiv.className = "header-text";
+        this.header.appendChild(this.headerTextDiv);
 
         // header drop areas
         this.headerDropAreas = new Array(headerElements.length);

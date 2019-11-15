@@ -23,7 +23,6 @@
     for (let keyword in searchKeywords)
         stringMap.add(keyword, searchKeywords[keyword]);
 
-    const mainDragArea = document.getElementById("main-drag-area");
     const searchResultsDiv = document.getElementById("search-results");
     const searchLimit = 10;
     const searchResultButtons = [];
@@ -37,7 +36,7 @@
         {
             if (ev.button === 0)
             {
-                const newElement = searchKeywords[searchResultButtons[index].innerHTML](mainDragArea);
+                const newElement = searchKeywords[searchResultButtons[index].innerHTML](currentFunctionDragContainer);
                 newElement.element.style.top = "20px";
                 newElement.element.style.left = "20px";
                 searchBox.value = "";
@@ -96,3 +95,34 @@
     searchBox.onfocus = searchBox.oninput;
     
 })();
+
+let currentFunctionDragContainer;
+const functionBodyDragContainers = {};
+
+function SwitchToFunction(functionName)
+{
+    const dragArea = document.getElementById("main-drag-area");
+    let functionDragContainer = functionBodyDragContainers.getOwnProperty(functionName);
+
+    if (functionDragContainer)
+        functionDragContainer.children[0].uiElementData.updateHeaderText();
+    else
+    {
+        functionDragContainer = document.createElement("div");
+        functionBodyDragContainers[functionName] = functionDragContainer;
+
+        const functionUIElement = new FunctionBody(functionDragContainer, functionName);
+        functionUIElement.element.style.left = "100px";
+        functionUIElement.element.style.top = "100px";
+    }
+
+    if (currentFunctionDragContainer)
+        dragArea.removeChild(currentFunctionDragContainer);
+
+    dragArea.appendChild(functionDragContainer);
+    currentFunctionDragContainer = functionDragContainer;
+
+    document.getElementById("function-selector-overlay").style.display = "none";
+}
+
+SwitchToFunction("Main");

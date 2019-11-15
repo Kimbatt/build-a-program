@@ -16,9 +16,41 @@ function GetVariable(variableName, parentBlock)
     return null;
 }
 
+async function RunFunction(func, parameterValues)
+{
+    const functionBlock = {
+        parentBlock: null,
+        variables: {}
+    };
+
+    for (let i = 0; i < parameterValues.length; ++i)
+    {
+        const parameterDefinition = func.parameters[i];
+        const parameterValue = parameterValues[i];
+        const parameterName = parameterDefinition.name;
+        
+        functionBlock.variables[parameterName] = {
+            variableValue: {
+                type: parameterValue.type,
+                value: parameterValue.value
+            },
+            variableName: parameterName
+        };
+    }
+
+    await HandleBlockStatement(func.block, functionBlock);
+}
+
+let currentlyRunningProgram;
 async function RunProgram(program)
 {
-    await HandleBlockStatement(program.mainFunction.block, null);
+    currentlyRunningProgram = program;
+    ProgramStartedRunning();
+
+    await RunFunction(program["Main"], []);
+
+    currentlyRunningProgram = undefined;
+    ProgramFinishedRunning();
 }
 
 function CreateTestProgram()

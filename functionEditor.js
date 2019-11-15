@@ -213,6 +213,9 @@ async function ExitFunctionEditor(save)
         if (name.includes(" "))
             return " must not contain spaces";
 
+        if (/[!"#%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/.test(name))
+            return " cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
+
         return "OK";
     }
     

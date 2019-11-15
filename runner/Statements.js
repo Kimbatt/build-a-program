@@ -8,7 +8,6 @@ async function HandleBlockStatement(data, parentBlock)
     const { statements } = data;
     const thisBlock = {
         parentBlock: parentBlock,
-        childBlocks: [],
         variables: {}
     };
 
@@ -79,12 +78,19 @@ async function HandleFunctionCall(data, parentBlock)
         parameterValues.push(await EvaluateExpression(param, parentBlock));
 
     const func = data.functionData.func;
-
-    // only await if the function is async (builtin functions are not)
-    if (func.constructor.name === "AsyncFunction")
-        return await func(parameterValues);
+    if (func) // built-in functions
+    {
+        // only await if the function is async (builtin functions are not)
+        if (func.constructor.name === "AsyncFunction")
+            return await func(parameterValues);
+        else
+            return func(parameterValues);
+    }
     else
-        return func(parameterValues);
+    {
+        // custom function
+        return await RunFunction(currentlyRunningProgram[data.functionData.name], parameterValues);
+    }
 }
 
 async function HandleVariableDeclaration(data, parentBlock)

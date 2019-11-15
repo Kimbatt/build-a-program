@@ -13,6 +13,9 @@ function CheckVariableName(variableName)
     if (variableName.includes(" "))
         return "Variable name must not contain spaces";
 
+    if (/[!"#%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/.test(variableName))
+        return "Variable name cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
+
     return "OK";
 }
 
@@ -29,7 +32,9 @@ async function CompileAndRun()
 
     const errors = [];
     const compiled = GenerateProgramJSON(errors);
-    CheckVariables(compiled, errors);
+
+    for (let func in compiled)
+        CheckVariables(compiled[func], errors);
 
     if (errors.length !== 0)
     {
@@ -39,13 +44,7 @@ async function CompileAndRun()
         return;
     }
 
-    ProgramStartedRunning();
-
-    await RunProgram({
-        mainFunction: compiled
-    });
-
-    ProgramFinishedRunning();
+    await RunProgram(compiled);
 
     consoleLinesDiv.scrollTo(0, consoleLinesDiv.scrollHeight);
 }
@@ -54,10 +53,14 @@ async function CompileAndRun()
  * @param {any[]} errors 
  */
 
-function CheckVariables(functionBlock, errors)
+function CheckVariables(compiledFunction, errors)
 {
-    // todo: function parameters
-    const mainBlock = functionBlock.block;
+    const mainBlock = compiledFunction.block;
+    const parameters = compiledFunction.parameters;
+
+    const parametersByName = {};
+    for (let param of parameters)
+        parametersByName[param.name] = param;
 
     const stack = [];
 
@@ -68,6 +71,9 @@ function CheckVariables(functionBlock, errors)
             if (block.hasOwnProperty(variableName))
                 return block[variableName];
         }
+
+        if (parametersByName.hasOwnProperty(variableName))
+            return parametersByName[variableName].type;
 
         return "unknown";
     }
@@ -364,14 +370,33 @@ function CheckVariables(functionBlock, errors)
 
 function GenerateProgramJSON(errors)
 {
-    const mainDragArea = document.getElementById("main-drag-area");
-
-    const nodes = mainDragArea.childNodes;
-    for (let elem of nodes)
+    const program = {};
+    
+    function CompileFunction(functionName)
     {
-        if (elem.uiElementData instanceof FunctionBody && elem.uiElementData.functionName === "Main")
+        const functionBodyContainer = functionBodyDragContainers.getOwnProperty(functionName);
+        const functionBody = functionBodyContainer && functionBodyContainer.children[0];
+        if (functionBody)
         {
-            return elem.uiElementData.compile(errors);
+            program[functionName] = functionBody.uiElementData.compile(errors);
+        }
+        else
+        {
+            // empty function
+            program[functionName] = {
+                parameters: [],
+                block: {
+                    statementType: "block",
+                    statements: []
+                }
+            }
         }
     }
+    
+    CompileFunction("Main");
+    
+    for (let func in customFunctions)
+        CompileFunction(func);
+        
+    return program;
 }
