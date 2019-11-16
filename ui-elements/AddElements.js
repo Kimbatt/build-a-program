@@ -100,22 +100,26 @@ const elementHandler = {};
 
 elementHandler.currentFunctionDragContainer = undefined;
 elementHandler.functionBodyDragContainers = {};
+elementHandler.functionBodies = {};
 
-elementHandler.SwitchToFunction = function(functionName)
+elementHandler.SwitchToFunction = function(functionGuid)
 {
     const dragArea = document.getElementById("main-drag-area");
-    let functionDragContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionName);
+    let functionDragContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionGuid);
+    const functionData = customFunctions.getOwnProperty(functionGuid);
 
     if (functionDragContainer)
-        functionDragContainer.children[0].uiElementData.updateHeaderText();
-    else
+        functionDragContainer.children[0].uiElementData.updateHeaderText(); // TODO: remove if header text is updated after function editing
+    else if (functionData)
     {
         functionDragContainer = document.createElement("div");
-        elementHandler.functionBodyDragContainers[functionName] = functionDragContainer;
+        elementHandler.functionBodyDragContainers[functionGuid] = functionDragContainer;
 
-        const functionUIElement = new FunctionBody(functionDragContainer, functionName);
+        const functionUIElement = new FunctionBody(functionDragContainer, functionData.name);
         functionUIElement.element.style.left = "100px";
         functionUIElement.element.style.top = "100px";
+
+        elementHandler.functionBodies[functionGuid] = functionUIElement;
     }
 
     if (elementHandler.currentFunctionDragContainer)
@@ -127,4 +131,23 @@ elementHandler.SwitchToFunction = function(functionName)
     document.getElementById("function-selector-overlay").style.display = "none";
 };
 
-elementHandler.SwitchToFunction("Main");
+(() =>
+{
+    // create main function element here
+    const dragContainer = document.createElement("div");
+    const main = new FunctionBody(dragContainer, "Main");
+
+    main.element.style.top = "100px";
+    main.element.style.left = "100px";
+
+    const guid = main.guid;
+
+    elementHandler.functionBodyDragContainers[guid] = dragContainer;
+    elementHandler.functionBodies[guid] = main;
+    elementHandler.SwitchToFunction(guid);
+    
+    elementHandler.SwitchToMainFunction = function()
+    {
+        elementHandler.SwitchToFunction(guid);
+    };
+})();

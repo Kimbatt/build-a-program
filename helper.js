@@ -435,3 +435,42 @@ Object.defineProperty(Object.prototype, "getOwnProperty", {
         return undefined;
     }
 });
+
+(() =>
+{
+    const guids = {};
+    const byteCount = 24;
+
+    function GenerateGuid()
+    {
+        let guid = "";
+        for (let i = 0; i < byteCount; ++i)
+            guid += String.fromCharCode(Math.random() * 256 | 0);
+
+        return btoa(guid);
+    }
+
+    helper.GetGuid = function(type)
+    {
+        /** @type {Set} */
+        const guidsByType = guids.getOwnProperty(type) || new Set();
+
+        while (true)
+        {
+            const guid = GenerateGuid();
+            if (!guidsByType.has(guid))
+            {
+                guidsByType.add(guid);
+                return guid;
+            }
+        }
+    };
+
+    helper.DeleteGuid = function(type, guid)
+    {
+        const guidsByType = guids.getOwnProperty(type);
+
+        if (guidsByType)
+            guidsByType.delete(guid);
+    };
+})();

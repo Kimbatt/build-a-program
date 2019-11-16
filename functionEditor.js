@@ -247,7 +247,7 @@ functionEditor.ExitFunctionEditor = async function(save)
         return;
     }
 
-    if (customFunctions.hasOwnProperty(functionName) && !functionEditor.currentEditedFunction)
+    if (customFunctionsByName.hasOwnProperty(functionName) && !functionEditor.currentEditedFunction)
     {
         errorText.style.display = "";
         errorText.innerText = "A function with the name \"" + functionName + "\" already exists";
@@ -300,20 +300,39 @@ functionEditor.ExitFunctionEditor = async function(save)
     if (functionEditor.currentEditedFunction)
     {
         functionObj = functionEditor.currentEditedFunction;
-        delete customFunctions[functionEditor.currentEditedFunction.name];
+        delete customFunctionsByName[functionEditor.currentEditedFunction.name];
     }
     else
-        functionObj = {};
+    {
+        const guid = helper.GetGuid("customFunction");
+        functionObj = {
+            guid: guid
+        };
 
+        customFunctions[guid] = functionObj;
+    }
+
+    customFunctionsByName[functionName] = functionObj;
     functionObj.name = functionName;
     functionObj.description = functionDescriptionInput.value;
     functionObj.returnType = functionReturnTypeSelector.value;
     functionObj.parameters = params;
 
-    customFunctions[functionName] = functionObj;
     errorText.style.display = "none";
     functionEditorOverlay.style.display = "none";
     functionViewer.UpdateCustomFunctionLines();
     // functionEditor.currentEditedFunction must exist before calling functionViewer.UpdateCustomFunctionLines
     functionEditor.currentEditedFunction = undefined;
+};
+
+functionEditor.FunctionWasEdited = function(oldFunctionName, newFunctionData)
+{
+    // update all function call statements of this function
+    // also update the header text of the function body element
+};
+
+functionEditor.FunctionWasDeleted = function(functionData)
+{
+    // delete all function call statements of this function
+    // if currently editing the deleted function, switch back to the Main function
 };

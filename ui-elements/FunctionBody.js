@@ -5,6 +5,25 @@ class FunctionBody extends BlockBase
     {
         super(parentNode, "", [], true);
         this.functionName = functionName;
+
+        if (functionName === "Main")
+        {
+            this.functionData = {
+                name: "Main",
+                guid: helper.GetGuid("customFunction"),
+                description: "Main function",
+                returnType: "void",
+                parameters: []
+            };
+        }
+        else
+        {
+            this.functionData = customFunctionsByName.getOwnProperty(functionName);
+    
+            if (!this.functionData)
+                throw new Error("Function " + functionName + " does not exist");
+        }
+
         this.updateHeaderText();
     }
 
@@ -18,11 +37,7 @@ class FunctionBody extends BlockBase
         let headerText = "Function " + this.functionName;
         if (this.functionName !== "Main")
         {
-            const functionData = customFunctions.getOwnProperty(this.functionName);
-            if (!functionData)
-                throw new Error("Function " + this.functionName + " does not exist");
-
-            const params = functionData.parameters;
+            const params = this.functionData.parameters;
             if (params.length !== 0)
                 headerText += " (" + params.map(param => param.name + ": " + param.type).join(", ") + ")";
         }
@@ -35,22 +50,14 @@ class FunctionBody extends BlockBase
 
     compile(errors)
     {
-        const functionData = customFunctions.getOwnProperty(this.functionName) || {
-            // if not a custom function then it is the main function
-            name: "Main",
-            description: "Main function",
-            returnType: "void",
-            parameters: []
-        };
-
         return {
-            name: functionData.name,
-            parameters: functionData.parameters.map(param => ({
+            name: this.functionData.name,
+            parameters: this.functionData.parameters.map(param => ({
                 name: param.name,
                 type: param.type
             })),
-            returnType: functionData.returnType,
-            description: functionData.description || "",
+            returnType: this.functionData.returnType,
+            description: this.functionData.description || "",
             block: super.compile(errors)
         };
     }

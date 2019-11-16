@@ -45,7 +45,7 @@
         <div id="builtin-function-list" class="function-list hidden-in-function-editor"></div>
         <div style="font-size: 24px;" class="custom-functions-title">Custom functions</div>
         <div id="custom-function-list" class="function-list"></div>
-        <button style="position: absolute; top: 11px; right: 190px;" class="buttonbutton visible-in-function-editor" onclick="elementHandler.SwitchToFunction('Main')">Switch to Main function</button>
+        <button style="position: absolute; top: 11px; right: 190px;" class="buttonbutton visible-in-function-editor" onclick="elementHandler.SwitchToMainFunction()">Switch to Main function</button>
         <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="functionEditor.ShowFunctionEditor(true, null, false)">New function</button>
     </div>
 </div>
@@ -116,13 +116,13 @@
 <script src="ui-elements/Expressions.js"></script>
 <script src="ui-elements/FunctionBody.js"></script>
 
-<script src="ui-elements/AddElements.js"></script>
-
 <script src="compiler/compiler.js"></script>
 <script src="runner/Runner.js"></script>
 <script src="runner/Expressions.js"></script>
 <script src="runner/Statements.js"></script>
 <script src="runner/BuiltInFunctions.js"></script>
+
+<script src="ui-elements/AddElements.js"></script>
 
 <script src="htmlFunctions.js"></script>
 <script src="functionViewer.js"></script>

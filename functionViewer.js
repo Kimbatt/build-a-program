@@ -1,6 +1,5 @@
 
 const functionViewer = {};
-const customFunctions = {};
 
 functionViewer.ShowFunctionInfo = function(show, func)
 {
@@ -66,7 +65,7 @@ functionViewer.CreateFunctionInfoLine = function(func)
         // if in function editor, then switch to the clicked function
         const isFunctionEditor = document.getElementById("function-selector-overlay").classList.contains("function-editor");
         if (isFunctionEditor)
-            elementHandler.SwitchToFunction(func.name);
+            elementHandler.SwitchToFunction(func.guid);
         else
         {
             document.getElementById("function-selector-overlay").style.display = "none";
@@ -114,7 +113,12 @@ functionViewer.CreateFunctionInfoLine = function(func)
     {
         if (await Confirm("Do you really want to delete the function \"" + func.name + "\"?"))
         {
-            delete customFunctions[func.name];
+            delete customFunctionsByName[func.name];
+            delete customFunctions[func.guid];
+            delete elementHandler.functionBodyDragContainers[func.guid];
+            delete elementHandler.functionBodies[func.guid];
+
+            functionEditor.FunctionWasDeleted(func);
             functionViewer.UpdateCustomFunctionLines();
         }
     };
@@ -149,41 +153,41 @@ functionViewer.UpdateCustomFunctionLines = function()
     const customFunctionsInfoLines = functionViewer.customFunctionsInfoLines;
 
     // remove deleted functions
-    for (let customFunctionName in customFunctionsInfoLines)
+    for (let customFunctionGuid in customFunctionsInfoLines)
     {
-        const func = customFunctions[customFunctionName];
+        const func = customFunctions[customFunctionGuid];
         if (!func)
         {
             // this function has a line, but the function was deleted
-            const functionLineDiv = customFunctionsInfoLines[customFunctionName];
+            const functionLineDiv = customFunctionsInfoLines[customFunctionGuid];
             functionsListDiv.removeChild(functionLineDiv);
-            delete customFunctionsInfoLines[customFunctionName];
+            delete customFunctionsInfoLines[customFunctionGuid];
         }
     }
 
     // look for new functions
-    for (let customFunctionName in customFunctions)
+    for (let customFunctionGuid in customFunctions)
     {
-        let functionLineDiv = customFunctionsInfoLines[customFunctionName];
+        let functionLineDiv = customFunctionsInfoLines[customFunctionGuid];
         if (!functionLineDiv)
         {
             // this function does not have a line yet
-            const func = customFunctions[customFunctionName];
+            const func = customFunctions[customFunctionGuid];
             functionLineDiv = functionViewer.CreateFunctionInfoLine(func);
             functionsListDiv.appendChild(functionLineDiv);
-            customFunctionsInfoLines[customFunctionName] = functionLineDiv;
+            customFunctionsInfoLines[customFunctionGuid] = functionLineDiv;
         }
     }
 
     if (functionEditor.currentEditedFunction)
     {
         // update the line of the edited function
-        const functionLineDiv = customFunctionsInfoLines[functionEditor.currentEditedFunction.name];
+        const functionLineDiv = customFunctionsInfoLines[functionEditor.currentEditedFunction.guid];
         const nextSibling = functionLineDiv.nextSibling;
         functionsListDiv.removeChild(functionLineDiv);
 
         const newFunctionLineDiv = functionViewer.CreateFunctionInfoLine(functionEditor.currentEditedFunction);
-        customFunctionsInfoLines[functionEditor.currentEditedFunction.name] = newFunctionLineDiv;
+        customFunctionsInfoLines[functionEditor.currentEditedFunction.guid] = newFunctionLineDiv;
         functionsListDiv.insertBefore(newFunctionLineDiv, nextSibling);
     }
 };

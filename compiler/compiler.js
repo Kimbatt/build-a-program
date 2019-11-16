@@ -396,8 +396,8 @@ compiler.GenerateProgramJSON = function(errors)
     
     CompileFunction("Main");
     
-    for (let func in customFunctions)
-        CompileFunction(func);
+    for (let guid in customFunctions)
+        CompileFunction(customFunctions[guid].name);
         
     return program;
 };

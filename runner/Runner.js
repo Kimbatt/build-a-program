@@ -1,5 +1,9 @@
 
 const runner = {};
+
+const customFunctions = {};
+const customFunctionsByName = {};
+
 runner.GetVariable = function(variableName, parentBlock)
 {
     let currentBlock = parentBlock;
