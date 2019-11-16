@@ -279,6 +279,13 @@ const draggable = {};
             elementStyle[s] = appliedStyles[s];
     };
 
+    draggable.ForceDrop = function(element, targetDropAreaElement)
+    {
+        element.draggableData.attachedDropArea = targetDropAreaElement;
+        targetDropAreaElement.draggableData.onDropHoverLeave(element, true);
+        targetDropAreaElement.draggableData.onDrop(element);
+    };
+
     draggable.AddElement = function(elem, handle)
     {
         draggable.SetElementDraggable(elem, true, handle);

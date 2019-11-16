@@ -410,6 +410,13 @@ class MultiBlockBase extends StatementBase
         deleteThisBlockButton.addEventListener("click", () =>
         {
             this.secondaryBlocksContainer.removeChild(newBlock.element);
+
+            for (let element of newBlock.element.children)
+            {
+                if (element.uiElementData && element.uiElementData instanceof ElementBase)
+                    element.uiElementData.delete();
+            }
+            newBlock.delete();
         });
 
         const addSecondaryBlockButton = document.createElement("button");
@@ -457,6 +464,7 @@ class MultiBlockBase extends StatementBase
             {
                 this.finalBlock.onDetachBlock(element);
                 this.finalBlock.parentNode.removeChild(element);
+                element.uiElementData.delete();
             }
         }
 

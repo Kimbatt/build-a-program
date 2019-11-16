@@ -320,19 +320,54 @@ functionEditor.ExitFunctionEditor = async function(save)
 
     errorText.style.display = "none";
     functionEditorOverlay.style.display = "none";
-    functionViewer.UpdateCustomFunctionLines();
+
     // functionEditor.currentEditedFunction must exist before calling functionViewer.UpdateCustomFunctionLines
-    functionEditor.currentEditedFunction = undefined;
+    functionViewer.UpdateCustomFunctionLines();
+
+    if (functionEditor.currentEditedFunction)
+    {
+        functionEditor.currentEditedFunction = undefined;
+        functionEditor.FunctionWasEdited(functionObj);
+    }
 };
 
-functionEditor.FunctionWasEdited = function(oldFunctionName, newFunctionData)
+functionEditor.FunctionWasEdited = function(functionData)
 {
     // update all function call statements of this function
     // also update the header text of the function body element
+
+    const functionBody = elementHandler.functionBodies.getOwnProperty(functionData.guid);
+    if (functionBody)
+        functionBody.updateHeaderText();
+
+    const allFunctionCalls = allUIElementsByType["FunctionCall"] || {};
+
+    for (let elementGuid in allFunctionCalls)
+    {
+        const element = allFunctionCalls[elementGuid];
+        const selectedFunction = element.selectedFunction;
+
+        if (selectedFunction && selectedFunction === functionData)
+            element.selectedFunctionChanged(selectedFunction);
+    }
 };
 
 functionEditor.FunctionWasDeleted = function(functionData)
 {
     // delete all function call statements of this function
     // if currently editing the deleted function, switch back to the Main function
+
+    if (functionData.guid === elementHandler.activeFunctionGuid)
+        elementHandler.SwitchToMainFunction(false);
+
+    const allFunctionCalls = allUIElementsByType["FunctionCall"] || {};
+
+    for (let elementGuid in allFunctionCalls)
+    {
+        const element = allFunctionCalls[elementGuid];
+        const selectedFunction = element.selectedFunction;
+
+        if (selectedFunction && selectedFunction === functionData)
+            element.selectedFunctionChanged(undefined);
+    }
 };

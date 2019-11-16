@@ -4,7 +4,6 @@ class FunctionBody extends BlockBase
     constructor(parentNode, functionName)
     {
         super(parentNode, "", [], true);
-        this.functionName = functionName;
 
         if (functionName === "Main")
         {
@@ -34,13 +33,11 @@ class FunctionBody extends BlockBase
 
     getHeaderText()
     {
-        let headerText = "Function " + this.functionName;
-        if (this.functionName !== "Main")
-        {
-            const params = this.functionData.parameters;
-            if (params.length !== 0)
-                headerText += " (" + params.map(param => param.name + ": " + param.type).join(", ") + ")";
-        }
+        let headerText = "Function " + this.functionData.name;
+
+        const params = this.functionData.parameters;
+        if (params.length !== 0)
+            headerText += " (" + params.map(param => param.name + ": " + param.type).join(", ") + ")";
 
         return headerText;
     }

@@ -65,7 +65,7 @@ functionViewer.CreateFunctionInfoLine = function(func)
         // if in function editor, then switch to the clicked function
         const isFunctionEditor = document.getElementById("function-selector-overlay").classList.contains("function-editor");
         if (isFunctionEditor)
-            elementHandler.SwitchToFunction(func.guid);
+            elementHandler.SwitchToFunction(func.guid, true);
         else
         {
             document.getElementById("function-selector-overlay").style.display = "none";
@@ -113,12 +113,13 @@ functionViewer.CreateFunctionInfoLine = function(func)
     {
         if (await Confirm("Do you really want to delete the function \"" + func.name + "\"?"))
         {
+            functionEditor.FunctionWasDeleted(func); // delete references after this
+
             delete customFunctionsByName[func.name];
             delete customFunctions[func.guid];
             delete elementHandler.functionBodyDragContainers[func.guid];
             delete elementHandler.functionBodies[func.guid];
 
-            functionEditor.FunctionWasDeleted(func);
             functionViewer.UpdateCustomFunctionLines();
         }
     };

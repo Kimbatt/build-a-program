@@ -340,10 +340,10 @@ class FunctionCall extends ElementBase
         header.className = "inline-text function-call-inline-text";
 
         // parameters text
-        const paramsText = document.createElement("div");
-        paramsText.innerText = "Parameters:";
-        paramsText.className = "inline-text";
-        paramsText.style.display = "none";
+        this.paramsText = document.createElement("div");
+        this.paramsText.innerText = "Parameters:";
+        this.paramsText.className = "inline-text";
+        this.paramsText.style.display = "none";
 
         // function selector
         this.selectedFunction = null;
@@ -366,23 +366,8 @@ class FunctionCall extends ElementBase
             waitingForFunctionSelection = false;
             functionViewer.functionSelectedCallback = undefined;
 
-            if (selectedFunction && selectedFunction != this.selectedFunction)
-            {
-                this.selectedFunction = selectedFunction;
-                this.functionSelector.innerText = selectedFunction ? selectedFunction.name : "(none selected)";
-
-                while (this.parameterDropAreasContainer.lastChild)
-                    this.parameterDropAreasContainer.removeChild(this.parameterDropAreasContainer.lastChild);
-        
-                if (this.selectedFunction.parameters.length === 0)
-                    paramsText.style.display = "none";
-                else
-                {
-                    paramsText.style.display = "";
-                    for (let param of this.selectedFunction.parameters)
-                        this.createParameterDropArea(param.type, param.name);
-                }
-            }
+            if (selectedFunction && selectedFunction !== this.selectedFunction)
+                this.selectedFunctionChanged(selectedFunction);
         };
 
         // container for parameter drop areas
@@ -396,12 +381,124 @@ class FunctionCall extends ElementBase
         this.element.appendChild(this.dragHandle);
         this.element.appendChild(header);
         this.element.appendChild(this.functionSelector);
-        this.element.appendChild(paramsText);
+        this.element.appendChild(this.paramsText);
         this.element.appendChild(this.parameterDropAreasContainer);
 
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, this.dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+
+    selectedFunctionChanged(selectedFunction)
+    {
+        // we need to update the function name here, and update the parameter drop areas
+        // for each element in the drop areas, we need to check if the type of the dropped element and the required type of the function parameter are the same
+        // if they are not the same, we move it outside the function call, and put it next to the function call
+
+        this.selectedFunction = selectedFunction;
+        this.functionSelector.innerText = selectedFunction ? selectedFunction.name : "(none selected)";
+
+        const droppedParameterElements = [];
+
+        const dropAreas = this.parameterDropAreasContainer.children;
+        for (let i = 0; i < dropAreas.length; ++i)
+        {
+            let hasDroppedElement = false;
+            const dropAreaNodes = dropAreas[i].children;
+            for (let j = 0; j < dropAreaNodes.length; ++j)
+            {
+                const elem = dropAreaNodes[j];
+                if (elem.uiElementData && elem.uiElementData instanceof ElementBase)
+                {
+                    // we have something dropped here
+                    hasDroppedElement = true;
+                    droppedParameterElements.push(elem);
+                    break;
+                }
+            }
+
+            if (!hasDroppedElement)
+                droppedParameterElements.push(null);
+        }
+
+        while (this.parameterDropAreasContainer.lastChild)
+        {
+            const dropArea = this.parameterDropAreasContainer.lastChild;
+            for (let i = 0; i < dropArea.children.length; ++i)
+            {
+                const elem = dropArea.children[i];
+                if (elem.uiElementData && elem.uiElementData instanceof ElementBase)
+                {
+                    dropArea.draggableData.onDetach(elem);
+                    break;
+                }
+            }
+
+            this.parameterDropAreasContainer.removeChild(dropArea);
+        }
+
+        if (!selectedFunction || selectedFunction.parameters.length === 0)
+            this.paramsText.style.display = "none";
+        else
+        {
+            this.paramsText.style.display = "";
+            for (let param of selectedFunction.parameters)
+                this.createParameterDropArea(param.type, param.name);
+        }
+
+        const functionParams = selectedFunction && selectedFunction.parameters; // can be undefined if deleting the function
+        const mismatchedTypeElements = [];
+        for (let i = 0; i < droppedParameterElements.length; ++i)
+        {
+            const droppedParam = droppedParameterElements[i];
+            if (!droppedParam)
+                continue;
+
+            let typeMismatch = false;
+            if (functionParams && functionParams.length > i)
+            {
+                const currentType = droppedParam.uiElementData.getType();
+                const requiredType = functionParams[i].type;
+
+                if (currentType !== requiredType)
+                    typeMismatch = true;
+                else
+                    draggable.ForceDrop(droppedParam, this.parameterDropAreasContainer.children[i]);
+            }
+            else
+            {
+                // the function has less parameters than we already have
+                typeMismatch = true;
+            }
+
+            if (typeMismatch)
+                mismatchedTypeElements.push(droppedParam);
+        }
+
+        const rect = helper.GetCoords(this.element)
+        const left = rect.x + rect.width;
+        let top = rect.y - rect.height - 40;
+
+        for (let i = 0; i < mismatchedTypeElements.length; ++i)
+        {
+            const elem = mismatchedTypeElements[i];
+            elem.draggableData.attachedDropArea = undefined;
+            elem.style.position = "absolute";
+            elem.style.left = left + "px";
+            elem.style.top = top + "px";
+            this.parentNode.appendChild(elem);
+
+            top += 40;
+        }
+
+        if (!selectedFunction)
+        {
+            // function was deleted, detach it from the drop area if attached
+            if (this.element.draggableData.attachedDropArea)
+                this.element.draggableData.attachedDropArea.draggableData.onDetach(this.element);
+
+            this.delete();
+        }
     }
 
     createParameterDropArea(requiredType, paramName)

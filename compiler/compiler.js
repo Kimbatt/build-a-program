@@ -373,9 +373,10 @@ compiler.GenerateProgramJSON = function(errors)
 {
     const program = {};
     
-    function CompileFunction(functionName)
+    function CompileFunction(functionData)
     {
-        const functionBodyContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionName);
+        const functionName = functionData.name;
+        const functionBodyContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionData.guid);
         const functionBody = functionBodyContainer && functionBodyContainer.children[0];
         if (functionBody)
         {
@@ -385,19 +386,25 @@ compiler.GenerateProgramJSON = function(errors)
         {
             // empty function
             program[functionName] = {
-                parameters: [],
+                name: functionData.name,
+                parameters: functionData.parameters.map(param => ({
+                    name: param.name,
+                    type: param.type
+                })),
+                returnType: functionData.returnType,
+                description: functionData.description || "",
                 block: {
                     statementType: "block",
                     statements: []
                 }
-            }
+            };
         }
     }
     
-    CompileFunction("Main");
+    CompileFunction(MainFunction);
     
     for (let guid in customFunctions)
-        CompileFunction(customFunctions[guid].name);
+        CompileFunction(customFunctions[guid]);
         
     return program;
 };

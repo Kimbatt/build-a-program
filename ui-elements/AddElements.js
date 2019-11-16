@@ -38,7 +38,7 @@ const elementHandler = {};
         {
             if (ev.button === 0)
             {
-                const newElement = searchKeywords[searchResultButtons[index].innerHTML](elementHandler.currentFunctionDragContainer);
+                const newElement = searchKeywords[searchResultButtons[index].innerHTML](elementHandler.functionBodyDragContainers[elementHandler.activeFunctionGuid]);
                 newElement.element.style.top = "20px";
                 newElement.element.style.left = "20px";
                 searchBox.value = "";
@@ -98,21 +98,21 @@ const elementHandler = {};
     
 })();
 
-elementHandler.currentFunctionDragContainer = undefined;
+elementHandler.activeFunctionGuid = undefined;
 elementHandler.functionBodyDragContainers = {};
 elementHandler.functionBodies = {};
+elementHandler.functionCallElements = {};
 
-elementHandler.SwitchToFunction = function(functionGuid)
+elementHandler.SwitchToFunction = function(functionGuid, hideFunctionSelector)
 {
     const dragArea = document.getElementById("main-drag-area");
     let functionDragContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionGuid);
     const functionData = customFunctions.getOwnProperty(functionGuid);
 
-    if (functionDragContainer)
-        functionDragContainer.children[0].uiElementData.updateHeaderText(); // TODO: remove if header text is updated after function editing
-    else if (functionData)
+    if (!elementHandler.functionBodyDragContainers.hasOwnProperty(functionGuid))
     {
         functionDragContainer = document.createElement("div");
+        functionDragContainer.className = "function-body-drag-container";
         elementHandler.functionBodyDragContainers[functionGuid] = functionDragContainer;
 
         const functionUIElement = new FunctionBody(functionDragContainer, functionData.name);
@@ -122,32 +122,39 @@ elementHandler.SwitchToFunction = function(functionGuid)
         elementHandler.functionBodies[functionGuid] = functionUIElement;
     }
 
-    if (elementHandler.currentFunctionDragContainer)
-        dragArea.removeChild(elementHandler.currentFunctionDragContainer);
+    const currentFunctionDragContainer = elementHandler.activeFunctionGuid
+        && elementHandler.functionBodyDragContainers.getOwnProperty(elementHandler.activeFunctionGuid);
+
+    if (currentFunctionDragContainer)
+        dragArea.removeChild(currentFunctionDragContainer);
 
     dragArea.appendChild(functionDragContainer);
-    elementHandler.currentFunctionDragContainer = functionDragContainer;
+    elementHandler.activeFunctionGuid = functionGuid;
 
-    document.getElementById("function-selector-overlay").style.display = "none";
+    if (hideFunctionSelector)
+        document.getElementById("function-selector-overlay").style.display = "none";
 };
 
 (() =>
 {
     // create main function element here
     const dragContainer = document.createElement("div");
+    dragContainer.className = "function-body-drag-container";
     const main = new FunctionBody(dragContainer, "Main");
+    window.MainFunction = main.functionData;
 
     main.element.style.top = "100px";
     main.element.style.left = "100px";
 
-    const guid = main.guid;
+    const guid = main.functionData.guid;
 
     elementHandler.functionBodyDragContainers[guid] = dragContainer;
     elementHandler.functionBodies[guid] = main;
-    elementHandler.SwitchToFunction(guid);
     
-    elementHandler.SwitchToMainFunction = function()
+    elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
     {
-        elementHandler.SwitchToFunction(guid);
+        elementHandler.SwitchToFunction(guid, hideFunctionSelector);
     };
 })();
+
+elementHandler.SwitchToMainFunction(false);
