@@ -1,8 +1,10 @@
 
+const compiler = {};
+
 /**
  * @param {string} variableName 
  */
-function CheckVariableName(variableName)
+compiler.CheckVariableName = function(variableName)
 {
     if (variableName === "")
         return "Variable name is empty";
@@ -17,43 +19,42 @@ function CheckVariableName(variableName)
         return "Variable name cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
 
     return "OK";
-}
+};
 
-async function CompileAndRun()
+compiler.CompileAndRun = async function()
 {
     if (document.getElementById("clear-console-on-run-checkbox").checked)
-        ConsoleClear();
+        Console.Clear();
 
-    if (!consoleIsVisible)
+    if (!Console.consoleIsVisible)
     {
-        ConsoleShow();
+        Console.Show();
         await new Promise(resolve => setTimeout(resolve, 350));
     }
 
     const errors = [];
-    const compiled = GenerateProgramJSON(errors);
+    const compiled = compiler.GenerateProgramJSON(errors);
 
     for (let func in compiled)
-        CheckVariables(compiled[func], errors);
+        compiler.CheckVariables(compiled[func], errors);
 
     if (errors.length !== 0)
     {
         for (let error of errors)
-            ConsoleError("Compile error: " + error.message);
+            Console.Error("Compile error: " + error.message);
 
         return;
     }
 
-    await RunProgram(compiled);
+    await runner.RunProgram(compiled);
 
-    consoleLinesDiv.scrollTo(0, consoleLinesDiv.scrollHeight);
-}
+    Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
+};
 
 /**
  * @param {any[]} errors 
  */
-
-function CheckVariables(compiledFunction, errors)
+compiler.CheckVariables = function(compiledFunction, errors)
 {
     const mainBlock = compiledFunction.block;
     const parameters = compiledFunction.parameters;
@@ -129,7 +130,7 @@ function CheckVariables(compiledFunction, errors)
                 return true;
             case "variable":
             {
-                const checkResult = CheckVariableName(expression.variableName);
+                const checkResult = compiler.CheckVariableName(expression.variableName);
                 if (checkResult !== "OK")
                 {
                     errors.push({
@@ -239,7 +240,7 @@ function CheckVariables(compiledFunction, errors)
                 case "variableDeclaration":
                 {
                     let ok = true;
-                    const variableNameCheckResult = CheckVariableName(statement.variableName);
+                    const variableNameCheckResult = compiler.CheckVariableName(statement.variableName);
                     if (variableNameCheckResult !== "OK")
                     {
                         errors.push({
@@ -266,7 +267,7 @@ function CheckVariables(compiledFunction, errors)
                 case "variableAssignment":
                 {
                     let variableNameIsOk = true;
-                    const variableNameCheckResult = CheckVariableName(statement.variableName);
+                    const variableNameCheckResult = compiler.CheckVariableName(statement.variableName);
                     if (variableNameCheckResult !== "OK")
                     {
                         errors.push({
@@ -366,15 +367,15 @@ function CheckVariables(compiledFunction, errors)
     }
 
     CheckInternal(mainBlock);
-}
+};
 
-function GenerateProgramJSON(errors)
+compiler.GenerateProgramJSON = function(errors)
 {
     const program = {};
     
     function CompileFunction(functionName)
     {
-        const functionBodyContainer = functionBodyDragContainers.getOwnProperty(functionName);
+        const functionBodyContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionName);
         const functionBody = functionBodyContainer && functionBodyContainer.children[0];
         if (functionBody)
         {
@@ -399,4 +400,4 @@ function GenerateProgramJSON(errors)
         CompileFunction(func);
         
     return program;
-}
+};

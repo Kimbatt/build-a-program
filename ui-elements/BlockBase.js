@@ -174,7 +174,7 @@ class BlockBase extends StatementBase
 
         for (let child of this.mainBlock.children)
         {
-            const { y, height } = GetCoords(child);
+            const { y, height } = helper.GetCoords(child);
             if (y + height / 2 > mouseY)
             {
                 foundElem = child;

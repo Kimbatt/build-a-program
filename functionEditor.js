@@ -1,29 +1,32 @@
 
-function ShowFunctionEditorList(show)
+const functionEditor = {};
+
+functionEditor.ShowFunctionEditorList = function(show)
 {
     if (show)
-        UpdateCustomFunctionLines();
+        functionViewer.UpdateCustomFunctionLines();
 
     const funcitonSelector = document.getElementById("function-selector-overlay");
     funcitonSelector.style.display = show ? "flex" : "none";
     funcitonSelector.classList.remove("not-function-editor");
     funcitonSelector.classList.add("function-editor");
-}
+};
 
-let functionEditorHasChanged = false;
-let currentEditedFunction = undefined;
-function ShowFunctionEditor(show, functionData, isEdit)
+functionEditor.functionEditorHasChanged = false;
+functionEditor.currentEditedFunction = undefined;
+
+functionEditor.ShowFunctionEditor = function(show, functionData, isEdit)
 {
     if (show)
     {
         if (isEdit)
-            currentEditedFunction = functionData;
+            functionEditor.currentEditedFunction = functionData;
 
-        const functionEditor = document.getElementById("function-editor");
-        const functionNameInput = functionEditor.querySelector("#function-editor-function-name");
-        const functionDescriptionInput = functionEditor.querySelector("#function-editor-function-description");
-        const functionReturnTypeSelector = functionEditor.querySelector("#function-editor-function-return-type");
-        const functionEditorParametersTable = functionEditor.querySelector("#function-editor-parameters-table");
+        const functionEditorDiv = document.getElementById("function-editor");
+        const functionNameInput = functionEditorDiv.querySelector("#function-editor-function-name");
+        const functionDescriptionInput = functionEditorDiv.querySelector("#function-editor-function-description");
+        const functionReturnTypeSelector = functionEditorDiv.querySelector("#function-editor-function-return-type");
+        const functionEditorParametersTable = functionEditorDiv.querySelector("#function-editor-parameters-table");
         const parametersTbody = functionEditorParametersTable.children[0];
 
         if (functionData)
@@ -35,7 +38,7 @@ function ShowFunctionEditor(show, functionData, isEdit)
             const functionParams = functionData.parameters;
             const numParameters = functionParams.length;
             while (parametersTbody.children.length - 1 < numParameters)
-                parametersTbody.appendChild(CreateFunctionEditorParameterRow());
+                parametersTbody.appendChild(functionEditor.CreateFunctionEditorParameterRow());
 
             for (let i = 0; i < numParameters; ++i)
             {
@@ -58,8 +61,8 @@ function ShowFunctionEditor(show, functionData, isEdit)
                 parametersTbody.removeChild(parametersTbody.lastChild);
         }
 
-        FunctionEditorParameterChanged(false); // add an empty line if needed
-        functionEditorHasChanged = false;
+        functionEditor.FunctionEditorParameterChanged(false); // add an empty line if needed
+        functionEditor.functionEditorHasChanged = false;
 
         const allTypes = new Set(["void", "number", "boolean", "string"]);
 
@@ -88,9 +91,9 @@ function ShowFunctionEditor(show, functionData, isEdit)
     }
 
     document.getElementById("function-editor-overlay").style.display = show ? "" : "none";
-}
+};
 
-function CreateFunctionEditorParameterRow()
+functionEditor.CreateFunctionEditorParameterRow = function()
 {
     const types = ["number", "string", "boolean"];
 
@@ -104,7 +107,7 @@ function CreateFunctionEditorParameterRow()
     paramNameInput.className = "text-input";
     paramNameInput.style.width = "250px";
     paramNameInput.placeholder = "Type to add new parameter";
-    paramNameInput.onchange = () => FunctionEditorParameterChanged(false);
+    paramNameInput.onchange = () => functionEditor.FunctionEditorParameterChanged(false);
     paramNameTd.appendChild(paramNameInput);
 
     const paramTypeTd = document.createElement("td");
@@ -115,7 +118,7 @@ function CreateFunctionEditorParameterRow()
     paramTypeSelector.style.width = "100%";
     paramTypeSelector.style.height = "36px";
     paramTypeSelector.style.border = "0px";
-    paramTypeSelector.oninput = () => FunctionEditorParameterChanged(false);
+    paramTypeSelector.oninput = () => functionEditor.FunctionEditorParameterChanged(false);
     paramTypeTd.appendChild(paramTypeSelector);
 
     for (let type of types)
@@ -133,7 +136,7 @@ function CreateFunctionEditorParameterRow()
     paramDescriptionInput.type = "text";
     paramDescriptionInput.className = "text-input";
     paramDescriptionInput.style.width = "calc(100% - 12px)";
-    paramDescriptionInput.onchange = () => FunctionEditorParameterChanged(false);
+    paramDescriptionInput.onchange = () => functionEditor.FunctionEditorParameterChanged(false);
     paramDescriptionTd.appendChild(paramDescriptionInput);
 
     row.appendChild(paramNameTd);
@@ -141,16 +144,16 @@ function CreateFunctionEditorParameterRow()
     row.appendChild(paramDescriptionTd);
 
     return row;
-}
+};
 
 /**
  * @param {HTMLInputElement} input 
  */
-function FunctionEditorParameterChanged(setChangedOnly)
+functionEditor.FunctionEditorParameterChanged = function(setChangedOnly)
 {
-    //setChangedOnly: don't check if we need to add a new row, just set functionEditorHasChanged to true
+    //setChangedOnly: don't check if we need to add a new row, just set functionEditor.functionEditorHasChanged to true
 
-    functionEditorHasChanged = true;
+    functionEditor.functionEditorHasChanged = true;
 
     if (!setChangedOnly)
     {
@@ -184,19 +187,19 @@ function FunctionEditorParameterChanged(setChangedOnly)
         }
 
         if (!lastRowIsEmpty)
-            tbody.appendChild(emptyRow || CreateFunctionEditorParameterRow());
+            tbody.appendChild(emptyRow || functionEditor.CreateFunctionEditorParameterRow());
     }
-}
+};
 
-async function ExitFunctionEditor(save)
+functionEditor.ExitFunctionEditor = async function(save)
 {
     const functionEditorOverlay = document.getElementById("function-editor-overlay");
     if (!save)
     {
-        if (!functionEditorHasChanged || await Confirm("Exit without saving?", "Yes", "Cancel"))
+        if (!functionEditor.functionEditorHasChanged || await Confirm("Exit without saving?", "Yes", "Cancel"))
         {
             functionEditorOverlay.style.display = "none";
-            currentEditedFunction = undefined;
+            functionEditor.currentEditedFunction = undefined;
         }
 
         return;
@@ -219,13 +222,13 @@ async function ExitFunctionEditor(save)
         return "OK";
     }
     
-    const functionEditor = document.getElementById("function-editor");
-    const functionNameInput = functionEditor.querySelector("#function-editor-function-name");
-    const functionDescriptionInput = functionEditor.querySelector("#function-editor-function-description");
-    const functionReturnTypeSelector = functionEditor.querySelector("#function-editor-function-return-type");
-    const functionEditorParametersTable = functionEditor.querySelector("#function-editor-parameters-table");
+    const functionEditorDiv = document.getElementById("function-editor");
+    const functionNameInput = functionEditorDiv.querySelector("#function-editor-function-name");
+    const functionDescriptionInput = functionEditorDiv.querySelector("#function-editor-function-description");
+    const functionReturnTypeSelector = functionEditorDiv.querySelector("#function-editor-function-return-type");
+    const functionEditorParametersTable = functionEditorDiv.querySelector("#function-editor-parameters-table");
     const parametersTbody = functionEditorParametersTable.children[0];
-    const errorText = functionEditor.querySelector("#function-editor-error-text");
+    const errorText = functionEditorDiv.querySelector("#function-editor-error-text");
 
     let checkResult;
     
@@ -244,7 +247,7 @@ async function ExitFunctionEditor(save)
         return;
     }
 
-    if (customFunctions.hasOwnProperty(functionName) && !currentEditedFunction)
+    if (customFunctions.hasOwnProperty(functionName) && !functionEditor.currentEditedFunction)
     {
         errorText.style.display = "";
         errorText.innerText = "A function with the name \"" + functionName + "\" already exists";
@@ -294,10 +297,10 @@ async function ExitFunctionEditor(save)
     }
 
     let functionObj;
-    if (currentEditedFunction)
+    if (functionEditor.currentEditedFunction)
     {
-        functionObj = currentEditedFunction;
-        delete customFunctions[currentEditedFunction.name];
+        functionObj = functionEditor.currentEditedFunction;
+        delete customFunctions[functionEditor.currentEditedFunction.name];
     }
     else
         functionObj = {};
@@ -310,7 +313,7 @@ async function ExitFunctionEditor(save)
     customFunctions[functionName] = functionObj;
     errorText.style.display = "none";
     functionEditorOverlay.style.display = "none";
-    UpdateCustomFunctionLines();
-    // currentEditedFunction must exist before calling UpdateCustomFunctionLines
-    currentEditedFunction = undefined;
-}
+    functionViewer.UpdateCustomFunctionLines();
+    // functionEditor.currentEditedFunction must exist before calling functionViewer.UpdateCustomFunctionLines
+    functionEditor.currentEditedFunction = undefined;
+};

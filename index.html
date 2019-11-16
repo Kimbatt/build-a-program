@@ -8,13 +8,14 @@
 <link rel="stylesheet" href="ui-elements/Block.css">
 <link rel="stylesheet" href="ui-elements/Statement.css">
 <link rel="stylesheet" href="ui-elements/Expression.css">
+<link rel="stylesheet" href="functions.css">
 
 </head>
 <body>
 <input id="search-box" class="text-input" type="text" placeholder="Search for elements">
-<button onclick="CompileAndRun()" class="buttonbutton" id="run-button">Run</button>
+<button onclick="compiler.CompileAndRun()" class="buttonbutton" id="run-button">Run</button>
 <div id="spinner" class="loading-spinner loading-spinner-hidden"></div>
-<button onclick="ShowFunctionEditorList(true)" class="buttonbutton">Functions</button>
+<button onclick="functionEditor.ShowFunctionEditorList(true)" class="buttonbutton">Functions</button>
 
 <div id="main-drag-area-top-border"></div>
 <div id="main-drag-area"></div>
@@ -23,8 +24,8 @@
 
 <div id="console" class="console-hidden">
     <div id="console-header">
-        <button id="console-hide-button" class="console-header-button" title="Hide the console" onclick="ConsoleHide()"></button>
-        <button id="console-clear-button" class="console-header-button" title="Clear the console" onclick="ConsoleClear()"></button>
+        <button id="console-hide-button" class="console-header-button" title="Hide the console" onclick="Console.Hide()"></button>
+        <button id="console-clear-button" class="console-header-button" title="Clear the console" onclick="Console.Clear()"></button>
         <label style="user-select: none;"><input id="clear-console-on-run-checkbox" type="checkbox" checked> Clear console on run</label>
     </div>
     <div id="console-lines-div"></div>
@@ -35,21 +36,21 @@
 </div>
 
 <div id="console-hidden" class="console-hidden-visible">
-    <button id="console-show-button" class="console-header-button" title="Show console" onclick="ConsoleShow()"></button>
+    <button id="console-show-button" class="console-header-button" title="Show console" onclick="Console.Show()"></button>
 </div>
 
-<div id="function-selector-overlay" class="fullscreen-overlay" style="display: none;" onclick="ShowAvailableFunctions(false)">
+<div id="function-selector-overlay" class="fullscreen-overlay" style="display: none;" onclick="functionViewer.ShowAvailableFunctions(false)">
     <div id="function-selector" onclick="event.stopPropagation()">
         <div style="font-size: 24px; margin-bottom: 10px;" class="hidden-in-function-editor">Built-in functions</div>
         <div id="builtin-function-list" class="function-list hidden-in-function-editor"></div>
         <div style="font-size: 24px;" class="custom-functions-title">Custom functions</div>
         <div id="custom-function-list" class="function-list"></div>
-        <button style="position: absolute; top: 11px; right: 190px;" class="buttonbutton visible-in-function-editor" onclick="SwitchToFunction('Main')">Switch to Main function</button>
-        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="ShowFunctionEditor(true, null, false)">New function</button>
+        <button style="position: absolute; top: 11px; right: 190px;" class="buttonbutton visible-in-function-editor" onclick="elementHandler.SwitchToFunction('Main')">Switch to Main function</button>
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton visible-in-function-editor" onclick="functionEditor.ShowFunctionEditor(true, null, false)">New function</button>
     </div>
 </div>
 
-<div id="function-viewer-overlay" class="fullscreen-overlay" style="display: none;" onclick="ShowFunctionInfo(false)">
+<div id="function-viewer-overlay" class="fullscreen-overlay" style="display: none;" onclick="functionViewer.ShowFunctionInfo(false)">
     <div id="function-viewer" onclick="event.stopPropagation()">
         <div id="function-viewer-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;"></div>
         <div class="header-text">Description:</div>
@@ -67,18 +68,18 @@
                 </tr>
             </tbody>
         </table>
-        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="ShowFunctionInfo(false)">Back</button>
+        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="functionViewer.ShowFunctionInfo(false)">Back</button>
     </div>
 </div>
 
 <div id="function-editor-overlay" class="fullscreen-overlay" style="display: none;">
     <div id="function-editor">
         <input class="text-input" id="function-editor-function-name" style="font-size: 36px; font-weight: bold; margin-bottom: 40px;"
-            placeholder="Function Name" onchange="FunctionEditorParameterChanged(true)">
+            placeholder="Function Name" onchange="functionEditor.FunctionEditorParameterChanged(true)">
         <div class="header-text">Description:</div>
-        <input class="text-input normal-text" id="function-editor-function-description" placeholder="Function description" onchange="FunctionEditorParameterChanged(true)">
+        <input class="text-input normal-text" id="function-editor-function-description" placeholder="Function description" onchange="functionEditor.FunctionEditorParameterChanged(true)">
         <div class="header-text">Return type:</div>
-        <select id="function-editor-function-return-type" class="type-selector normal-text" onchange="FunctionEditorParameterChanged(true)"></select>
+        <select id="function-editor-function-return-type" class="type-selector normal-text" onchange="functionEditor.FunctionEditorParameterChanged(true)"></select>
         <div class="header-text">Parameters:</div>
         <table id="function-editor-parameters-table" class="function-viewer-parameters-table">
             <tbody>
@@ -90,8 +91,8 @@
             </tbody>
         </table>
         <div id="function-editor-error-text" style="display: none;"></div>
-        <button class="buttonbutton" style="position: absolute; top: 10px; right: 140px;" onclick="ExitFunctionEditor(true)">Save</button>
-        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="ExitFunctionEditor(false)">Cancel</button>
+        <button class="buttonbutton" style="position: absolute; top: 10px; right: 140px;" onclick="functionEditor.ExitFunctionEditor(true)">Save</button>
+        <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="functionEditor.ExitFunctionEditor(false)">Cancel</button>
     </div>
 </div>
 
@@ -118,12 +119,13 @@
 <script src="ui-elements/AddElements.js"></script>
 
 <script src="compiler/compiler.js"></script>
+<script src="runner/Runner.js"></script>
 <script src="runner/Expressions.js"></script>
 <script src="runner/Statements.js"></script>
-<script src="runner/Runner.js"></script>
 <script src="runner/BuiltInFunctions.js"></script>
 
 <script src="htmlFunctions.js"></script>
+<script src="functionViewer.js"></script>
 <script src="functionEditor.js"></script>
 
 </body>

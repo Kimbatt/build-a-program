@@ -385,7 +385,7 @@ class LiteralExpression extends ExpressionBase
                 {
                     const num = Number(this.inputField.value);
                     this.inputField.value = isNaN(num) ? "0" : num.toString();
-                    this.inputField.style.width = (GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
+                    this.inputField.style.width = (helper.GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
                 };
                 this.inputField.onkeydown = ev =>
                 {
@@ -394,7 +394,7 @@ class LiteralExpression extends ExpressionBase
                 }
                 this.inputField.oninput = () =>
                 {
-                    this.inputField.style.width = (GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
+                    this.inputField.style.width = (helper.GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
                 }
                 break;
             case "boolean":
@@ -425,7 +425,7 @@ class LiteralExpression extends ExpressionBase
                 }
                 this.inputField.oninput = () =>
                 {
-                    this.inputField.style.width = (GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
+                    this.inputField.style.width = (helper.GetTextSize(this.inputField.value, this.inputField) + 20) + "px";
                 }
                 break;
             default:
@@ -534,7 +534,7 @@ class VariableExpression extends ExpressionBase
         }
         this.variableNameInputField.oninput = () =>
         {
-            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
+            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : helper.GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
             this.recalculateDraggableSizes();
         }
 

@@ -1,27 +1,27 @@
 
-async function EvaluateExpression(data, parentBlock)
+runner.EvaluateExpression = async function(data, parentBlock)
 {
-    return await expressionEvaluators[data.expressionType](data, parentBlock);
-}
+    return await runner.expressionEvaluators[data.expressionType](data, parentBlock);
+};
 
-async function EvaluateLiteral(data, parentBlock)
+runner.EvaluateLiteral = async function(data, parentBlock)
 {
     return {
         type: data.type,
         value: data.value
     };
-}
+};
 
-async function EvaluateVariable(data, parentBlock)
+runner.EvaluateVariable = async function(data, parentBlock)
 {
-    const variableValue = GetVariable(data.variableName, parentBlock).variableValue;
+    const variableValue = runner.GetVariable(data.variableName, parentBlock).variableValue;
     return {
         type: variableValue.type,
         value: variableValue.value
     }
-}
+};
 
-async function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boolean -> boolean
+runner.EvaluateUnaryBooleanExpression = async function(data, parentBlock) // operator boolean -> boolean
 {
     const { value, operator } = data;
 
@@ -29,7 +29,7 @@ async function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boo
         type: "boolean"
     }
 
-    const jsBooleanValue = (await EvaluateExpression(value, parentBlock)).value;
+    const jsBooleanValue = (await runner.EvaluateExpression(value, parentBlock)).value;
 
     switch (operator)
     {
@@ -42,9 +42,9 @@ async function EvaluateUnaryBooleanExpression(data, parentBlock) // operator boo
     }
 
     return ret;
-}
+};
 
-async function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean operator boolean -> boolean
+runner.EvaluateBinaryBooleanExpression = async function(data, parentBlock) // boolean operator boolean -> boolean
 {
     const { first, second, operator } = data;
 
@@ -52,14 +52,14 @@ async function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean ope
         type: "boolean"
     }
 
-    const jsBooleanValueFirst = (await EvaluateExpression(first, parentBlock)).value;
+    const jsBooleanValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
     if (operator === "&&") // boolean short-circuit for && and ||
-        ret.value = jsBooleanValueFirst && (await EvaluateExpression(first, parentBlock)).value;
+        ret.value = jsBooleanValueFirst && (await runner.EvaluateExpression(first, parentBlock)).value;
     else if (operator === "||")
-        ret.value = jsBooleanValueFirst || (await EvaluateExpression(first, parentBlock)).value;
+        ret.value = jsBooleanValueFirst || (await runner.EvaluateExpression(first, parentBlock)).value;
     else
     {
-        const jsBooleanValueSecond = (await EvaluateExpression(second, parentBlock)).value;
+        const jsBooleanValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
         switch (operator)
         {
             case "^":
@@ -78,9 +78,9 @@ async function EvaluateBinaryBooleanExpression(data, parentBlock) // boolean ope
     }
 
     return ret;
-}
+};
 
-async function EvaluateUnaryNumericExpression(data, parentBlock) // operator number -> number
+runner.EvaluateUnaryNumericExpression = async function(data, parentBlock) // operator number -> number
 {
     const { value, operator } = data;
 
@@ -88,7 +88,7 @@ async function EvaluateUnaryNumericExpression(data, parentBlock) // operator num
         type: "number"
     }
 
-    const jsNumberValue = (await EvaluateExpression(value, parentBlock)).value;
+    const jsNumberValue = (await runner.EvaluateExpression(value, parentBlock)).value;
     switch (operator)
     {
         case "+":
@@ -106,9 +106,9 @@ async function EvaluateUnaryNumericExpression(data, parentBlock) // operator num
     }
 
     return ret;
-}
+};
 
-async function EvaluateBinaryNumericExpression(data, parentBlock) // number operator number -> number
+runner.EvaluateBinaryNumericExpression = async function(data, parentBlock) // number operator number -> number
 {
     const { first, second, operator } = data;
 
@@ -116,8 +116,8 @@ async function EvaluateBinaryNumericExpression(data, parentBlock) // number oper
         type: "number"
     }
 
-    const jsNumberValueFirst = (await EvaluateExpression(first, parentBlock)).value;
-    const jsNumberValueSecond = (await EvaluateExpression(second, parentBlock)).value;
+    const jsNumberValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
+    const jsNumberValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -160,9 +160,9 @@ async function EvaluateBinaryNumericExpression(data, parentBlock) // number oper
     }
 
     return ret;
-}
+};
 
-async function EvaluateNumberComparison(data, parentBlock) // number operator number -> boolean
+runner.EvaluateNumberComparison = async function(data, parentBlock) // number operator number -> boolean
 {
     const { first, second, operator } = data;
 
@@ -170,8 +170,8 @@ async function EvaluateNumberComparison(data, parentBlock) // number operator nu
         type: "boolean"
     }
 
-    const jsNumberValueFirst = (await EvaluateExpression(first, parentBlock)).value;
-    const jsNumberValueSecond = (await EvaluateExpression(second, parentBlock)).value;
+    const jsNumberValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
+    const jsNumberValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -199,9 +199,9 @@ async function EvaluateNumberComparison(data, parentBlock) // number operator nu
     }
 
     return ret;
-}
+};
 
-async function EvaluateStringComparison(data, parentBlock) // string operator string -> boolean
+runner.EvaluateStringComparison = async function(data, parentBlock) // string operator string -> boolean
 {
     const { first, second, operator } = data;
 
@@ -209,8 +209,8 @@ async function EvaluateStringComparison(data, parentBlock) // string operator st
         type: "boolean"
     }
 
-    const jsStringValueFirst = (await EvaluateExpression(first, parentBlock)).value;
-    const jsStringValueSecond = (await EvaluateExpression(second, parentBlock)).value;
+    const jsStringValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
+    const jsStringValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -226,9 +226,9 @@ async function EvaluateStringComparison(data, parentBlock) // string operator st
     }
 
     return ret;
-}
+};
 
-async function EvaluateBinaryStringExpression(data, parentBlock) // string operator string -> string
+runner.EvaluateBinaryStringExpression = async function(data, parentBlock) // string operator string -> string
 {
     const { first, second, operator } = data;
 
@@ -236,8 +236,8 @@ async function EvaluateBinaryStringExpression(data, parentBlock) // string opera
         type: "string"
     }
 
-    const jsStringValueFirst = (await EvaluateExpression(first, parentBlock)).value;
-    const jsStringValueSecond = (await EvaluateExpression(second, parentBlock)).value;
+    const jsStringValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
+    const jsStringValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
 
     switch (operator)
     {
@@ -250,22 +250,22 @@ async function EvaluateBinaryStringExpression(data, parentBlock) // string opera
     }
 
     return ret;
-}
+};
 
-async function EvaluateFunctionCall(data, parentBlock)
+runner.EvaluateFunctionCall = async function(data, parentBlock)
 {
-    return await HandleFunctionCall(data, parentBlock);
-}
+    return await runner.HandleFunctionCall(data, parentBlock);
+};
 
-const expressionEvaluators = {
-    literal: EvaluateLiteral,
-    variable: EvaluateVariable,
-    unaryBooleanExpression: EvaluateUnaryBooleanExpression,
-    binaryBooleanExpression: EvaluateBinaryBooleanExpression,
-    unaryNumericExpression: EvaluateUnaryNumericExpression,
-    binaryNumericExpression: EvaluateBinaryNumericExpression,
-    numberComparison: EvaluateNumberComparison,
-    binaryStringExpression: EvaluateBinaryStringExpression,
-    stringComparison: EvaluateStringComparison,
-    functionCall: EvaluateFunctionCall
+runner.expressionEvaluators = {
+    literal: runner.EvaluateLiteral,
+    variable: runner.EvaluateVariable,
+    unaryBooleanExpression: runner.EvaluateUnaryBooleanExpression,
+    binaryBooleanExpression: runner.EvaluateBinaryBooleanExpression,
+    unaryNumericExpression: runner.EvaluateUnaryNumericExpression,
+    binaryNumericExpression: runner.EvaluateBinaryNumericExpression,
+    numberComparison: runner.EvaluateNumberComparison,
+    binaryStringExpression: runner.EvaluateBinaryStringExpression,
+    stringComparison: runner.EvaluateStringComparison,
+    functionCall: runner.EvaluateFunctionCall
 };

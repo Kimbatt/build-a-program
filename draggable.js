@@ -190,8 +190,8 @@ const draggable = {};
         constraintData.constraintElement = toElement;
         constraintData.borderSize = borderSize;
 
-        //const thisRect = GetCoords(thisElement);
-        //const otherRect = GetCoords(toElement);
+        //const thisRect = helper.GetCoords(thisElement);
+        //const otherRect = helper.GetCoords(toElement);
 
         constraintData.minX = 0; //otherRect.x - thisRect.x + borderSize;
         constraintData.minY = 0; //otherRect.y - thisRect.y + borderSize;
@@ -261,14 +261,14 @@ const draggable = {};
         let parentCoords;
         while (parentNode)
         {
-            parentCoords = GetCoords(parentNode);
+            parentCoords = helper.GetCoords(parentNode);
             if (getComputedStyle(parentNode).position === "relative")
                 break;
 
             parentNode = parentNode.parentNode;
         }
 
-        const startCoords = GetCoords(element);
+        const startCoords = helper.GetCoords(element);
         startPosLeft = startCoords.x - parentCoords.x;
         startPosTop = startCoords.y - parentCoords.y;
         

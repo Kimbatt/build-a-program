@@ -1,0 +1,212 @@
+
+#function-selector, #function-editor-list
+{
+    position: relative;
+    width: 1000px;
+    height: calc(100% - 80px);
+    padding: 16px;
+
+    background: black;
+    border-radius: 10px;
+}
+
+#function-selector .function-list
+{
+    height: calc(50% - 58px);
+    overflow-y: scroll;
+    border: 2px solid #2c2c2c;
+}
+
+#function-selector .function-info
+{
+    justify-self: flex-start;
+    flex-grow: 1;
+    cursor: pointer;
+    overflow: hidden;
+}
+
+.function-selector-line
+{
+    display: flex;
+    border-bottom: 2px solid #2c2c2c;
+    padding: 8px;
+
+    transition: background 0.1s linear;
+}
+
+.function-selector-line:hover
+{
+    background-color: #2c2c2c;
+}
+
+.function-selector-line:active
+{
+    background-color: #181818;
+}
+
+.function-selector-line .function-name
+{
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 12px;
+    max-width: 600px;
+    overflow-wrap: break-word;
+}
+
+.function-selector-line .function-description
+{
+    max-width: 600px;
+    overflow-wrap: break-word;
+}
+
+.function-details-button
+{
+    position: absolute;
+    top: 0px;
+    bottom: 2px;
+    right: 0px;
+    height: 50px;
+}
+
+#function-viewer-overlay, #function-editor-overlay
+{
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    overflow-y: scroll;
+
+    background: rgba(0, 0, 0, 0.5);
+}
+
+#function-viewer, #function-editor, #function-selector
+{
+    display: table;
+    position: relative;
+    border: 2px solid #4e4e4e;
+    margin: auto;
+    width: 1000px;
+    padding: 16px;
+
+    background: black;
+    border-radius: 10px;
+}
+
+#function-viewer .header-text, #function-editor .header-text
+{
+    font-size: 24px;
+    border-bottom: 2px solid #747474;
+    display: table;
+    margin-bottom: 10px;
+}
+
+#function-viewer .normal-text, #function-editor .normal-text
+{
+    font-size: 20px;
+    margin-bottom: 40px;
+}
+
+.function-viewer-parameters-table
+{
+    border-collapse: collapse;
+    table-layout: fixed;
+    word-break: break-all;
+    font-size: 20px;
+    width: 100%;
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+.function-viewer-parameters-table, .function-viewer-parameters-table td, .function-viewer-parameters-table th
+{
+    border: 2px solid #747474;
+}
+
+.function-viewer-parameters-table th
+{
+    padding: 6px;
+}
+
+.function-viewer-parameters-table td
+{
+    padding: 4px;
+}
+
+.function-editor .hidden-in-function-editor
+{
+    display: none;
+}
+
+.not-function-editor .visible-in-function-editor
+{
+    display: none;
+}
+
+.custom-functions-title
+{
+    margin: 30px 0px 10px 0px;
+}
+
+.function-editor .custom-functions-title
+{
+    margin: 10px 0px 20px 0px;
+}
+
+.function-editor #custom-function-list
+{
+    height: calc(100% - 62px);
+}
+
+#function-editor-list .function-list
+{
+    height: calc(100% - 62px);
+    overflow-y: scroll;
+    border: 2px solid #2c2c2c;
+}
+
+#function-editor .type-selector
+{
+    -moz-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+
+    background-image: var(--dropdown-arrow);
+    background-color: #404040;
+    background-repeat: no-repeat;
+    background-position: right;
+    
+    flex-shrink: 0;
+    font-size: 20px;
+    color: white;
+    border: 1px solid #8a8a8a;
+    padding: 4px 25px 4px 10px;
+    outline: none;
+    text-align-last: center;
+    height: 34px;
+    vertical-align: middle;
+}
+
+#function-editor #function-editor-function-description
+{
+    width: calc(100% - 14px);
+}
+
+#function-editor .function-editor-parameter-input
+{
+    padding: 0px;
+}
+
+#function-editor .function-editor-parameter-input .text-input
+{
+    height: 24px;
+    border: 0px;
+}
+
+#function-editor #function-editor-error-text
+{
+    color: #ff2d2d;
+    margin-top: 20px;
+    font-size: 24px;
+    font-weight: bold;
+}

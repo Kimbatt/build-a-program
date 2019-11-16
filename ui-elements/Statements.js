@@ -140,7 +140,7 @@ class VariableDeclaration extends StatementBase
         }
         this.variableNameInputField.oninput = () =>
         {
-            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
+            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : helper.GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
         }
 
         // another text
@@ -215,7 +215,7 @@ class VariableAssignment extends StatementBase
         }
         this.variableNameInputField.oninput = () =>
         {
-            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
+            this.variableNameInputField.style.width = (this.variableNameInputField.value === "" ? 130 : helper.GetTextSize(this.variableNameInputField.value, this.variableNameInputField)) + "px";
         }
 
         // another text
@@ -360,11 +360,11 @@ class FunctionCall extends ElementBase
                 return;
 
             waitingForFunctionSelection = true;
-            ShowAvailableFunctions(true);
+            functionViewer.ShowAvailableFunctions(true);
 
-            const selectedFunction = await new Promise(resolve => functionSelectedCallback = resolve);
+            const selectedFunction = await new Promise(resolve => functionViewer.functionSelectedCallback = resolve);
             waitingForFunctionSelection = false;
-            functionSelectedCallback = undefined;
+            functionViewer.functionSelectedCallback = undefined;
 
             if (selectedFunction && selectedFunction != this.selectedFunction)
             {

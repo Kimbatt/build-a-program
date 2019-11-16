@@ -1,5 +1,7 @@
 
-function GetCoords(elem) // https://stackoverflow.com/a/26230989
+const helper = {};
+
+helper.GetCoords = function(elem) // https://stackoverflow.com/a/26230989
 {
     const rect = elem.getBoundingClientRect();
 
@@ -18,14 +20,13 @@ function GetCoords(elem) // https://stackoverflow.com/a/26230989
         width: rect.width,
         height: rect.height
     };
-}
+};
 
-let GetTextSize;
 (() =>
 {
     const div = document.createElement("div");
     div.style = "display: table; visibility: hidden;";
-    GetTextSize = function(text, element)
+    helper.GetTextSize = function(text, element)
     {
         div.innerText = text;
         const elementStyle = getComputedStyle(element);

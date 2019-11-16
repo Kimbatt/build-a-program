@@ -1,4 +1,6 @@
 
+const elementHandler = {};
+
 (() =>
 {
     const stringMap = new StringMap();
@@ -36,7 +38,7 @@
         {
             if (ev.button === 0)
             {
-                const newElement = searchKeywords[searchResultButtons[index].innerHTML](currentFunctionDragContainer);
+                const newElement = searchKeywords[searchResultButtons[index].innerHTML](elementHandler.currentFunctionDragContainer);
                 newElement.element.style.top = "20px";
                 newElement.element.style.left = "20px";
                 searchBox.value = "";
@@ -96,33 +98,33 @@
     
 })();
 
-let currentFunctionDragContainer;
-const functionBodyDragContainers = {};
+elementHandler.currentFunctionDragContainer = undefined;
+elementHandler.functionBodyDragContainers = {};
 
-function SwitchToFunction(functionName)
+elementHandler.SwitchToFunction = function(functionName)
 {
     const dragArea = document.getElementById("main-drag-area");
-    let functionDragContainer = functionBodyDragContainers.getOwnProperty(functionName);
+    let functionDragContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionName);
 
     if (functionDragContainer)
         functionDragContainer.children[0].uiElementData.updateHeaderText();
     else
     {
         functionDragContainer = document.createElement("div");
-        functionBodyDragContainers[functionName] = functionDragContainer;
+        elementHandler.functionBodyDragContainers[functionName] = functionDragContainer;
 
         const functionUIElement = new FunctionBody(functionDragContainer, functionName);
         functionUIElement.element.style.left = "100px";
         functionUIElement.element.style.top = "100px";
     }
 
-    if (currentFunctionDragContainer)
-        dragArea.removeChild(currentFunctionDragContainer);
+    if (elementHandler.currentFunctionDragContainer)
+        dragArea.removeChild(elementHandler.currentFunctionDragContainer);
 
     dragArea.appendChild(functionDragContainer);
-    currentFunctionDragContainer = functionDragContainer;
+    elementHandler.currentFunctionDragContainer = functionDragContainer;
 
     document.getElementById("function-selector-overlay").style.display = "none";
-}
+};
 
-SwitchToFunction("Main");
+elementHandler.SwitchToFunction("Main");
