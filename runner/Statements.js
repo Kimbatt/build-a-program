@@ -56,9 +56,7 @@ runner.HandleIfStatement = async function(data, parentBlock)
 
     // no conditions met, handle else block if any
     if (elseBlock)
-    {
         await runner.HandleBlockStatement(elseBlock, parentBlock);
-    }
 };
 
 runner.HandleWhileStatement = async function(data, parentBlock)
@@ -70,11 +68,18 @@ runner.HandleWhileStatement = async function(data, parentBlock)
     }
 };
 
+runner.maxCallStackSize = 200;
+runner.currentCallStackSize = 0;
 runner.HandleFunctionCall = async function(data, parentBlock)
 {
+    ++runner.currentCallStackSize;
+    // TODO: throw an exception if max call stack size is exceeded
+
     const parameterValues = [];
     for (let param of data.parameters)
         parameterValues.push(await runner.EvaluateExpression(param, parentBlock));
+
+    let result;
 
     const builtinFunction = builtInFunctions.getOwnProperty(data.functionName);
     if (builtinFunction)
@@ -82,16 +87,19 @@ runner.HandleFunctionCall = async function(data, parentBlock)
         const func = builtinFunction.func;
         // only await if the function is async (builtin functions are usually not)
         if (func.constructor.name === "AsyncFunction")
-            return await func(parameterValues);
+            result = await func(parameterValues);
         else
-            return func(parameterValues);
+            result = func(parameterValues);
     }
     else
     {
         // custom function
         // TODO: return values
-        return await runner.RunFunction(runner.currentlyRunningProgram[data.functionName], parameterValues);
+        result = await runner.RunFunction(runner.currentlyRunningProgram[data.functionName], parameterValues);
     }
+
+    --runner.currentCallStackSize;
+    return result;
 };
 
 runner.HandleVariableDeclaration = async function(data, parentBlock)

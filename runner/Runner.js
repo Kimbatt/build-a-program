@@ -61,6 +61,7 @@ runner.RunProgram = async function(program)
 runner.ProgramStartedRunning = function()
 {
     runner.blockStatementCounter = 0;
+    runner.currentCallStackSize = 0;
     const runButton = document.getElementById("run-button");
     const spinner = document.getElementById("spinner");
     runButton.disabled = true;
@@ -71,6 +72,8 @@ runner.ProgramStartedRunning = function()
 
 runner.ProgramFinishedRunning = function()
 {
+    runner.blockStatementCounter = 0;
+    runner.currentCallStackSize = 0;
     const runButton = document.getElementById("run-button");
     runButton.disabled = false;
     runButton.innerText = "Run";

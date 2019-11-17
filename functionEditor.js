@@ -254,9 +254,9 @@ functionEditor.ExitFunctionEditor = async function(save)
     {
         const functionWithThisName = customFunctionsByName.getOwnProperty(functionName);
         if (functionWithThisName)
-            nameTaken = true;
+            nameTaken = functionWithThisName !== functionEditor.currentEditedFunction;
         else
-            nameTaken = functionWithThisName === functionEditor.currentEditedFunction;
+            nameTaken = false;
     }
     else
         nameTaken = customFunctionsByName.hasOwnProperty(functionName);

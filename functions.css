@@ -82,7 +82,6 @@
 
 #function-viewer, #function-editor, #function-selector
 {
-    display: table;
     position: relative;
     border: 2px solid #4e4e4e;
     margin: auto;
