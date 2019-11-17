@@ -396,7 +396,8 @@ compiler.GenerateProgramJSON = function(errors)
                 name: functionData.name,
                 parameters: functionData.parameters.map(param => ({
                     name: param.name,
-                    type: param.type
+                    type: param.type,
+                    description: param.description
                 })),
                 returnType: functionData.returnType,
                 description: functionData.description || "",
@@ -414,4 +415,91 @@ compiler.GenerateProgramJSON = function(errors)
         CompileFunction(customFunctions[guid]);
         
     return program;
+};
+
+compiler.LoadProgram = function(jsonString)
+{
+    let jsonObj;
+    try
+    {
+        jsonObj = JSON.parse(jsonString);
+    }
+    catch (e)
+    {
+        return;
+    }
+
+    helper.ClearGuids("customFunction");
+
+    for (let guid in customFunctions)
+        delete customFunctions[guid];
+
+    for (let functionName in customFunctionsByName)
+        delete customFunctionsByName[functionName];
+
+    for (let elem in allUIElementsByType)
+        delete allUIElementsByType[elem];
+
+    elementHandler.functionBodyDragContainers = {};
+    elementHandler.functionBodies = {};
+    elementHandler.functionCallElements = {};
+
+    const mainDragArea = document.getElementById("main-drag-area");
+    while (mainDragArea.lastChild)
+        mainDragArea.removeChild(mainDragArea.lastChild);
+
+    for (let functionName in jsonObj)
+    {
+        const functionData = jsonObj[functionName];
+        if (functionName !== "Main")
+        {
+            const guid = helper.GetGuid("customFunction");
+            const functionObj = {
+                name: functionData.name,
+                guid: guid,
+                parameters: functionData.parameters.map(param => ({
+                    name: param.name,
+                    type: param.type,
+                    description: param.description
+                })),
+                returnType: functionData.returnType
+            };
+
+            customFunctions[guid] = functionObj;
+            customFunctionsByName[functionObj.name] = functionObj;
+        }
+
+        const functionBody = elementHandler.CreateNewFunctionBody(functionName);
+        const block = functionData.block;
+        for (let statement of block.statements)
+        {
+            const newElement = compiler.CreateNewElement(statement.statementType, functionBody.parentNode);
+            newElement.load(statement);
+            draggable.ForceDrop(newElement.element, functionBody.mainBlock);
+        }
+    }
+
+    elementHandler.SwitchToMainFunction(false);
+};
+
+compiler.CreateNewElement = function(type, parentNode)
+{
+    return new compiler.elementTypesToClasses[type](parentNode);
+};
+
+compiler.elementTypesToClasses = {
+    binaryBooleanExpression: BinaryBooleanExpression,
+    binaryNumericExpression: BinaryNumericExpression,
+    binaryStringExpression: BinaryStringExpression,
+    numberComparison: NumberComparison,
+    stringComparison: StringComparison,
+    numberLiteralExpression: NumberLiteralExpression,
+    booleanLiteralExpression: BooleanLiteralExpression,
+    stringLiteralExpression: StringLiteralExpression,
+    variableExpression: VariableExpression,
+    ifStatement: IfStatement,
+    whileStatement: WhileStatement,
+    variableDeclaration: VariableDeclaration,
+    variableAssignment: VariableAssignment,
+    functionCall: FunctionCall,
 };

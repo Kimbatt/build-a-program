@@ -36,6 +36,7 @@ class ElementBase
     }
 
     compile(errors) {}
+    load(data) {}
 
     delete()
     {

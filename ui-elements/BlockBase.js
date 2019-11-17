@@ -188,9 +188,7 @@ class BlockBase extends StatementBase
                 this.mainBlock.insertBefore(this.mainBlockPlaceholder, foundElem);
         }
         else
-        {
             this.mainBlock.appendChild(this.mainBlockPlaceholder);
-        }
     }
 
     onHoverLeaveBlock(element, isDrop)
@@ -215,7 +213,7 @@ class BlockBase extends StatementBase
             this.mainBlockPlaceholderActive = false;
         }
         else
-            throw "ehh";
+            this.mainBlock.appendChild(element);
 
         //console.log("drop");
         element.style.position = "static";

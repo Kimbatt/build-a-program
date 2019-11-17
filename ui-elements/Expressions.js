@@ -161,6 +161,8 @@ class BinaryExpression extends ExpressionBase
             if (expression.uiElementData && expression.uiElementData instanceof ElementBase)
                 return expression.uiElementData.compile(errors);
         }
+
+        return null;
     }
 
     getOperator()

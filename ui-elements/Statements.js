@@ -29,6 +29,7 @@ class IfStatement extends MultiBlockBase
                 message: "Condition missing from If statement",
                 data: [mainConditionNodes]
             });
+            conditions.push(null);
         }
 
         blocks.push(this.mainBlock.compile(errors));
@@ -57,6 +58,7 @@ class IfStatement extends MultiBlockBase
                         message: "Condition missing from If statement",
                         data: [secondaryConditionNodes]
                     });
+                    conditions.push(null);
                 }
         
                 blocks.push(secondaryBlock.compile(errors));
@@ -69,6 +71,11 @@ class IfStatement extends MultiBlockBase
             blocks: blocks,
             elseBlock: this.finalBlock.compile(errors)
         };
+    }
+
+    load(data)
+    {
+
     }
 }
 
@@ -100,6 +107,7 @@ class WhileStatement extends BlockBase
                 message: "Condition missing from While statement",
                 data: [mainConditionNodes]
             });
+            mainCondition = null;
         }
 
         return {
@@ -107,6 +115,24 @@ class WhileStatement extends BlockBase
             condition: mainCondition,
             block: super.compile(errors)
         };
+    }
+
+    load(data)
+    {
+        if (data.condition)
+        {
+            const conditionElement = compiler.CreateNewElement(data.condition.expressionType, this.parentNode);
+            conditionElement.load(data.condition);
+            draggable.ForceDrop(conditionElement.element, this.headerDropAreas[0].dropArea);
+        }
+
+        const block = data.block;
+        for (let statement of block.statements)
+        {
+            const newElement = compiler.CreateNewElement(statement.statementType, this.parentNode);
+            newElement.load(statement);
+            draggable.ForceDrop(newElement.element, this.mainBlock);
+        }
     }
 }
 
@@ -614,7 +640,7 @@ class FunctionCall extends ElementBase
         return {
             statementType: "functionCall",
             expressionType: "functionCall",
-            functionName: this.selectedFunction && this.selectedFunction.name,
+            functionName: this.selectedFunction ? this.selectedFunction.name : null,
             parameters: compiledExpressions
         };
     }

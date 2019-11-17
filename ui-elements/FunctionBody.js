@@ -14,6 +14,8 @@ class FunctionBody extends BlockBase
                 returnType: "void",
                 parameters: []
             };
+
+            window.MainFunction = this.functionData;
         }
         else
         {
@@ -51,7 +53,8 @@ class FunctionBody extends BlockBase
             name: this.functionData.name,
             parameters: this.functionData.parameters.map(param => ({
                 name: param.name,
-                type: param.type
+                type: param.type,
+                description: param.description
             })),
             returnType: this.functionData.returnType,
             description: this.functionData.description || "",

@@ -103,23 +103,31 @@ elementHandler.functionBodyDragContainers = {};
 elementHandler.functionBodies = {};
 elementHandler.functionCallElements = {};
 
+elementHandler.CreateNewFunctionBody = function(functionName)
+{
+    const dragContainer = document.createElement("div");
+    dragContainer.className = "function-body-drag-container";
+    const functionUIElement = new FunctionBody(dragContainer, functionName);
+
+    const functionGuid = functionUIElement.functionData.guid;
+    elementHandler.functionBodyDragContainers[functionGuid] = dragContainer;
+    functionUIElement.element.style.left = "100px";
+    functionUIElement.element.style.top = "100px";
+
+    elementHandler.functionBodies[functionGuid] = functionUIElement;
+    return functionUIElement;
+};
+
 elementHandler.SwitchToFunction = function(functionGuid, hideFunctionSelector)
 {
     const dragArea = document.getElementById("main-drag-area");
     let functionDragContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionGuid);
-    const functionData = customFunctions.getOwnProperty(functionGuid);
+    const functionData = customFunctions.getOwnProperty(functionGuid) || MainFunction;
 
     if (!elementHandler.functionBodyDragContainers.hasOwnProperty(functionGuid))
     {
-        functionDragContainer = document.createElement("div");
-        functionDragContainer.className = "function-body-drag-container";
-        elementHandler.functionBodyDragContainers[functionGuid] = functionDragContainer;
-
-        const functionUIElement = new FunctionBody(functionDragContainer, functionData.name);
-        functionUIElement.element.style.left = "100px";
-        functionUIElement.element.style.top = "100px";
-
-        elementHandler.functionBodies[functionGuid] = functionUIElement;
+        elementHandler.CreateNewFunctionBody(functionData.name);
+        functionDragContainer = elementHandler.functionBodyDragContainers[functionGuid];
     }
 
     const currentFunctionDragContainer = elementHandler.activeFunctionGuid
@@ -138,23 +146,15 @@ elementHandler.SwitchToFunction = function(functionGuid, hideFunctionSelector)
 (() =>
 {
     // create main function element here
-    const dragContainer = document.createElement("div");
-    dragContainer.className = "function-body-drag-container";
-    const main = new FunctionBody(dragContainer, "Main");
-    window.MainFunction = main.functionData;
+    elementHandler.CreateNewFunctionBody("Main");
 
-    main.element.style.top = "100px";
-    main.element.style.left = "100px";
-
-    const guid = main.functionData.guid;
-
-    elementHandler.functionBodyDragContainers[guid] = dragContainer;
-    elementHandler.functionBodies[guid] = main;
-    
-    elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
-    {
-        elementHandler.SwitchToFunction(guid, hideFunctionSelector);
-    };
+    elementHandler.activeFunctionGuid = MainFunction.guid;
+    document.getElementById("main-drag-area").appendChild(elementHandler.functionBodyDragContainers[MainFunction.guid]);
 })();
+
+elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
+{
+    elementHandler.SwitchToFunction(MainFunction.guid, hideFunctionSelector);
+};
 
 elementHandler.SwitchToMainFunction(false);

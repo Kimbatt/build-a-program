@@ -8,8 +8,16 @@ helper.GetCoords = function(elem) // https://stackoverflow.com/a/26230989
     const body = document.body;
     const docEl = document.documentElement;
 
-    const scrollTop = window.pageYOffset; // || docEl.scrollTop || body.scrollTop;
-    const scrollLeft = window.pageXOffset; // || docEl.scrollLeft || body.scrollLeft;
+    let scrollTop = 0;
+    let scrollLeft = 0;
+
+    let node = elem.parentNode;
+    while (node)
+    {
+        scrollTop += node.scrollTop || 0;
+        scrollLeft += node.scrollLeft || 0;
+        node = node.parentNode;
+    }
 
     const clientTop = docEl.clientTop || body.clientTop || 0;
     const clientLeft = docEl.clientLeft || body.clientLeft || 0;
@@ -472,5 +480,10 @@ Object.defineProperty(Object.prototype, "getOwnProperty", {
 
         if (guidsByType)
             guidsByType.delete(guid);
+    };
+
+    helper.ClearGuids = function(type)
+    {
+        delete guids[type];
     };
 })();
