@@ -63,7 +63,6 @@ runner.ProgramStartedRunning = function()
     runner.blockStatementCounter = 0;
     const runButton = document.getElementById("run-button");
     const spinner = document.getElementById("spinner");
-    Console.consoleDiv.style.display = "none";
     runButton.disabled = true;
     runButton.innerText = "Running";
     spinner.classList.remove("loading-spinner-hidden");
@@ -73,9 +72,10 @@ runner.ProgramStartedRunning = function()
 runner.ProgramFinishedRunning = function()
 {
     const runButton = document.getElementById("run-button");
-    Console.consoleDiv.style.display = "";
     runButton.disabled = false;
     runButton.innerText = "Run";
     spinner.classList.remove("loading-spinner-visible");
     spinner.classList.add("loading-spinner-hidden");
+    Console.CancelRead();
+    Console.Notification("Program finished running");
 };

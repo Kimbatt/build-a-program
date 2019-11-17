@@ -29,7 +29,7 @@ compiler.CompileAndRun = async function()
     if (!Console.consoleIsVisible)
     {
         Console.Show();
-        await new Promise(resolve => setTimeout(resolve, 350));
+        await new Promise(resolve => setTimeout(resolve, 250));
     }
 
     const errors = [];
@@ -167,13 +167,14 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 return CheckBinaryExpression("a binary string expression", expression, "string");
             case "functionCall":
             {
-                if (!expression.functionData)
+                if (!expression.functionName)
                     return false; // if no function selected
 
+                const functionData = builtInFunctions.getOwnProperty(expression.functionName) || customFunctionsByName.getOwnProperty(expression.functionName);
                 let allParamsOk = true;
-                for (let i = 0; i < expression.functionData.parameters.length; ++i)
+                for (let i = 0; i < functionData.parameters.length; ++i)
                 {
-                    const requiredParameter = expression.functionData.parameters[i];
+                    const requiredParameter = functionData.parameters[i];
                     const currentParameter = expression.parameters[i];
                     if (CheckExpression(currentParameter))
                     {
@@ -219,7 +220,13 @@ compiler.CheckVariables = function(compiledFunction, errors)
             case "binaryStringExpression":
                 return "string";
             case "functionCall":
-                return expression.functionData.returnType;
+            {
+                const functionData = builtInFunctions.getOwnProperty(expression.functionName) || customFunctionsByName.getOwnProperty(expression.functionName);
+                if (functionData)
+                    return functionData.returnType;
+
+                break;
+            }
         }
 
         return "unknown";

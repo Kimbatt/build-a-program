@@ -12,8 +12,17 @@ html
 body
 {
     background: #323639;
+    margin: 0px;
     color: white;
     font-family: Verdana, Geneva, Tahoma, sans-serif;
+}
+
+@media screen and (max-height: 400px), screen and (max-width: 800px)
+{
+    #small-screen-warning
+    {
+        display: flex !important;
+    }
 }
 
 #main-drag-area
@@ -21,7 +30,9 @@ body
     position: relative;
     margin-top: 12px;
     width: 100%;
-    height: 0px;
+    height: 100%;
+    flex-grow: 1;
+    overflow: auto;
 }
 
 #main-drag-area-top-border
@@ -174,13 +185,14 @@ body
 
 #console
 {
+    flex-grow: 0;
     display: flex;
     flex-direction: column;
     background: black;
-    position: fixed;
+    /*position: fixed;*/
     left: 0px;
-    width: 100%;
-    height: 40%;
+    width: calc(100% - 4px);
+    height: 40vh;
 
     border: 2px solid #161616;
 }
@@ -208,6 +220,12 @@ body
 .console-line-error
 {
     color: #ff2d2d;
+}
+
+.console-line-notification
+{
+    color: #808080;
+    font-style: italic;
 }
 
 .console-line:nth-child(2n)
@@ -243,7 +261,7 @@ body
 
 #console-input-arrow
 {
-    padding-left: 8px;
+    padding: 0px 8px;
     font-family: Consolas;
     user-select: none;
     font-size: 24px;
@@ -323,17 +341,19 @@ body
 .console-visible /*hidden -> visible*/
 {
     visibility: visible;
-    bottom: 0px;
+    transform: translateY(0%);
+    margin-bottom: 0px;
 
-    transition: bottom 0.25s ease-out 0.1s, visibility 0.25s 0.1s;
+    transition: transform 0.25s ease-out, margin-bottom 0.25s ease-out, visibility 0.25s;
 }
 
 .console-hidden /*visible -> hidden*/
 {
     visibility: hidden;
-    bottom: -400px;
+    transform: translateY(100%);
+    margin-bottom: calc(-40vh - 4px);
 
-    transition: bottom 0.25s ease-in, visibility 0.25s;
+    transition: transform 0.25s ease-in, margin-bottom 0.25s ease-in, visibility 0.25s;
 }
 
 .console-hidden-visible /*hidden -> visible*/
@@ -341,7 +361,7 @@ body
     visibility: visible;
     bottom: 0px;
 
-    transition: bottom 0.1s linear 0.25s, visibility 0.1s 0.25s;
+    transition: bottom 0.1s linear 0.15s, visibility 0.1s 0.15s;
 }
 
 .console-hidden-hidden /*visible -> hidden*/

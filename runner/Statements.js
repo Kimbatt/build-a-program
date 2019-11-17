@@ -21,10 +21,7 @@ runner.HandleBlockStatement = async function(data, parentBlock)
         {
             // wait for a browser update
             runner.lastFrameCheckTime = now;
-            Console.consoleDiv.style.display = "";
-            Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
             await WaitImmediate();
-            Console.consoleDiv.style.display = "none";
         }
     }
 
@@ -79,10 +76,11 @@ runner.HandleFunctionCall = async function(data, parentBlock)
     for (let param of data.parameters)
         parameterValues.push(await runner.EvaluateExpression(param, parentBlock));
 
-    const func = data.functionData.func;
-    if (func) // built-in functions
+    const builtinFunction = builtInFunctions.getOwnProperty(data.functionName);
+    if (builtinFunction)
     {
-        // only await if the function is async (builtin functions are not)
+        const func = builtinFunction.func;
+        // only await if the function is async (builtin functions are usually not)
         if (func.constructor.name === "AsyncFunction")
             return await func(parameterValues);
         else
@@ -92,7 +90,7 @@ runner.HandleFunctionCall = async function(data, parentBlock)
     {
         // custom function
         // TODO: return values
-        return await runner.RunFunction(runner.currentlyRunningProgram[data.functionData.name], parameterValues);
+        return await runner.RunFunction(runner.currentlyRunningProgram[data.functionName], parameterValues);
     }
 };
 

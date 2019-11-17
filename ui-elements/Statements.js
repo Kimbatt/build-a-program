@@ -614,7 +614,7 @@ class FunctionCall extends ElementBase
         return {
             statementType: "functionCall",
             expressionType: "functionCall",
-            functionData: this.selectedFunction,
+            functionName: this.selectedFunction && this.selectedFunction.name,
             parameters: compiledExpressions
         };
     }

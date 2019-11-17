@@ -19,10 +19,10 @@ const builtInFunctions = {
         description: "Reads a string from the console, and returns it.",
         returnType: "string",
         parameters: [],
-        func: () => {
+        func: async () => {
             return {
                 type: "string",
-                value: prompt() // todo: use the console for input
+                value: await Console.Read()
             };
         }
     },

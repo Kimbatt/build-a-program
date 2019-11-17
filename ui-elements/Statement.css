@@ -66,6 +66,11 @@
     content: "Call function";
 }
 
+.function-call.nested-as-expression
+{
+    margin: 0px 10px;
+}
+
 .function-call.nested-as-expression > .function-call-inline-text::before
 {
     content: "Return value of";
