@@ -194,11 +194,15 @@ functionEditor.FunctionEditorParameterChanged = function(setChangedOnly)
 functionEditor.ExitFunctionEditor = async function(save)
 {
     const functionEditorOverlay = document.getElementById("function-editor-overlay");
+    const functionEditorDiv = document.getElementById("function-editor");
+    const errorText = functionEditorDiv.querySelector("#function-editor-error-text");
+
     if (!save)
     {
         if (!functionEditor.functionEditorHasChanged || await Confirm("Exit without saving?", "Yes", "Cancel"))
         {
             functionEditorOverlay.style.display = "none";
+            errorText.style.display = "none";
             functionEditor.currentEditedFunction = undefined;
         }
 
@@ -222,13 +226,11 @@ functionEditor.ExitFunctionEditor = async function(save)
         return "OK";
     }
     
-    const functionEditorDiv = document.getElementById("function-editor");
     const functionNameInput = functionEditorDiv.querySelector("#function-editor-function-name");
     const functionDescriptionInput = functionEditorDiv.querySelector("#function-editor-function-description");
     const functionReturnTypeSelector = functionEditorDiv.querySelector("#function-editor-function-return-type");
     const functionEditorParametersTable = functionEditorDiv.querySelector("#function-editor-parameters-table");
     const parametersTbody = functionEditorParametersTable.children[0];
-    const errorText = functionEditorDiv.querySelector("#function-editor-error-text");
 
     let checkResult;
     
@@ -247,7 +249,19 @@ functionEditor.ExitFunctionEditor = async function(save)
         return;
     }
 
-    if (customFunctionsByName.hasOwnProperty(functionName) && !functionEditor.currentEditedFunction)
+    let nameTaken;
+    if (functionEditor.currentEditedFunction)
+    {
+        const functionWithThisName = customFunctionsByName.getOwnProperty(functionName);
+        if (functionWithThisName)
+            nameTaken = true;
+        else
+            nameTaken = functionWithThisName === functionEditor.currentEditedFunction;
+    }
+    else
+        nameTaken = customFunctionsByName.hasOwnProperty(functionName);
+
+    if (nameTaken)
     {
         errorText.style.display = "";
         errorText.innerText = "A function with the name \"" + functionName + "\" already exists";
