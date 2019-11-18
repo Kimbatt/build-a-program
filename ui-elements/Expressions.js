@@ -179,6 +179,17 @@ class BinaryExpression extends ExpressionBase
     {
         return this.getExpressionCompiled(this.expression2, errors);
     }
+
+    load(data)
+    {
+        if (data.first)
+            compiler.LoadElement(this.parentNode, data.first, this.expression1);
+
+        if (data.second)
+            compiler.LoadElement(this.parentNode, data.second, this.expression2);
+
+        this.operatorSelector.value = data.operator;
+    }
 }
 
 class BinaryBooleanExpression extends BinaryExpression
@@ -461,10 +472,16 @@ class NumberLiteralExpression extends LiteralExpression
     compile(errors)
     {
         return {
-            expressionType: "literal",
+            expressionType: "numberLiteralExpression",
             value: Number(this.inputField.value),
             type: "number"
         };
+    }
+
+    load(data)
+    {
+        this.inputField.value = String(data.value);
+        this.inputField.oninput();
     }
 }
 
@@ -480,7 +497,7 @@ class BooleanLiteralExpression extends LiteralExpression
     compile(errors)
     {
         return {
-            expressionType: "literal",
+            expressionType: "booleanLiteralExpression",
             value: this.inputField.value === "true",
             type: "boolean"
         };
@@ -499,7 +516,7 @@ class StringLiteralExpression extends LiteralExpression
     compile(errors)
     {
         return {
-            expressionType: "literal",
+            expressionType: "stringLiteralExpression",
             value: this.inputField.value,
             type: "string"
         };
@@ -556,8 +573,14 @@ class VariableExpression extends ExpressionBase
     compile(errors)
     {
         return {
-            expressionType: "variable",
+            expressionType: "variableExpression",
             variableName: this.variableNameInputField.value
         }
+    }
+
+    load(data)
+    {
+        this.variableNameInputField.value = data.variableName;
+        this.variableNameInputField.oninput();
     }
 }

@@ -36,14 +36,36 @@ helper.GetCoords = function(elem) // https://stackoverflow.com/a/26230989
     div.style = "display: table; visibility: hidden;";
     helper.GetTextSize = function(text, element)
     {
-        div.innerText = text;
-        const elementStyle = getComputedStyle(element);
-        div.style.fontFamily = elementStyle.fontFamily;
-        div.style.fontSize = elementStyle.fontSize;
-        div.style.fontWeight = elementStyle.fontWeight;
-        div.style.fontStyle = elementStyle.fontStyle;
+        const isInDOM = Boolean(document.body.contains(element));
+        const parentNode = element.parentNode;
+        const nextSibling = element.nextSibling;
+        if (!isInDOM)
+        {
+            div.appendChild(element);
+            document.body.appendChild(div);
+        }
 
-        document.body.appendChild(div);
+        const elementStyle = getComputedStyle(element);
+        const fontFamily = elementStyle.fontFamily;
+        const fontSize = elementStyle.fontSize;
+        const fontWeight = elementStyle.fontWeight;
+        const fontStyle = elementStyle.fontStyle;
+
+        if (!isInDOM)
+            parentNode.insertBefore(element, nextSibling);
+
+        div.innerText = text;
+        if (text.includes(" "))
+            div.innerHTML = div.innerHTML.replace(/ /g, "&nbsp;");
+
+        div.style.fontFamily = fontFamily;
+        div.style.fontSize = fontSize;
+        div.style.fontWeight = fontWeight;
+        div.style.fontStyle = fontStyle;
+
+        if (isInDOM)
+            document.body.appendChild(div);
+
         const width = div.clientWidth;
         document.body.removeChild(div);
         return width;

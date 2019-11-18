@@ -69,13 +69,43 @@ class IfStatement extends MultiBlockBase
             statementType: "ifStatement",
             conditions: conditions,
             blocks: blocks,
-            elseBlock: this.finalBlock.compile(errors)
+            elseBlock: this.hasFinalBlock ? this.finalBlock.compile(errors) : null
         };
     }
 
     load(data)
     {
+        if (data.conditions[0])
+        {
+            // main condition
+            compiler.LoadElement(this.parentNode, data.conditions[0], this.mainBlock.headerDropAreas[0].dropArea);
+        }
 
+        for (let statement of data.blocks[0].statements)
+        {
+            // main block
+            compiler.LoadElement(this.parentNode, statement, this.mainBlock.mainBlock);
+        }
+
+        for (let i = 1; i < data.conditions.length; ++i)
+        {
+            const newSecondaryBlock = this.createSecondaryBlock();
+            this.secondaryBlocksContainer.appendChild(newSecondaryBlock);
+            
+            if (data.conditions[i])
+                compiler.LoadElement(this.parentNode, data.conditions[i], newSecondaryBlock.uiElementData.headerDropAreas[0].dropArea);
+
+            for (let statement of data.blocks[i].statements)
+                compiler.LoadElement(this.parentNode, statement, newSecondaryBlock.uiElementData.mainBlock);
+        }
+
+        if (data.elseBlock)
+        {
+            this.showFinalBlock();
+
+            for (let statement of data.elseBlock.statements)
+                compiler.LoadElement(this.parentNode, statement, this.finalBlock.mainBlock);
+        }
     }
 }
 
@@ -120,19 +150,11 @@ class WhileStatement extends BlockBase
     load(data)
     {
         if (data.condition)
-        {
-            const conditionElement = compiler.CreateNewElement(data.condition.expressionType, this.parentNode);
-            conditionElement.load(data.condition);
-            draggable.ForceDrop(conditionElement.element, this.headerDropAreas[0].dropArea);
-        }
+            compiler.LoadElement(this.parentNode, data.condition, this.headerDropAreas[0].dropArea);
 
         const block = data.block;
         for (let statement of block.statements)
-        {
-            const newElement = compiler.CreateNewElement(statement.statementType, this.parentNode);
-            newElement.load(statement);
-            draggable.ForceDrop(newElement.element, this.mainBlock);
-        }
+            compiler.LoadElement(this.parentNode, statement, this.mainBlock);
     }
 }
 
@@ -182,7 +204,7 @@ class VariableDeclaration extends StatementBase
         {
             const option = document.createElement("option");
             option.innerText = types[i];
-            option.value = types[i];
+            option.value = types[i].toLowerCase();
             this.typeSelector.appendChild(option);
         }
 
@@ -206,8 +228,15 @@ class VariableDeclaration extends StatementBase
         return {
             statementType: "variableDeclaration",
             variableName: this.variableNameInputField.value,
-            variableType: this.typeSelector.value.toLowerCase()
+            variableType: this.typeSelector.value
         };
+    }
+
+    load(data)
+    {
+        this.variableNameInputField.value = data.variableName;
+        this.variableNameInputField.oninput(); // update length
+        this.typeSelector.value = data.variableType;
     }
 }
 
@@ -341,6 +370,15 @@ class VariableAssignment extends StatementBase
             variableName: this.variableNameInputField.value,
             newVariableValue: expression ? expression.compile(errors) : null
         }
+    }
+
+    load(data)
+    {
+        this.variableNameInputField.value = data.variableName;
+        this.variableNameInputField.oninput(); // update length
+        
+        if (data.newVariableValue)
+            compiler.LoadElement(this.parentNode, data.newVariableValue, this.expressionDropArea);
     }
 }
 
@@ -643,5 +681,24 @@ class FunctionCall extends ElementBase
             functionName: this.selectedFunction ? this.selectedFunction.name : null,
             parameters: compiledExpressions
         };
+    }
+
+    load(data)
+    {
+        if (data.functionName)
+        {
+            let func = builtInFunctions.getOwnProperty(data.functionName) || customFunctionsByName.getOwnProperty(data.functionName);
+            if (func)
+            {
+                this.selectedFunctionChanged(func);
+
+                for (let i = 0; i < func.parameters.length; ++i)
+                {
+                    const currentParam = data.parameters[i];
+                    if (currentParam)
+                        compiler.LoadElement(this.parentNode, currentParam, this.parameterDropAreasContainer.children[i]);
+                }
+            }
+        }
     }
 }

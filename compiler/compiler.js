@@ -126,7 +126,9 @@ compiler.CheckVariables = function(compiledFunction, errors)
 
         switch (expression.expressionType)
         {
-            case "literal":
+            case "numberLiteralExpression":
+            case "booleanLiteralExpression":
+            case "stringLiteralExpression":
                 return true;
             case "variable":
             {
@@ -205,7 +207,9 @@ compiler.CheckVariables = function(compiledFunction, errors)
 
         switch (expression.expressionType)
         {
-            case "literal":
+            case "numberLiteralExpression":
+            case "booleanLiteralExpression":
+            case "stringLiteralExpression":
                 return expression.type;
             case "variable":
                 return GetVariableType(expression.variableName);
@@ -448,6 +452,7 @@ compiler.LoadProgram = function(jsonString)
     while (mainDragArea.lastChild)
         mainDragArea.removeChild(mainDragArea.lastChild);
 
+    // load funciton definitions first
     for (let functionName in jsonObj)
     {
         const functionData = jsonObj[functionName];
@@ -457,6 +462,7 @@ compiler.LoadProgram = function(jsonString)
             const functionObj = {
                 name: functionData.name,
                 guid: guid,
+                description: functionData.description,
                 parameters: functionData.parameters.map(param => ({
                     name: param.name,
                     type: param.type,
@@ -468,15 +474,15 @@ compiler.LoadProgram = function(jsonString)
             customFunctions[guid] = functionObj;
             customFunctionsByName[functionObj.name] = functionObj;
         }
+    }
 
+    for (let functionName in jsonObj)
+    {
         const functionBody = elementHandler.CreateNewFunctionBody(functionName);
+        const functionData = jsonObj[functionName];
         const block = functionData.block;
         for (let statement of block.statements)
-        {
-            const newElement = compiler.CreateNewElement(statement.statementType, functionBody.parentNode);
-            newElement.load(statement);
-            draggable.ForceDrop(newElement.element, functionBody.mainBlock);
-        }
+            compiler.LoadElement(functionBody.parentNode, statement, functionBody.mainBlock);
     }
 
     elementHandler.SwitchToMainFunction(false);
@@ -485,6 +491,13 @@ compiler.LoadProgram = function(jsonString)
 compiler.CreateNewElement = function(type, parentNode)
 {
     return new compiler.elementTypesToClasses[type](parentNode);
+};
+
+compiler.LoadElement = function(parentNode, data, targetDropArea)
+{
+    const newElement = compiler.CreateNewElement(data.statementType || data.expressionType, parentNode);
+    newElement.load(data);
+    draggable.ForceDrop(newElement.element, targetDropArea);
 };
 
 compiler.elementTypesToClasses = {
@@ -502,4 +515,27 @@ compiler.elementTypesToClasses = {
     variableDeclaration: VariableDeclaration,
     variableAssignment: VariableAssignment,
     functionCall: FunctionCall,
+};
+
+compiler.lastProgram = undefined;
+compiler.DebugReloadProgram = function()
+{
+    const program = compiler.lastProgram || JSON.stringify(this.GenerateProgramJSON([]));
+    let error;
+    try
+    {
+        this.LoadProgram(program);
+    }
+    catch (e)
+    {
+        error = e;
+    }
+
+    if (error)
+    {
+        compiler.lastProgram = program;
+        throw error;
+    }
+
+    compiler.lastProgram = undefined;
 };

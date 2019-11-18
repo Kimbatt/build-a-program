@@ -258,8 +258,10 @@ runner.EvaluateFunctionCall = async function(data, parentBlock)
 };
 
 runner.expressionEvaluators = {
-    literal: runner.EvaluateLiteral,
-    variable: runner.EvaluateVariable,
+    numberLiteralExpression: runner.EvaluateLiteral,
+    booleanLiteralExpression: runner.EvaluateLiteral,
+    stringLiteralExpression: runner.EvaluateLiteral,
+    variableExpression: runner.EvaluateVariable,
     unaryBooleanExpression: runner.EvaluateUnaryBooleanExpression,
     binaryBooleanExpression: runner.EvaluateBinaryBooleanExpression,
     unaryNumericExpression: runner.EvaluateUnaryNumericExpression,
