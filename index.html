@@ -12,6 +12,32 @@
 
 </head>
 <body>
+
+<!-- main menu -->
+<div id="page-menu" style="user-select: none; display: flex; flex-direction: column; justify-content: center; align-items: center;
+    background: #1a1a1a; position: fixed; width: 100%; height: 100%;">
+
+<div style="font-size: 80px; margin-bottom: 30px;">Welcome</div>
+<div style="display: grid; width: 450px;">
+    <button class="buttonbutton main-menu-button" style="grid-row: 1;" onclick="menu.ShowEditor()">Create a new program</button>
+    <button class="buttonbutton main-menu-button" style="grid-row: 2;" onclick="menu.ShowLoadProgramOverlay(true)">Load program</button>
+    <button class="buttonbutton main-menu-button" style="grid-row: 3;">Help</button>
+</div>
+
+<div id="program-loader-overlay" class="fullscreen-overlay" style="display: none;" onclick="menu.ShowLoadProgramOverlay(false)">
+    <div id="program-loader" onclick="event.stopPropagation()">
+        <div style="font-size: 24px; margin-bottom: 10px;" class="hidden-in-function-editor">Load program</div>
+        <div class="function-list" style="height: calc(100% - 62px);"></div>
+        <input id="program-load-from-file" type="file" style="display: none;" accept="application/json" onclick="this.value=null" onchange="menu.LoadProgramFromFile(this.files[0])">
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton" onclick="document.getElementById('program-load-from-file').click()">Load from file</button>
+    </div>
+</div>
+<!-- end of main menu -->
+</div>
+
+<!-- program editor -->
+<div id="page-editor" style="display: none;">
+
 <div id="main-editor" style="display: flex; flex-direction: column; align-items: stretch; height: 100vh; overflow: hidden;">
     <div style="margin: 8px 0px 0px 8px; display: flex; flex-grow: 1; flex-direction: column;">
         <div>
@@ -20,6 +46,7 @@
             <div id="spinner" class="loading-spinner loading-spinner-hidden"></div>
             <button onclick="functionEditor.ShowFunctionEditorList(true)" class="buttonbutton">Functions</button>
 
+            <button class="buttonbutton" style="position: absolute; margin-left: auto; right: 8px;" onclick="menu.QuitToMenu()">Quit to main menu</button>
             <div id="main-drag-area-top-border"></div>
         </div>
         <div id="main-drag-area"></div>
@@ -101,9 +128,15 @@
     </div>
 </div>
 
+<!-- end of program editor -->
+</div>
+
+<div id="loading-overlay" style="position: absolute; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); color: white; font-size: 10vh;
+    display: none; justify-content: center; align-items: center; user-select: none;">Loading...</div>
+
 <div id="alert-overlay" class="fullscreen-overlay" style="display: none;">
     <div id="alert-box" style="background: black; border-radius: 10px; font-size: 24px; border: 2px solid #4e4e4e; margin: auto;">
-        <div id="alert-text" style="margin: 18px 0px 30px 18px; width: 600px; overflow-wrap: break-word;"></div>
+        <div id="alert-text" style="margin: 18px 18px 30px 18px; width: 600px; overflow-wrap: break-word;"></div>
         <div style="margin: 10px; display: flex; justify-content: flex-end;">
             <button id="alert-button-yes" class="buttonbutton" style="margin-left: 10px;">Yes</button>
             <button id="alert-button-no" class="buttonbutton" style="margin-left: 10px;">No</button>
@@ -113,11 +146,13 @@
 </div>
 
 <div id="small-screen-warning" class="fullscreen-overlay" style="background: black; display: none; align-items: center; justify-content: center;">
-    <div style="font-size: 10vh; text-align: center; user-select: none;">The application needs a larger screen size to work.</div>
+    <div style="font-size: 10vh; text-align: center; user-select: none;">The application needs a larger screen size to work properly.</div>
 </div>
 
 <script src="helper.js"></script>
 <script src="draggable.js"></script>
+
+<script src="menu.js"></script>
 
 <script src="ui-elements/ElementBase.js"></script>
 <script src="ui-elements/BlockBase.js"></script>

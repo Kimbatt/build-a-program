@@ -32,19 +32,23 @@ compiler.CompileAndRun = async function()
         await new Promise(resolve => setTimeout(resolve, 250));
     }
 
-    const errors = [];
-    const compiled = compiler.GenerateProgramJSON(errors);
+    const errorsByFunctions = {};
+    const compiled = compiler.GenerateProgramJSON(errorsByFunctions);
 
     for (let func in compiled)
-        compiler.CheckVariables(compiled[func], errors);
+        compiler.CheckVariables(compiled[func], errorsByFunctions[func]);
 
-    if (errors.length !== 0)
+    let anyErrors = false;
+    for (let functionName in errorsByFunctions)
     {
+        anyErrors = true;
+        const errors = errorsByFunctions[functionName];
         for (let error of errors)
-            Console.Error("Compile error: " + error.message);
-
-        return;
+            Console.Error("Compile error in function \"" + functionName + "\": " + error.message);
     }
+    
+    if (anyErrors)
+        return;
 
     await runner.RunProgram(compiled);
 
@@ -380,19 +384,19 @@ compiler.CheckVariables = function(compiledFunction, errors)
     CheckInternal(mainBlock);
 };
 
-compiler.GenerateProgramJSON = function(errors)
+compiler.GenerateProgramJSON = function(errorsByFunctions)
 {
     const program = {};
     
     function CompileFunction(functionData)
     {
+        const errors = [];
         const functionName = functionData.name;
         const functionBodyContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionData.guid);
         const functionBody = functionBodyContainer && functionBodyContainer.children[0];
+
         if (functionBody)
-        {
             program[functionName] = functionBody.uiElementData.compile(errors);
-        }
         else
         {
             // empty function
@@ -411,6 +415,9 @@ compiler.GenerateProgramJSON = function(errors)
                 }
             };
         }
+
+        if (errors.length !== 0)
+            errorsByFunctions[functionName] = errors;
     }
     
     CompileFunction(MainFunction);
@@ -423,15 +430,7 @@ compiler.GenerateProgramJSON = function(errors)
 
 compiler.LoadProgram = function(jsonString)
 {
-    let jsonObj;
-    try
-    {
-        jsonObj = JSON.parse(jsonString);
-    }
-    catch (e)
-    {
-        return;
-    }
+    const jsonObj = JSON.parse(jsonString);
 
     helper.ClearGuids("customFunction");
 

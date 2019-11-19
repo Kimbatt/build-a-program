@@ -389,3 +389,24 @@ input[type="text"]
 
     background: rgba(0, 0, 0, 0.75);
 }
+
+.main-menu-button
+{
+    font-size: 30px;
+    margin: 10px;
+    border-radius: 8px;
+    padding: 15px 30px;
+}
+
+#program-loader
+{
+    position: relative;
+    border: 2px solid #4e4e4e;
+    margin: auto;
+    width: 1000px;
+    height: calc(100% - 80px);
+    padding: 16px;
+
+    background: black;
+    border-radius: 10px;
+}

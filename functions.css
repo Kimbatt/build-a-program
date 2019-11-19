@@ -13,7 +13,7 @@
 #function-selector .function-list
 {
     height: calc(50% - 58px);
-    overflow-y: scroll;
+    overflow-y: auto;
     border: 2px solid #2c2c2c;
 }
 
@@ -155,13 +155,6 @@
 .function-editor #custom-function-list
 {
     height: calc(100% - 62px);
-}
-
-#function-editor-list .function-list
-{
-    height: calc(100% - 62px);
-    overflow-y: scroll;
-    border: 2px solid #2c2c2c;
 }
 
 #function-editor .type-selector
