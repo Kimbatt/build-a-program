@@ -19,17 +19,18 @@
 
 <div style="font-size: 80px; margin-bottom: 30px;">Welcome</div>
 <div style="display: grid; width: 450px;">
-    <button class="buttonbutton main-menu-button" style="grid-row: 1;" onclick="menu.ShowEditor()">Create a new program</button>
+    <button class="buttonbutton main-menu-button" style="grid-row: 1;" onclick="menu.CreateNewProgram()">Create a new program</button>
     <button class="buttonbutton main-menu-button" style="grid-row: 2;" onclick="menu.ShowLoadProgramOverlay(true)">Load program</button>
     <button class="buttonbutton main-menu-button" style="grid-row: 3;">Help</button>
 </div>
 
 <div id="program-loader-overlay" class="fullscreen-overlay" style="display: none;" onclick="menu.ShowLoadProgramOverlay(false)">
     <div id="program-loader" onclick="event.stopPropagation()">
-        <div style="font-size: 24px; margin-bottom: 10px;" class="hidden-in-function-editor">Load program</div>
-        <div class="function-list" style="height: calc(100% - 62px);"></div>
-        <input id="program-load-from-file" type="file" style="display: none;" accept="application/json" onclick="this.value=null" onchange="menu.LoadProgramFromFile(this.files[0])">
-        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton" onclick="document.getElementById('program-load-from-file').click()">Load from file</button>
+        <div style="font-size: 30px; margin-bottom: 22px;">Load program</div>
+        <div id="program-loader-available-programs" style="height: calc(100% - 62px); overflow-y: auto; border: 2px solid #2c2c2c;"></div>
+        <input id="program-load-from-file" type="file" style="display: none;" accept=".program" onclick="this.value=null" onchange="menu.LoadProgramFromFile(this.files[0])">
+        <a id="program-exporter-link" style="display: none;"></a>
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton" onclick="document.getElementById('program-load-from-file').click()">Import from file</button>
     </div>
 </div>
 <!-- end of main menu -->
@@ -137,6 +138,7 @@
 <div id="alert-overlay" class="fullscreen-overlay" style="display: none;">
     <div id="alert-box" style="background: black; border-radius: 10px; font-size: 24px; border: 2px solid #4e4e4e; margin: auto;">
         <div id="alert-text" style="margin: 18px 18px 30px 18px; width: 600px; overflow-wrap: break-word;"></div>
+        <input id="alert-input" type="text" class="text-input" style="width: calc(100% - 48px); margin: 0px 18px; font-size: 24px; display: none;">
         <div style="margin: 10px; display: flex; justify-content: flex-end;">
             <button id="alert-button-yes" class="buttonbutton" style="margin-left: 10px;">Yes</button>
             <button id="alert-button-no" class="buttonbutton" style="margin-left: 10px;">No</button>
@@ -148,6 +150,8 @@
 <div id="small-screen-warning" class="fullscreen-overlay" style="background: black; display: none; align-items: center; justify-content: center;">
     <div style="font-size: 10vh; text-align: center; user-select: none;">The application needs a larger screen size to work properly.</div>
 </div>
+
+<script src="lzma.js"></script>
 
 <script src="helper.js"></script>
 <script src="draggable.js"></script>
