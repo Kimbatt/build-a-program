@@ -36,7 +36,13 @@ compiler.CompileAndRun = async function()
     const compiled = compiler.GenerateProgramJSON(errorsByFunctions);
 
     for (let func in compiled)
-        compiler.CheckVariables(compiled[func], errorsByFunctions[func]);
+    {
+        const errors = errorsByFunctions.getOwnProperty(func) || [];
+        compiler.CheckVariables(compiled[func], errors);
+
+        if (errors.length !== 0)
+            errorsByFunctions[func] = errors;
+    }
 
     let anyErrors = false;
     for (let functionName in errorsByFunctions)
@@ -134,7 +140,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
             case "booleanLiteralExpression":
             case "stringLiteralExpression":
                 return true;
-            case "variable":
+            case "variableExpression":
             {
                 const checkResult = compiler.CheckVariableName(expression.variableName);
                 if (checkResult !== "OK")
@@ -215,7 +221,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
             case "booleanLiteralExpression":
             case "stringLiteralExpression":
                 return expression.type;
-            case "variable":
+            case "variableExpression":
                 return GetVariableType(expression.variableName);
             case "unaryBooleanExpression":
             case "binaryBooleanExpression":

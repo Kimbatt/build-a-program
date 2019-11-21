@@ -1,35 +1,73 @@
 
 const menu = {};
 menu.programPrefix = "program__";
+menu.currentProgramName = "";
 
-menu.CreateNewProgram = async function()
+menu.PromptProgramName = async function()
 {
     while (true)
     {
-        const programName = await Prompt("Enter a name for the program:", "OK", "Cancel");
+        let programName = await Prompt("Enter a name for the program:", "OK", "Cancel");
         if (programName === null) // clicked on cancel
-            return;
+            return null;
+
+        programName = programName.trim();
+        if (programName === "")
+        {
+            await Alert("Program name cannot be empty");
+            continue;
+        }
 
         if (localStorage.getItem(menu.programPrefix + programName) !== null)
+        {
             await Alert("A program with this name already exists.\nPlease choose a different name.");
-        else
-            break;
-    }
+            continue;
+        }
 
-    // load empty program
-    compiler.LoadProgram(`{"Main":{"name":"Main","parameters":[],"returnType":"void","description":"Main function","block":{"statementType":"block","statements":[]}}}`);
+        return programName;
+    }
+};
+
+menu.CreateNewProgram = async function()
+{
+    const programName = await menu.PromptProgramName();
+    if (!programName)
+        return;
+
+    // create empty program
+    const emptyProgram = `{"Main":{"name":"Main","parameters":[],"returnType":"void","description":"Main function","block":{"statementType":"block","statements":[]}}}`;
+    await menu.SaveProgram(programName, emptyProgram);
+    menu.currentProgramName = programName;
+
+    compiler.LoadProgram(emptyProgram);
+
     document.getElementById("page-menu").style.display = "none";
     document.getElementById("page-editor").style.display = "";
 };
 
 menu.QuitToMenu = async function()
 {
-    if (!await Confirm("Do you want to return to the main menu?\n\nAny elements that are not part of the program will not be saved.", "Yes", "Cancel"))
+    const dialogResult = await ShowPopupAlert("Do you want to save the program before you quit?\n\nAny elements that are not part of the program will not be saved.",
+        "Save and quit", "Don't save", "Cancel", false);
+        
+    if (dialogResult === "cancel")
         return;
+
+    if (dialogResult === "yes")
+        await menu.SaveCurrentProgram();
+
+    Console.Clear();
+    Console.Hide();
 
     document.getElementById("page-editor").style.display = "none";
     document.getElementById("page-menu").style.display = "flex";
 };
+
+menu.SaveCurrentProgram = async function()
+{
+    if (await menu.SaveProgram(menu.currentProgramName, JSON.stringify(compiler.GenerateProgramJSON({}))))
+        await Alert("Program saved successfully.");
+}
 
 menu.ShowLoadProgramOverlay = function(show)
 {
@@ -59,7 +97,11 @@ menu.CreateLoadProgramLine = function(programName)
 
     const line = document.createElement("div");
     line.className = "program-loader-line";
-    line.onclick = () => menu.LoadProgramFromText(localStorage.getItem(menu.programPrefix + programName));
+    line.onclick = async () =>
+    {
+        if (await menu.LoadProgramFromText(programName, localStorage.getItem(menu.programPrefix + programName)))
+            menu.ShowLoadProgramOverlay(false);
+    };
 
     const programInfoDiv = document.createElement("div");
     programInfoDiv.className = "program-info";
@@ -115,8 +157,7 @@ menu.CreateLoadProgramLine = function(programName)
 
 menu.LoadProgramFromFile = async function(file)
 {
-    const loadingOverlay = document.getElementById("loading-overlay");
-    loadingOverlay.style.display = "flex";
+    menu.ShowLoading();
 
     const fr = new FileReader();
     let resultText;
@@ -136,25 +177,16 @@ menu.LoadProgramFromFile = async function(file)
     }
     finally
     {
-        loadingOverlay.style.display = "none";
+        menu.HideLoading();
     }
 
     const index = file.name.lastIndexOf(".");
     let programName = menu.programPrefix + (index === -1 ? file.name : file.name.substring(0, index));
-    while (localStorage.getItem(programName) !== null)
+    if (localStorage.getItem(programName) !== null)
     {
-        let newName = await Prompt("A program with this name already exists.\nPlease choose a different name:", "OK", "Cancel");
-        if (newName === null) // clicked on cancel
+        programName = await menu.PromptProgramName();
+        if (!programName)
             return;
-
-        newName = newName.trim();
-        if (newName === "")
-        {
-            await Alert("Name must not be empty");
-            continue;
-        }
-
-        programName = menu.programPrefix + newName;
     }
 
     localStorage.setItem(programName, resultText);
@@ -163,26 +195,61 @@ menu.LoadProgramFromFile = async function(file)
     menu.ShowLoadProgramOverlay(true);
 };
 
-menu.LoadProgramFromText = async function(text)
+menu.LoadProgramFromText = async function(programName, text)
 {
-    const loadingOverlay = document.getElementById("loading-overlay");
-    loadingOverlay.style.display = "flex";
+    menu.ShowLoading();
 
     try
     {
         const decompressed = await LZMA.decompress_async(text, true);
-        await compiler.LoadProgram(decompressed);
+        compiler.LoadProgram(decompressed);
     }
     catch (e)
     {
         Alert("Cannot load program:\n\nThe selected program is not in the correct format");
-        return;
+        return false;
     }
     finally
     {
-        loadingOverlay.style.display = "none";
+        menu.HideLoading();
     }
 
+    menu.currentProgramName = programName;
     document.getElementById("page-menu").style.display = "none";
     document.getElementById("page-editor").style.display = "";
+    return true;
+};
+
+menu.SaveProgram = async function(programName, programDataJSON)
+{
+    if (menu.currentProgramName === "")
+        return false;
+
+    menu.ShowLoading();
+    try
+    {
+        const compressed = await LZMA.compress_async(programDataJSON, 9, true);
+        localStorage.setItem(menu.programPrefix + programName, compressed);
+    }
+    catch (e)
+    {
+        await Alert("Error saving program");
+        return false;
+    }
+    finally
+    {
+        menu.HideLoading();
+    }
+
+    return true;
+};
+
+menu.ShowLoading = function()
+{
+    document.getElementById("loading-overlay").style.display = "flex";
+};
+
+menu.HideLoading = function()
+{
+    document.getElementById("loading-overlay").style.display = "none";
 };

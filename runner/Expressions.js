@@ -54,9 +54,9 @@ runner.EvaluateBinaryBooleanExpression = async function(data, parentBlock) // bo
 
     const jsBooleanValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
     if (operator === "&&") // boolean short-circuit for && and ||
-        ret.value = jsBooleanValueFirst && (await runner.EvaluateExpression(first, parentBlock)).value;
+        ret.value = jsBooleanValueFirst && (await runner.EvaluateExpression(second, parentBlock)).value;
     else if (operator === "||")
-        ret.value = jsBooleanValueFirst || (await runner.EvaluateExpression(first, parentBlock)).value;
+        ret.value = jsBooleanValueFirst || (await runner.EvaluateExpression(second, parentBlock)).value;
     else
     {
         const jsBooleanValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
@@ -188,10 +188,10 @@ runner.EvaluateNumberComparison = async function(data, parentBlock) // number op
             ret.value = jsNumberValueFirst >= jsNumberValueSecond;
             break;
         case "==":
-            ret.value = jsNumberValueFirst == jsNumberValueSecond;
+            ret.value = jsNumberValueFirst === jsNumberValueSecond;
             break;
         case "!=":
-            ret.value = jsNumberValueFirst != jsNumberValueSecond;
+            ret.value = jsNumberValueFirst !== jsNumberValueSecond;
             break;
         default:
             console.error("unknown number comparison operator: " + operator);

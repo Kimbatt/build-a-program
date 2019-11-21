@@ -458,6 +458,12 @@ class LiteralExpression extends ExpressionBase
     }
 
     getType() { return this.type; }
+
+    load(data)
+    {
+        this.inputField.value = String(data.value);
+        this.inputField.oninput();
+    }
 }
 
 class NumberLiteralExpression extends LiteralExpression
@@ -476,12 +482,6 @@ class NumberLiteralExpression extends LiteralExpression
             value: Number(this.inputField.value),
             type: "number"
         };
-    }
-
-    load(data)
-    {
-        this.inputField.value = String(data.value);
-        this.inputField.oninput();
     }
 }
 

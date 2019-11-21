@@ -47,7 +47,8 @@
             <div id="spinner" class="loading-spinner loading-spinner-hidden"></div>
             <button onclick="functionEditor.ShowFunctionEditorList(true)" class="buttonbutton">Functions</button>
 
-            <button class="buttonbutton" style="position: absolute; margin-left: auto; right: 8px;" onclick="menu.QuitToMenu()">Quit to main menu</button>
+            <button class="buttonbutton" style="position: absolute; margin-left: auto; right: 190px;" onclick="menu.SaveCurrentProgram()">Save</button>
+            <button class="buttonbutton" style="position: absolute; margin-left: auto; right: 8px;" onclick="menu.QuitToMenu()">Quit to menu</button>
             <div id="main-drag-area-top-border"></div>
         </div>
         <div id="main-drag-area"></div>
@@ -133,7 +134,7 @@
 </div>
 
 <div id="loading-overlay" style="position: absolute; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.95); color: white; font-size: 10vh;
-    display: none; justify-content: center; align-items: center; user-select: none;">Loading...</div>
+    top: 0px; left: 0px; display: none; justify-content: center; align-items: center; user-select: none;">Loading...</div>
 
 <div id="alert-overlay" class="fullscreen-overlay" style="display: none;">
     <div id="alert-box" style="background: black; border-radius: 10px; font-size: 24px; border: 2px solid #4e4e4e; margin: auto;">
