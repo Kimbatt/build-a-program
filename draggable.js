@@ -55,11 +55,16 @@ const draggable = {};
 
         const elem = element.draggableData.draggedElement;
 
-        let mouseX = ev.clientX, mouseY = ev.clientY;
+        const mouseX = ev.clientX;
+        const mouseY = ev.clientY;
         //const scrollX = ev.pageX - mouseX, scrollY = ev.pageY - mouseY;
 
-        const diffX = mouseX - dragStartX + window.pageXOffset;
-        const diffY = mouseY - dragStartY + window.pageYOffset;
+        const elementScreenCoords = element.getBoundingClientRect();
+        const elementAbsoluteCoords = helper.GetCoords(element);
+        const mouseAbsoluteX = mouseX - elementScreenCoords.left + elementAbsoluteCoords.x;
+        const mouseAbsoluteY = mouseY - elementScreenCoords.top + elementAbsoluteCoords.y;
+        const diffX = mouseAbsoluteX - dragStartX;
+        const diffY = mouseAbsoluteY - dragStartY;
 
         let left = diffX + startPosLeft;
         let top = diffY + startPosTop;
@@ -127,11 +132,7 @@ const draggable = {};
             hoveredElement = undefined;
 
         if (hoveredElement !== undefined && hoveredElement.draggableData.onDropCheck(element))
-        {
-            hoveredElement.draggableData.onDropHoverMove(element,
-                mouseX + window.pageXOffset + document.documentElement.clientLeft,
-                mouseY + window.pageYOffset + document.documentElement.clientTop);
-        }
+            hoveredElement.draggableData.onDropHoverMove(element, mouseAbsoluteX, mouseAbsoluteY);
 
         if (previousHoveredElement && previousHoveredElement !== hoveredElement)
             previousHoveredElement.draggableData.onDropHoverLeave(element, false);
@@ -254,7 +255,7 @@ const draggable = {};
             {
                 isValidElement = true;
                 break;
-            }   
+            }
         }
 
         if (!isValidElement)
@@ -262,31 +263,30 @@ const draggable = {};
 
         const draggableData = node.draggableData;
         element = draggableData.draggedElement;
-        const draggableData2 = element.draggableData;
         elementStyle = element.style;
         handleStyle = draggableData.handle.style;
         dragging = true;
 
         eventHandlers.dragStart.forEach(handler => handler(element));
 
-        const borderSize = (draggableData.constraintData && draggableData.constraintData.borderSize) ||
-            (draggableData2.constraintData && draggableData2.constraintData.borderSize) || 0;
-
-        dragStartX = ev.clientX + window.pageXOffset + document.documentElement.clientLeft + borderSize;
-        dragStartY = ev.clientY + window.pageYOffset + document.documentElement.clientTop + borderSize;
-
         let parentNode = element.parentNode;
-        let parentCoords;
         while (parentNode)
         {
-            parentCoords = helper.GetCoords(parentNode);
             if (getComputedStyle(parentNode).position === "relative")
                 break;
 
             parentNode = parentNode.parentNode;
         }
 
+        const parentCoords = helper.GetCoords(parentNode);
         const startCoords = helper.GetCoords(element);
+        const elementScreenCoords = element.getBoundingClientRect();
+
+        const mouseX = ev.clientX;
+        const mouseY = ev.clientY;
+        dragStartX = mouseX - elementScreenCoords.left + startCoords.x;
+        dragStartY = mouseY - elementScreenCoords.top + startCoords.y;
+
         startPosLeft = startCoords.x - parentCoords.x;
         startPosTop = startCoords.y - parentCoords.y;
         

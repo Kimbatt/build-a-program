@@ -19,7 +19,8 @@ const elementHandler = {};
         "Boolean value": d => new BooleanLiteralExpression(d),
         "String": d => new StringLiteralExpression(d),
         "Variable": d => new VariableExpression(d),
-        "Function call": d => new FunctionCall(d)
+        "Function call": d => new FunctionCall(d),
+        "Return statement": d => new ReturnStatement(d)
     };
 
     for (let keyword in searchKeywords)

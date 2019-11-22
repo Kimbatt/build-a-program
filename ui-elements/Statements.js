@@ -702,3 +702,157 @@ class FunctionCall extends ElementBase
         }
     }
 }
+
+class ReturnStatement extends StatementBase
+{
+    isStatement() { return true; }
+
+    constructor(parentNode)
+    {
+        super();
+        this.parentNode = parentNode;
+
+        // use same style as functionCall, they are similar
+        
+        // main element
+        this.element = document.createElement("div");
+        this.element.uiElementData = this;
+        this.element.className = "function-call";
+
+        // text
+        const header = document.createElement("div");
+        header.innerText = "Return";
+        header.className = "inline-text";
+
+        // drag handle
+        this.dragHandle = document.createElement("div");
+        this.dragHandle.className = "drag-handle";
+
+        // expression drop area
+        this.dropArea = document.createElement("div");
+        this.dropArea.className = "drop-area drop-normal";
+
+        const headerDropAreaMinWidth = "150px";
+        this.dropArea.style.minWidth = headerDropAreaMinWidth;
+
+        const dropAreaPlaceholder = document.createElement("div");
+        dropAreaPlaceholder.className = "drop-placeholder";
+        dropAreaPlaceholder.innerHTML = "+";
+        this.dropArea.appendChild(dropAreaPlaceholder);
+
+        let expressionIsEmpty = true;
+
+        draggable.CreateDropArea(this.dropArea,
+        {
+            check: element => expressionIsEmpty && element.uiElementData.isExpression(),
+            hoverenter: element =>
+            {
+                this.dropArea.classList.remove("drop-normal");
+                this.dropArea.classList.add("drop-highlight");
+            },
+            hoverleave: element =>
+            {
+                this.dropArea.classList.add("drop-normal");
+                this.dropArea.classList.remove("drop-highlight");
+            },
+            drop: element =>
+            {
+                expressionIsEmpty = false;
+                dropAreaPlaceholder.style.display = "none";
+                dropAreaPlaceholder.style.minWidth = "";
+                this.dropArea.classList.add("not-empty");
+                //console.log("drop");
+                element.style.position = "static";
+                this.dropArea.appendChild(element);
+                element.classList.add("nested");
+                element.classList.add("nested-as-expression");
+
+                this.recalculateDraggableSizes();
+            },
+            detach: element =>
+            {
+                expressionIsEmpty = true;
+                dropAreaPlaceholder.style.display = "";
+                this.dropArea.style.minWidth = headerDropAreaMinWidth;
+                this.dropArea.classList.remove("not-empty");
+                //console.log("detach");
+                this.parentNode.appendChild(element);
+                element.classList.remove("nested");
+                element.classList.remove("nested-as-expression");
+
+                this.recalculateDraggableSizes();
+            }
+        });
+
+        this.element.appendChild(this.dragHandle);
+        this.element.appendChild(header);
+        this.element.appendChild(this.dropArea);
+
+        parentNode.appendChild(this.element);
+        draggable.AddElement(this.element, this.dragHandle);
+        draggable.ConstrainToElement(this.element, parentNode, 2);
+    }
+/*
+    compile(errors)
+    {
+        const dropAreaNodes = this.parameterDropAreasContainer.children;
+        const compiledExpressions = [];
+        for (let node of dropAreaNodes)
+        {
+            let found = false;
+            for (let expression of node.children)
+            {
+                if (expression.uiElementData && expression.uiElementData instanceof ElementBase)
+                {
+                    compiledExpressions.push(expression.uiElementData.compile(errors));
+                    found = true;
+                    break;
+                }
+            }
+
+            if (!found)
+            {
+                errors.push({
+                    message: "Missing function parameter",
+                    data: []
+                });
+
+                compiledExpressions.push(null); // add empty data to match the count of required function parameters 
+            }
+        }
+
+        if (!this.selectedFunction)
+        {
+            errors.push({
+                message: "No function selected",
+                data: []
+            });
+        }
+
+        return {
+            statementType: "functionCall",
+            expressionType: "functionCall",
+            functionName: this.selectedFunction ? this.selectedFunction.name : null,
+            parameters: compiledExpressions
+        };
+    }
+
+    load(data)
+    {
+        if (data.functionName)
+        {
+            let func = builtInFunctions.getOwnProperty(data.functionName) || customFunctionsByName.getOwnProperty(data.functionName);
+            if (func)
+            {
+                this.selectedFunctionChanged(func);
+
+                for (let i = 0; i < func.parameters.length; ++i)
+                {
+                    const currentParam = data.parameters[i];
+                    if (currentParam)
+                        compiler.LoadElement(this.parentNode, currentParam, this.parameterDropAreasContainer.children[i]);
+                }
+            }
+        }
+    }*/
+}
