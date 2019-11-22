@@ -96,6 +96,32 @@ const elementHandler = {};
 
     searchBox.onfocus = searchBox.oninput;
     
+    // delete drop area
+    const deleteDropArea = document.getElementById("delete-item-drop-area");
+    draggable.CreateDropArea(deleteDropArea, {
+        check: elem => elem.uiElementData && !(elem.uiElementData instanceof FunctionBody),
+        hoverenter: elem => deleteDropArea.classList.add("hovered"),
+        hoverleave: elem => deleteDropArea.classList.remove("hovered"),
+        drop: elem => elem.uiElementData.delete()
+    });
+
+    draggable.AddEventListener("dragStart", elem =>
+    {
+        if (elem.uiElementData && !(elem.uiElementData instanceof FunctionBody))
+        {
+            deleteDropArea.classList.remove("hidden");
+            deleteDropArea.classList.add("visible");
+        }
+    });
+
+    draggable.AddEventListener("dragEnd", elem =>
+    {
+        if (elem.uiElementData && !(elem.uiElementData instanceof FunctionBody))
+        {
+            deleteDropArea.classList.remove("visible");
+            deleteDropArea.classList.add("hidden");
+        }
+    });
 })();
 
 elementHandler.activeFunctionGuid = undefined;

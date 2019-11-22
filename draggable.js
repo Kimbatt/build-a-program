@@ -16,6 +16,20 @@ const draggable = {};
 
     const isTouchDevice = window.ontouchstart !== undefined;
 
+    const eventHandlers = {
+        dragStart: [],
+        dragEnd: []
+    };
+
+    draggable.AddEventListener = function(event, handler)
+    {
+        const handlers = eventHandlers.getOwnProperty(event);
+        if (!handlers)
+            throw new Error("Draggable event type \"" + event + "\" does not exist");
+
+        handlers.push(handler);
+    };
+
     let dragging = false;
     let dragStartX, dragStartY;
     let startPosLeft, startPosTop;
@@ -133,6 +147,8 @@ const draggable = {};
             return;
 
         dragging = false;
+
+        eventHandlers.dragEnd.forEach(handler => handler(element));
         
         for (let s in appliedStyles)
             elementStyle[s] = prevStyle[s];
@@ -250,6 +266,8 @@ const draggable = {};
         elementStyle = element.style;
         handleStyle = draggableData.handle.style;
         dragging = true;
+
+        eventHandlers.dragStart.forEach(handler => handler(element));
 
         const borderSize = (draggableData.constraintData && draggableData.constraintData.borderSize) ||
             (draggableData2.constraintData && draggableData2.constraintData.borderSize) || 0;

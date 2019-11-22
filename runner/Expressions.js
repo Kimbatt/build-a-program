@@ -37,6 +37,7 @@ runner.EvaluateUnaryBooleanExpression = async function(data, parentBlock) // ope
             ret.value = !jsBooleanValue;
             break;
         default:
+            ret.value = false;
             console.error("unknown unary boolean operator: " + operator);
             break;
     }
@@ -72,6 +73,7 @@ runner.EvaluateBinaryBooleanExpression = async function(data, parentBlock) // bo
                 ret.value = jsBooleanValueFirst !== jsBooleanValueSecond;
                 break;
             default:
+                ret.value = false;
                 console.error("unknown binary boolean operator: " + operator);
                 break;
         }
@@ -101,6 +103,7 @@ runner.EvaluateUnaryNumericExpression = async function(data, parentBlock) // ope
             ret.value = ~jsNumberValue;
             break;
         default:
+            ret.value = 0;
             console.error("unknown unary numeric operator: " + operator);
             break;
     }
@@ -155,6 +158,7 @@ runner.EvaluateBinaryNumericExpression = async function(data, parentBlock) // nu
             ret.value = jsNumberValueFirst >> jsNumberValueSecond;
             break;
         default:
+            ret.value = 0;
             console.error("unknown binary numeric operator: " + operator);
             break;
     }
@@ -194,6 +198,7 @@ runner.EvaluateNumberComparison = async function(data, parentBlock) // number op
             ret.value = jsNumberValueFirst !== jsNumberValueSecond;
             break;
         default:
+            ret.value = false;
             console.error("unknown number comparison operator: " + operator);
             break;
     }
@@ -221,6 +226,7 @@ runner.EvaluateStringComparison = async function(data, parentBlock) // string op
             ret.value = jsStringValueFirst !== jsStringValueSecond;
             break;
         default:
+            ret.value = false;
             console.error("unknown string comparison operator: " + operator);
             break;
     }
@@ -245,6 +251,7 @@ runner.EvaluateBinaryStringExpression = async function(data, parentBlock) // str
             ret.value = jsStringValueFirst + jsStringValueSecond;
             break;
         default:
+            ret.value = "";
             console.error("unknown binary string operator: " + operator);
             break;
     }
