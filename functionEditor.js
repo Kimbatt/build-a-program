@@ -355,7 +355,6 @@ functionEditor.FunctionWasEdited = function(functionData)
         functionBody.updateHeaderText();
 
     const allFunctionCalls = allUIElementsByType["FunctionCall"] || {};
-
     for (let elementGuid in allFunctionCalls)
     {
         const element = allFunctionCalls[elementGuid];
@@ -363,6 +362,16 @@ functionEditor.FunctionWasEdited = function(functionData)
 
         if (selectedFunction && selectedFunction === functionData)
             element.selectedFunctionChanged(selectedFunction);
+    }
+
+    const allReturnStatements = allUIElementsByType["ReturnStatement"] || {};
+    for (let elementGuid in allReturnStatements)
+    {
+        const element = allReturnStatements[elementGuid];
+        const parentFunction = element.parentFunction;
+
+        if (parentFunction === functionData)
+            element.parentFunctionWasEdited();
     }
 };
 

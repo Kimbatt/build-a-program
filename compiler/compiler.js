@@ -381,6 +381,26 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     CheckExpression(statement);
                     break;
                 }
+                case "returnStatement":
+                {
+                    if (statement.hasOwnProperty("returnValue"))
+                    {
+                        if (CheckExpression(statement.returnValue))
+                        {
+                            const expressionType = GetExpressionType(statement.returnValue);
+                            if (compiledFunction.returnType !== expressionType)
+                            {
+                                errors.push({
+                                    message: "Value returned must be " + AnOrA(compiledFunction.returnType) + " "
+                                        + compiledFunction.returnType + " (currently: " + expressionType + ")",
+                                    data: []
+                                });
+                            }
+                        }
+                    }
+
+                    break;
+                }
             }
         }
 
@@ -484,6 +504,10 @@ compiler.LoadProgram = function(jsonString)
     for (let functionName in jsonObj)
     {
         const functionBody = elementHandler.CreateNewFunctionBody(functionName);
+
+        // temporarily set currently active function so parent functions are correctly set for the UI elements
+        elementHandler.activeFunctionGuid = functionName === "Main" ? MainFunction.guid : customFunctionsByName[functionName].guid;
+
         const functionData = jsonObj[functionName];
         const block = functionData.block;
         for (let statement of block.statements)
@@ -520,6 +544,7 @@ compiler.elementTypesToClasses = {
     variableDeclaration: VariableDeclaration,
     variableAssignment: VariableAssignment,
     functionCall: FunctionCall,
+    returnStatement: ReturnStatement
 };
 
 compiler.lastProgram = undefined;

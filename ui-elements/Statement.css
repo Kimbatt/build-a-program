@@ -1,5 +1,5 @@
 
-.variable-assignment, .function-call
+.variable-assignment, .function-call, .return-statement
 {
     position: absolute;
     display: flex;
@@ -8,7 +8,7 @@
     font-size: 20px;
 }
 
-.variable-assignment > .drag-handle, .function-call > .drag-handle
+.variable-assignment > .drag-handle, .function-call > .drag-handle, .return-statement > .drag-handle
 {
     width: 20px;
     flex-shrink: 0;
@@ -16,13 +16,13 @@
     cursor: grab;
 }
 
-.variable-assignment > .inline-text, .function-call > .inline-text
+.variable-assignment > .inline-text, .function-call > .inline-text, .return-statement > .inline-text
 {
     padding: 5px 10px;
     user-select: none;
 }
 
-.variable-assignment.nested, .function-call.nested-as-statement
+.variable-assignment.nested, .function-call.nested-as-statement, .return-statement.nested
 {
     margin: 10px;
 }
@@ -86,6 +86,12 @@
 {
     display: flex;
     height: 34px;
+}
+
+.return-statement > .drop-area.not-empty
+{
+    border: 0px;
+    background: black;
 }
 
 .function-selector-button

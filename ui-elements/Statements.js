@@ -712,12 +712,10 @@ class ReturnStatement extends StatementBase
         super();
         this.parentNode = parentNode;
 
-        // use same style as functionCall, they are similar
-        
         // main element
         this.element = document.createElement("div");
         this.element.uiElementData = this;
-        this.element.className = "function-call";
+        this.element.className = "return-statement";
 
         // text
         const header = document.createElement("div");
@@ -791,20 +789,68 @@ class ReturnStatement extends StatementBase
         parentNode.appendChild(this.element);
         draggable.AddElement(this.element, this.dragHandle);
         draggable.ConstrainToElement(this.element, parentNode, 2);
+
+        // check if expression drop area should be visible
+        this.parentFunction = MainFunction.guid === elementHandler.activeFunctionGuid ? MainFunction : customFunctions[elementHandler.activeFunctionGuid];
+        if (this.parentFunction.returnType === "void")
+            this.hideExpression();
     }
-/*
+
+    parentFunctionWasEdited()
+    {
+        if (this.parentFunction.returnType === "void")
+            this.hideExpression();
+        else
+            this.showExpression();
+    }
+
+    showExpression()
+    {
+        this.dropArea.style.display = "";
+    }
+
+    hideExpression()
+    {
+        this.dropArea.style.display = "none";
+
+        for (let element of this.dropArea.children)
+        {
+            if (element.uiElementData && element.uiElementData instanceof ElementBase)
+            {
+                this.dropArea.draggableData.onDetach(element);
+
+                const rect = helper.GetCoords(this.element)
+                const left = rect.x + rect.width;
+                let top = rect.y - rect.height - 40;
+
+                element.draggableData.attachedDropArea = undefined;
+                element.style.position = "absolute";
+                element.style.left = left + "px";
+                element.style.top = top + "px";
+
+                break;
+            }
+        }
+    }
+
     compile(errors)
     {
-        const dropAreaNodes = this.parameterDropAreasContainer.children;
-        const compiledExpressions = [];
-        for (let node of dropAreaNodes)
+        if (this.parentFunction.returnType === "void")
+        {
+            return {
+                statementType: "returnStatement",
+            };
+        }
+        else
         {
             let found = false;
-            for (let expression of node.children)
+            let compiledExpression = null;
+
+            for (let expression of this.dropArea.children)
             {
                 if (expression.uiElementData && expression.uiElementData instanceof ElementBase)
                 {
-                    compiledExpressions.push(expression.uiElementData.compile(errors));
+                    compiledExpression = expression.uiElementData.compile(errors);
                     found = true;
                     break;
                 }
@@ -813,46 +859,26 @@ class ReturnStatement extends StatementBase
             if (!found)
             {
                 errors.push({
-                    message: "Missing function parameter",
+                    message: "Missing expression from return statement",
                     data: []
                 });
-
-                compiledExpressions.push(null); // add empty data to match the count of required function parameters 
             }
-        }
 
-        if (!this.selectedFunction)
-        {
-            errors.push({
-                message: "No function selected",
-                data: []
-            });
+            return {
+                statementType: "returnStatement",
+                returnValue: compiledExpression
+            };
         }
-
-        return {
-            statementType: "functionCall",
-            expressionType: "functionCall",
-            functionName: this.selectedFunction ? this.selectedFunction.name : null,
-            parameters: compiledExpressions
-        };
     }
 
     load(data)
     {
-        if (data.functionName)
+        if (data.hasOwnProperty("returnValue"))
         {
-            let func = builtInFunctions.getOwnProperty(data.functionName) || customFunctionsByName.getOwnProperty(data.functionName);
-            if (func)
-            {
-                this.selectedFunctionChanged(func);
-
-                for (let i = 0; i < func.parameters.length; ++i)
-                {
-                    const currentParam = data.parameters[i];
-                    if (currentParam)
-                        compiler.LoadElement(this.parentNode, currentParam, this.parameterDropAreasContainer.children[i]);
-                }
-            }
+            this.showExpression();
+            compiler.LoadElement(this.parentNode, data.returnValue, this.dropArea);
         }
-    }*/
+        else
+            this.hideExpression();
+    }
 }

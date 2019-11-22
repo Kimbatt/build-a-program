@@ -160,7 +160,7 @@ elementHandler.SwitchToFunction = function(functionGuid, hideFunctionSelector)
     const currentFunctionDragContainer = elementHandler.activeFunctionGuid
         && elementHandler.functionBodyDragContainers.getOwnProperty(elementHandler.activeFunctionGuid);
 
-    if (currentFunctionDragContainer)
+    if (currentFunctionDragContainer && dragArea.contains(currentFunctionDragContainer))
         dragArea.removeChild(currentFunctionDragContainer);
 
     dragArea.appendChild(functionDragContainer);
