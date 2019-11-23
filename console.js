@@ -53,7 +53,13 @@ Console.CheckConsoleMaxSize = function()
 
 Console.Write = function(arg)
 {
-    Console.consoleLinesDiv.appendChild(Console.GetConsoleLineDiv(arg, "console-line"));
+    const line = Console.GetConsoleLineDiv(arg, "console-line");
+    if (/[^\s|\s$|\s+]/m.test(arg)) // check for leading & trailing & multiple spaces
+        line.innerHTML = arg.replace(/\s/g, "&nbsp;");
+    else if (arg === "") // special case for empty string
+        line.innerHTML = "&nbsp;";
+
+    Console.consoleLinesDiv.appendChild(line);
     Console.CheckConsoleMaxSize();
 };
 

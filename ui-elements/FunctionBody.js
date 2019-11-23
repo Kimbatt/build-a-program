@@ -41,6 +41,9 @@ class FunctionBody extends BlockBase
         if (params.length !== 0)
             headerText += " (" + params.map(param => param.name + ": " + param.type).join(", ") + ")";
 
+        if (this.functionData.returnType !== "void")
+            headerText += " → " + this.functionData.returnType;
+
         return headerText;
     }
 
@@ -58,7 +61,8 @@ class FunctionBody extends BlockBase
             })),
             returnType: this.functionData.returnType,
             description: this.functionData.description || "",
-            block: super.compile(errors)
+            block: super.compile(errors),
+            srcElement: this
         };
     }
 }

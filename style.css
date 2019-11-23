@@ -221,6 +221,7 @@ input[type="text"]
     font-family: Consolas;
     font-size: 20px;
     padding: 10px 10px;
+    word-break: break-all;
 }
 
 .console-line-error
@@ -378,6 +379,12 @@ input[type="text"]
     transition: bottom 0.1s linear, visibility 0.1s;
 }
 
+.console-error-link
+{
+    cursor: pointer;
+    text-decoration: underline;
+}
+
 .fullscreen-overlay
 {
     position: fixed;
@@ -491,4 +498,22 @@ input[type="text"]
     border: 2px dashed black;
     background-color: white;
     background-image: var(--delete-icon-black);
+}
+
+.flashing
+{
+    animation: flash 0.65s linear 2;
+}
+
+@keyframes flash
+{
+    0%, 100%
+    {
+        filter: invert(0);
+    }
+
+    25%
+    {
+        filter: invert(1);
+    }
 }

@@ -65,7 +65,7 @@ menu.QuitToMenu = async function()
 
 menu.SaveCurrentProgram = async function()
 {
-    if (await menu.SaveProgram(menu.currentProgramName, JSON.stringify(compiler.GenerateProgramJSON({}))))
+    if (await menu.SaveProgram(menu.currentProgramName, JSON.stringify(compiler.RemoveSrcElementsFromJSON(compiler.GenerateProgramJSON({})))))
         await Alert("Program saved successfully.");
 }
 
@@ -207,6 +207,7 @@ menu.LoadProgramFromText = async function(programName, text)
     catch (e)
     {
         Alert("Cannot load program:\n\nThe selected program is not in the correct format");
+        console.error(e);
         return false;
     }
     finally

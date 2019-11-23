@@ -30,6 +30,18 @@ helper.GetCoords = function(elem) // https://stackoverflow.com/a/26230989
     };
 };
 
+helper.Flash = function(elem)
+{
+    function AnimationFinished()
+    {
+        elem.classList.remove("flashing");
+        elem.removeEventListener("animationend", AnimationFinished);
+    }
+
+    elem.addEventListener("animationend", AnimationFinished);
+    elem.classList.add("flashing");
+};
+
 (() =>
 {
     const div = document.createElement("div");

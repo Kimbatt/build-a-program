@@ -26,8 +26,8 @@ class IfStatement extends MultiBlockBase
         if (!hasMainCondition)
         {
             errors.push({
-                message: "Condition missing from If statement",
-                data: [mainConditionNodes]
+                message: "{{Condition}} missing from {{If statement}}",
+                data: [this.mainBlock.headerDropAreas[0].dropArea, this.element]
             });
             conditions.push(null);
         }
@@ -55,8 +55,8 @@ class IfStatement extends MultiBlockBase
                 if (!secondaryBlockHasCondition)
                 {
                     errors.push({
-                        message: "Condition missing from If statement",
-                        data: [secondaryConditionNodes]
+                        message: "{{Condition}} missing from {{If statement}}",
+                        data: [secondaryBlock.headerDropAreas[0].dropArea, this.element]
                     });
                     conditions.push(null);
                 }
@@ -69,7 +69,8 @@ class IfStatement extends MultiBlockBase
             statementType: "ifStatement",
             conditions: conditions,
             blocks: blocks,
-            elseBlock: this.hasFinalBlock ? this.finalBlock.compile(errors) : null
+            elseBlock: this.hasFinalBlock ? this.finalBlock.compile(errors) : null,
+            srcElement: this
         };
     }
 
@@ -134,8 +135,8 @@ class WhileStatement extends BlockBase
         if (!hasMainCondition)
         {
             errors.push({
-                message: "Condition missing from While statement",
-                data: [mainConditionNodes]
+                message: "{{Condition}} missing from {{While statement}}",
+                data: [this.headerDropAreas[0].dropArea, this.element]
             });
             mainCondition = null;
         }
@@ -143,7 +144,8 @@ class WhileStatement extends BlockBase
         return {
             statementType: "whileStatement",
             condition: mainCondition,
-            block: super.compile(errors)
+            block: super.compile(errors),
+            srcElement: this
         };
     }
 
@@ -228,7 +230,8 @@ class VariableDeclaration extends StatementBase
         return {
             statementType: "variableDeclaration",
             variableName: this.variableNameInputField.value,
-            variableType: this.typeSelector.value
+            variableType: this.typeSelector.value,
+            srcElement: this
         };
     }
 
@@ -368,7 +371,8 @@ class VariableAssignment extends StatementBase
         return {
             statementType: "variableAssignment",
             variableName: this.variableNameInputField.value,
-            newVariableValue: expression ? expression.compile(errors) : null
+            newVariableValue: expression ? expression.compile(errors) : null,
+            srcElement: this
         }
     }
 
@@ -659,8 +663,8 @@ class FunctionCall extends ElementBase
             if (!found)
             {
                 errors.push({
-                    message: "Missing function parameter",
-                    data: []
+                    message: "Missing {{function parameter}}",
+                    data: [node]
                 });
 
                 compiledExpressions.push(null); // add empty data to match the count of required function parameters 
@@ -670,8 +674,8 @@ class FunctionCall extends ElementBase
         if (!this.selectedFunction)
         {
             errors.push({
-                message: "No function selected",
-                data: []
+                message: "{{No function selected}}",
+                data: [this.functionSelector]
             });
         }
 
@@ -679,7 +683,8 @@ class FunctionCall extends ElementBase
             statementType: "functionCall",
             expressionType: "functionCall",
             functionName: this.selectedFunction ? this.selectedFunction.name : null,
-            parameters: compiledExpressions
+            parameters: compiledExpressions,
+            srcElement: this
         };
     }
 
@@ -859,14 +864,15 @@ class ReturnStatement extends StatementBase
             if (!found)
             {
                 errors.push({
-                    message: "Missing expression from return statement",
-                    data: []
+                    message: "{{Missing expression}} from {{return statement}}",
+                    data: [this.dropArea, this.element]
                 });
             }
 
             return {
                 statementType: "returnStatement",
-                returnValue: compiledExpression
+                returnValue: compiledExpression,
+                srcElement: this
             };
         }
     }
@@ -876,7 +882,9 @@ class ReturnStatement extends StatementBase
         if (data.hasOwnProperty("returnValue"))
         {
             this.showExpression();
-            compiler.LoadElement(this.parentNode, data.returnValue, this.dropArea);
+
+            if (data.returnValue !== null)
+                compiler.LoadElement(this.parentNode, data.returnValue, this.dropArea);
         }
         else
             this.hideExpression();

@@ -29,7 +29,11 @@ runner.EvaluateUnaryBooleanExpression = async function(data, parentBlock) // ope
         type: "boolean"
     }
 
-    const jsBooleanValue = (await runner.EvaluateExpression(value, parentBlock)).value;
+    const result = await runner.EvaluateExpression(value, parentBlock);
+    if (result.hasOwnProperty("errorType"))
+        return result;
+
+    const jsBooleanValue = result.value;
 
     switch (operator)
     {
@@ -53,14 +57,44 @@ runner.EvaluateBinaryBooleanExpression = async function(data, parentBlock) // bo
         type: "boolean"
     }
 
-    const jsBooleanValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
+    const firstResult = await runner.EvaluateExpression(first, parentBlock);
+    if (firstResult.hasOwnProperty("errorType"))
+        return firstResult;
+
+    const jsBooleanValueFirst = firstResult.value;
     if (operator === "&&") // boolean short-circuit for && and ||
-        ret.value = jsBooleanValueFirst && (await runner.EvaluateExpression(second, parentBlock)).value;
+    {
+        if (jsBooleanValueFirst === false) // if the first is false then the result must be false
+            ret.value = false;
+        else
+        {
+            const secondResult = await runner.EvaluateExpression(second, parentBlock);
+            if (secondResult.hasOwnProperty("errorType"))
+                return secondResult;
+
+            ret.value = secondResult.value;
+        }
+    }
     else if (operator === "||")
-        ret.value = jsBooleanValueFirst || (await runner.EvaluateExpression(second, parentBlock)).value;
+    {
+        if (jsBooleanValueFirst === true) // if the first is true then the result must be true
+            ret.value = true;
+        else
+        {
+            const secondResult = await runner.EvaluateExpression(second, parentBlock);
+            if (secondResult.hasOwnProperty("errorType"))
+                return secondResult;
+
+            ret.value = secondResult.value;
+        }
+    }
     else
     {
-        const jsBooleanValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
+        const secondResult = await runner.EvaluateExpression(second, parentBlock);
+        if (secondResult.hasOwnProperty("errorType"))
+            return secondResult;
+
+        const jsBooleanValueSecond = secondResult.value;
         switch (operator)
         {
             case "^":
@@ -90,7 +124,11 @@ runner.EvaluateUnaryNumericExpression = async function(data, parentBlock) // ope
         type: "number"
     }
 
-    const jsNumberValue = (await runner.EvaluateExpression(value, parentBlock)).value;
+    const result = await runner.EvaluateExpression(value, parentBlock);
+    if (result.hasOwnProperty("errorType"))
+        return result;
+
+    const jsNumberValue = result.value;
     switch (operator)
     {
         case "+":
@@ -119,8 +157,17 @@ runner.EvaluateBinaryNumericExpression = async function(data, parentBlock) // nu
         type: "number"
     }
 
-    const jsNumberValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
-    const jsNumberValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
+    const firstResult = await runner.EvaluateExpression(first, parentBlock);
+    if (firstResult.hasOwnProperty("errorType"))
+        return firstResult;
+
+    const jsNumberValueFirst = firstResult.value;
+
+    const secondResult = await runner.EvaluateExpression(second, parentBlock);
+    if (secondResult.hasOwnProperty("errorType"))
+        return secondResult;
+
+    const jsNumberValueSecond = secondResult.value;
 
     switch (operator)
     {
@@ -174,8 +221,17 @@ runner.EvaluateNumberComparison = async function(data, parentBlock) // number op
         type: "boolean"
     }
 
-    const jsNumberValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
-    const jsNumberValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
+    const firstResult = await runner.EvaluateExpression(first, parentBlock);
+    if (firstResult.hasOwnProperty("errorType"))
+        return firstResult;
+
+    const jsNumberValueFirst = firstResult.value;
+
+    const secondResult = await runner.EvaluateExpression(second, parentBlock);
+    if (secondResult.hasOwnProperty("errorType"))
+        return secondResult;
+
+    const jsNumberValueSecond = secondResult.value;
 
     switch (operator)
     {
@@ -214,8 +270,17 @@ runner.EvaluateStringComparison = async function(data, parentBlock) // string op
         type: "boolean"
     }
 
-    const jsStringValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
-    const jsStringValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
+    const firstResult = await runner.EvaluateExpression(first, parentBlock);
+    if (firstResult.hasOwnProperty("errorType"))
+        return firstResult;
+
+    const jsStringValueFirst = firstResult.value;
+
+    const secondResult = await runner.EvaluateExpression(second, parentBlock);
+    if (secondResult.hasOwnProperty("errorType"))
+        return secondResult;
+
+    const jsStringValueSecond = secondResult.value;
 
     switch (operator)
     {
@@ -242,8 +307,17 @@ runner.EvaluateBinaryStringExpression = async function(data, parentBlock) // str
         type: "string"
     }
 
-    const jsStringValueFirst = (await runner.EvaluateExpression(first, parentBlock)).value;
-    const jsStringValueSecond = (await runner.EvaluateExpression(second, parentBlock)).value;
+    const firstResult = await runner.EvaluateExpression(first, parentBlock);
+    if (firstResult.hasOwnProperty("errorType"))
+        return firstResult;
+
+    const jsStringValueFirst = firstResult.value;
+
+    const secondResult = await runner.EvaluateExpression(second, parentBlock);
+    if (secondResult.hasOwnProperty("errorType"))
+        return secondResult;
+
+    const jsStringValueSecond = secondResult.value;
 
     switch (operator)
     {

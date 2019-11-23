@@ -257,7 +257,8 @@ class BlockBase extends StatementBase
     {
         return {
             statementType: "block",
-            statements: this.getStatementsOfBlock(errors)
+            statements: this.getStatementsOfBlock(errors),
+            srcElement: this
         };
     }
 }

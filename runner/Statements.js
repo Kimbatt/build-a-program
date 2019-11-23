@@ -3,6 +3,7 @@ runner.blockStatementCounter = 0;
 runner.blockStatementMaxCount = 100; // check time every 100 block statements
 runner.lastFrameCheckTime = 0;
 runner.maxFrameTime = 1000 / 60;
+runner.aborted = false;
 
 runner.HandleBlockStatement = async function(data, parentBlock)
 {
@@ -19,9 +20,19 @@ runner.HandleBlockStatement = async function(data, parentBlock)
         const now = performance.now();
         if (now > runner.lastFrameCheckTime + runner.maxFrameTime)
         {
+            Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
+
             // wait for a browser update
             runner.lastFrameCheckTime = now;
             await WaitImmediate();
+
+            if (runner.aborted)
+            {
+                runner.aborted = false;
+                return {
+                    errorType: "aborted"
+                }
+            }
         }
     }
 
@@ -36,8 +47,12 @@ runner.HandleBlockStatement = async function(data, parentBlock)
             continue;
         }
 
-        await handler(statement, thisBlock);
+        const statementResult = await handler(statement, thisBlock);
+        if (statementResult.hasOwnProperty("errorType"))
+            return statementResult;
     }
+
+    return {};
 };
 
 runner.HandleIfStatement = async function(data, parentBlock)
@@ -47,37 +62,76 @@ runner.HandleIfStatement = async function(data, parentBlock)
     for (let i = 0; i < conditions.length; ++i)
     {
         const conditionValue = await runner.EvaluateExpression(conditions[i], parentBlock);
+        if (conditionValue.hasOwnProperty("errorType"))
+            return conditionValue;
+
         if (conditionValue.value /* === true */)
         {
-            await runner.HandleBlockStatement(blocks[i], parentBlock);
-            return;
+            const statementResult = await runner.HandleBlockStatement(blocks[i], parentBlock);
+            if (statementResult.hasOwnProperty("errorType"))
+                return statementResult;
+
+            return {};
         }
     }
 
     // no conditions met, handle else block if any
     if (elseBlock)
-        await runner.HandleBlockStatement(elseBlock, parentBlock);
+    {
+        const statementResult = await runner.HandleBlockStatement(elseBlock, parentBlock);
+        if (statementResult.hasOwnProperty("errorType"))
+            return statementResult;
+    }
+
+    return {};
 };
 
 runner.HandleWhileStatement = async function(data, parentBlock)
 {
     const { condition, block } = data;
-    while ((await runner.EvaluateExpression(condition, parentBlock)).value /* === true */)
+    while (true)
     {
-        await runner.HandleBlockStatement(block, parentBlock);
+        const expressionValue = await runner.EvaluateExpression(condition, parentBlock);
+        if (expressionValue.hasOwnProperty("errorType"))
+            return expressionValue;
+
+        if (expressionValue.value /* === true */)
+        {
+            const statementResult = await runner.HandleBlockStatement(block, parentBlock);
+            if (statementResult.hasOwnProperty("errorType"))
+                return statementResult;
+        }
+        else
+            break;
     }
+
+    return {};
 };
 
 runner.maxCallStackSize = 200;
 runner.currentCallStackSize = 0;
 runner.HandleFunctionCall = async function(data, parentBlock)
 {
+    if (runner.currentCallStackSize > runner.maxCallStackSize)
+    {
+        return {
+            errorType: "error",
+            exceptionType: "RecursionError",
+            errorMessage: "Maximum recursion depth reached"
+        }
+    }
+
     ++runner.currentCallStackSize;
-    // TODO: throw an exception if max call stack size is exceeded
 
     const parameterValues = [];
     for (let param of data.parameters)
-        parameterValues.push(await runner.EvaluateExpression(param, parentBlock));
+    {
+        const expressionValue = await runner.EvaluateExpression(param, parentBlock);
+        if (expressionValue.hasOwnProperty("errorType"))
+            return expressionValue;
+        
+        parameterValues.push(expressionValue);
+    }
 
     let result;
 
@@ -90,11 +144,15 @@ runner.HandleFunctionCall = async function(data, parentBlock)
             result = await func(parameterValues);
         else
             result = func(parameterValues);
+
+        if (result === undefined)
+            result = {};
     }
     else
     {
         // custom function
-        // TODO: return values
+
+        // result will contain errorType if needed
         result = await runner.RunFunction(runner.currentlyRunningProgram[data.functionName], parameterValues);
     }
 
@@ -128,6 +186,8 @@ runner.HandleVariableDeclaration = async function(data, parentBlock)
     }
 
     parentBlock.variables[variableName] = variable;
+
+    return {};
 };
 
 runner.HandleVariableAssignment = async function(data, parentBlock)
@@ -135,7 +195,32 @@ runner.HandleVariableAssignment = async function(data, parentBlock)
     const { variableName, newVariableValue } = data;
     let variable = runner.GetVariable(variableName, parentBlock);
 
-    variable.variableValue = await runner.EvaluateExpression(newVariableValue, parentBlock);
+    const expressionValue = await runner.EvaluateExpression(newVariableValue, parentBlock);
+    if (expressionValue.hasOwnProperty("errorType"))
+        return expressionValue;
+
+    variable.variableValue = expressionValue;
+
+    return {};
+};
+
+runner.HandleReturnStatement = async function(data, parentBlock)
+{
+    if (data.hasOwnProperty("returnValue"))
+    {
+        const expressionValue = await runner.EvaluateExpression(data.returnValue, parentBlock);
+        if (expressionValue.hasOwnProperty("errorType"))
+            return expressionValue;
+
+        expressionValue.errorType = "return";
+        return expressionValue;
+    }
+    else
+    {
+        return {
+            errorType: "return"
+        };
+    }
 };
 
 runner.statementHandlers = {
@@ -144,5 +229,6 @@ runner.statementHandlers = {
     whileStatement: runner.HandleWhileStatement,
     functionCall: runner.HandleFunctionCall,
     variableDeclaration: runner.HandleVariableDeclaration,
-    variableAssignment: runner.HandleVariableAssignment
+    variableAssignment: runner.HandleVariableAssignment,
+    returnStatement: runner.HandleReturnStatement
 };

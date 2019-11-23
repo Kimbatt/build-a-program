@@ -7,16 +7,16 @@ const compiler = {};
 compiler.CheckVariableName = function(variableName)
 {
     if (variableName === "")
-        return "Variable name is empty";
+        return "{{Variable name}} must not be empty";
 
     if (/^[0-9]/.test(variableName))
-        return "Variable name must not start with a number";
+        return "{{Variable name}} must not start with a number";
 
     if (variableName.includes(" "))
-        return "Variable name must not contain spaces";
+        return "{{Variable name}} must not contain spaces";
 
     if (/[!"#%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/.test(variableName))
-        return "Variable name cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
+        return "{{Variable name}} cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
 
     return "OK";
 };
@@ -50,12 +50,40 @@ compiler.CompileAndRun = async function()
         anyErrors = true;
         const errors = errorsByFunctions[functionName];
         for (let error of errors)
-            Console.Error("Compile error in function \"" + functionName + "\": " + error.message);
+        {
+            const consoleLineDiv = Console.GetConsoleLineDiv("", "console-line console-line-error");
+            consoleLineDiv.appendChild(document.createTextNode("Compile error in function \"" + functionName + "\": "));
+
+            const segments = error.message.split(/\{\{(.+?)\}\}/g); // we need to create a link for every 2n+1 -th element
+            for (let i = 0; i < segments.length; ++i)
+            {
+                if ((i & 1) == 0)
+                {
+                    // normal text
+                    consoleLineDiv.appendChild(document.createTextNode(segments[i]));
+                }
+                else
+                {
+                    // link
+                    const dataElement = error.data[i >>> 1];
+                    const span = document.createElement("span");
+                    span.className = "console-error-link";
+                    span.innerText = segments[i];
+                    span.onclick = () => helper.Flash(dataElement);
+
+                    consoleLineDiv.appendChild(span);
+                }
+            }
+
+            Console.consoleLinesDiv.appendChild(consoleLineDiv);
+            Console.CheckConsoleMaxSize();
+        }
     }
     
     if (anyErrors)
         return;
 
+    compiler.RemoveSrcElementsFromJSON(compiled);
     await runner.RunProgram(compiled);
 
     Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
@@ -94,7 +122,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
         return /^[aeiou]/i.test(str) ? "an" : "a";
     }
 
-    function CheckSingleExpression(expressionText, expression, requiredType, ordinal)
+    function CheckSingleExpression(expressionText, expression, requiredType, ordinal, parentElement)
     {
         if (CheckExpression(expression))
         {
@@ -104,8 +132,8 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 if (expressionType !== "unknown")
                 {
                     errors.push({
-                        message: "The " + ordinal + "expression of " + expressionText + " must be " + AnOrA(requiredType) + " " + requiredType + " (currently: " + expressionType + ")",
-                        data: []
+                        message: "The {{" + ordinal + "expression}} of " + expressionText + " must be " + AnOrA(requiredType) + " " + requiredType + " (currently: " + expressionType + ")",
+                        data: [expression.srcElement.element, parentElement.element]
                     });
                 }
                 return false;
@@ -119,13 +147,13 @@ compiler.CheckVariables = function(compiledFunction, errors)
 
     function CheckUnaryExpression(expressionText, expression, requiredType)
     {
-        return CheckSingleExpression(expressionText, expression.first, requiredType, "");
+        return CheckSingleExpression(expressionText, expression.value, requiredType, "", expression.srcElement);
     }
 
     function CheckBinaryExpression(expressionText, expression, requiredType)
     {
-        const firstResult = CheckSingleExpression(expressionText, expression.first, requiredType, "first ");
-        const secondResult = CheckSingleExpression(expressionText, expression.second, requiredType, "second ");
+        const firstResult = CheckSingleExpression(expressionText, expression.first, requiredType, "first ", expression.srcElement);
+        const secondResult = CheckSingleExpression(expressionText, expression.second, requiredType, "second ", expression.srcElement);
         return firstResult && secondResult;
     }
 
@@ -147,7 +175,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 {
                     errors.push({
                         message: checkResult,
-                        data: []
+                        data: [expression.srcElement.variableNameInputField]
                     });
                     return false;
                 }
@@ -155,8 +183,8 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 if (GetVariableType(expression.variableName) === "unknown")
                 {
                     errors.push({
-                        message: "Variable " + expression.variableName + " must be declared before using it",
-                        data: []
+                        message: "{{Variable " + expression.variableName + "}} must be declared before using it",
+                        data: [expression.srcElement.variableNameInputField]
                     });
                     return false;
                 }
@@ -164,19 +192,19 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 return true;
             }
             case "unaryBooleanExpression":
-                return CheckUnaryExpression("a unary boolean expression", expression, "boolean");
+                return CheckUnaryExpression("a {{unary boolean expression}}", expression, "boolean");
             case "binaryBooleanExpression":
-                return CheckBinaryExpression("a binary boolean expression", expression, "boolean");
+                return CheckBinaryExpression("a {{binary boolean expression}}", expression, "boolean");
             case "unaryNumericExpression":
-                return CheckUnaryExpression("a unary numeric expression", expression, "number");
+                return CheckUnaryExpression("a {{unary numeric expression}}", expression, "number");
             case "binaryNumericExpression":
-                return CheckBinaryExpression("a binary numeric expression", expression, "number");
+                return CheckBinaryExpression("a {{binary numeric expression}}", expression, "number");
             case "numberComparison":
-                return CheckBinaryExpression("a number comparison", expression, "number");
+                return CheckBinaryExpression("a {{number comparison}}", expression, "number");
             case "stringComparison":
-                return CheckBinaryExpression("a string comparison", expression, "string");
+                return CheckBinaryExpression("a {{string comparison}}", expression, "string");
             case "binaryStringExpression":
-                return CheckBinaryExpression("a binary string expression", expression, "string");
+                return CheckBinaryExpression("a {{binary string expression}}", expression, "string");
             case "functionCall":
             {
                 if (!expression.functionName)
@@ -194,9 +222,9 @@ compiler.CheckVariables = function(compiledFunction, errors)
                         if (currentParameterType !== requiredParameter.type)
                         {
                             errors.push({
-                                message: "Function parameter type is wrong, it should be " + AnOrA(requiredParameter.type) + " " + requiredParameter.type
+                                message: "{{Function parameter}} type is wrong, it should be " + AnOrA(requiredParameter.type) + " " + requiredParameter.type
                                     + " (currently: " + currentParameterType + ")",
-                                data: []
+                                data: [currentParameter.srcElement.element]
                             });
                             allParamsOk = false;
                         }
@@ -266,7 +294,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     {
                         errors.push({
                             message: variableNameCheckResult,
-                            data: []
+                            data: [statement.srcElement.variableNameInputField]
                         });
                         ok = false;
                     }
@@ -274,8 +302,8 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     if (ok && GetVariableType(statement.variableName) !== "unknown")
                     {
                         errors.push({
-                            message: "Variable " + statement.variableName + " was already declared before",
-                            data: []
+                            message: "{{Variable " + statement.variableName + "}} was already declared before",
+                            data: [statement.srcElement.variableNameInputField]
                         });
                         ok = false;
                     }
@@ -293,7 +321,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     {
                         errors.push({
                             message: variableNameCheckResult,
-                            data: []
+                            data: [statement.srcElement.variableNameInputField]
                         });
                         variableNameIsOk = false;
                     }
@@ -302,8 +330,8 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     if (variableNameIsOk && requiredVariableType === "unknown")
                     {
                         errors.push({
-                            message: "Variable " + statement.variableName + " must be declared before using it",
-                            data: []
+                            message: "{{Variable " + statement.variableName + "}} must be declared before using it",
+                            data: [statement.srcElement.variableNameInputField]
                         });
                         variableNameIsOk = false;
                     }
@@ -312,8 +340,8 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     if (!statement.newVariableValue)
                     {
                         errors.push({
-                            message: "Missing expression from variable assignment",
-                            data: []
+                            message: "{{Missing expression}} from {{variable assignment}}",
+                            data: [statement.srcElement.expressionDropArea, statement.srcElement.element]
                         });
                         expressionIsOk = false;
                     }
@@ -325,9 +353,9 @@ compiler.CheckVariables = function(compiledFunction, errors)
                             && requiredVariableType !== "unknown" && currentExpressionType !== "unknown")
                         {
                             errors.push({
-                                message: "Variable " + statement.variableName + " is " + AnOrA(requiredVariableType) + " " + requiredVariableType
-                                    + ", cannot assign " + AnOrA(currentExpressionType) + " " + currentExpressionType + " to it",
-                                data: []
+                                message: "{{Variable " + statement.variableName + "}} is " + AnOrA(requiredVariableType) + " " + requiredVariableType
+                                    + ", cannot assign {{" + AnOrA(currentExpressionType) + " " + currentExpressionType + "}} to it",
+                                data: [statement.srcElement.variableNameInputField, statement.srcElement.expressionDropArea]
                             });
                         }
                     }
@@ -342,8 +370,8 @@ compiler.CheckVariables = function(compiledFunction, errors)
                         if (conditionExpressionType !== "boolean")
                         {
                             errors.push({
-                                message: "Condition of a While statement must be a boolean expression (currently: " + conditionExpressionType + ")",
-                                data: []
+                                message: "{{The condition}} of a {{While statement}} must be a boolean expression (currently: " + conditionExpressionType + ")",
+                                data: [statement.srcElement.headerDropAreas[0].dropArea, statement.srcElement.element]
                             });
                         }
                     }
@@ -353,16 +381,21 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 }
                 case "ifStatement":
                 {
-                    for (let condition of statement.conditions)
+                    for (let i = 0; i < statement.conditions.length; ++i)
                     {
+                        const condition = statement.conditions[i];
                         if (CheckExpression(condition))
                         {
                             const conditionExpressionType = GetExpressionType(condition);
                             if (conditionExpressionType !== "boolean")
                             {
+                                const headerDropArea = (i === 0)
+                                    ? statement.srcElement.mainBlock.headerDropAreas[0].dropArea
+                                    : statement.srcElement.secondaryBlocksContainer.children[i - 1].uiElementData.headerDropAreas[0].dropArea;
+
                                 errors.push({
-                                    message: "The condition of an If statement must be boolean expressions (currently: " + conditionExpressionType + ")",
-                                    data: []
+                                    message: "{{The condition}} of an {{If statement}} must be boolean expressions (currently: " + conditionExpressionType + ")",
+                                    data: [headerDropArea, statement.srcElement.element]
                                 });
                             }
                         }
@@ -391,9 +424,9 @@ compiler.CheckVariables = function(compiledFunction, errors)
                             if (compiledFunction.returnType !== expressionType)
                             {
                                 errors.push({
-                                    message: "Value returned must be " + AnOrA(compiledFunction.returnType) + " "
+                                    message: "{{Value returned}} must be " + AnOrA(compiledFunction.returnType) + " "
                                         + compiledFunction.returnType + " (currently: " + expressionType + ")",
-                                    data: []
+                                    data: [statement.srcElement.dropArea]
                                 });
                             }
                         }
@@ -445,13 +478,42 @@ compiler.GenerateProgramJSON = function(errorsByFunctions)
         if (errors.length !== 0)
             errorsByFunctions[functionName] = errors;
     }
-    
+
     CompileFunction(MainFunction);
-    
+
     for (let guid in customFunctions)
         CompileFunction(customFunctions[guid]);
-        
+
     return program;
+};
+
+compiler.RemoveSrcElementsFromJSON = function(jsonObj)
+{
+    // remove srcElement references from compiled program
+    const stack = [];
+    for (let functionName in jsonObj)
+        stack.push(jsonObj[functionName]);
+
+    while (stack.length !== 0)
+    {
+        const current = stack.pop();
+        
+        const keys = Object.keys(current);
+        for (let key of keys)
+        {
+            if (key === "srcElement")
+            {
+                delete current[key];
+                continue;
+            }
+
+            const obj = current[key];
+            if (typeof obj === "object" && obj !== null)
+                stack.push(obj);
+        }
+    }
+
+    return jsonObj
 };
 
 compiler.LoadProgram = function(jsonString)
@@ -533,6 +595,8 @@ compiler.elementTypesToClasses = {
     binaryBooleanExpression: BinaryBooleanExpression,
     binaryNumericExpression: BinaryNumericExpression,
     binaryStringExpression: BinaryStringExpression,
+    unaryBooleanExpression: UnaryBooleanExpression,
+    unaryNumericExpression: UnaryNumericExpression,
     numberComparison: NumberComparison,
     stringComparison: StringComparison,
     numberLiteralExpression: NumberLiteralExpression,
@@ -550,7 +614,7 @@ compiler.elementTypesToClasses = {
 compiler.lastProgram = undefined;
 compiler.DebugReloadProgram = function()
 {
-    const program = compiler.lastProgram || JSON.stringify(this.GenerateProgramJSON([]));
+    const program = compiler.lastProgram || JSON.stringify(compiler.RemoveSrcElementsFromJSON(compiler.GenerateProgramJSON([])));
     let error;
     try
     {
