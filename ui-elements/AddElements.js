@@ -41,9 +41,10 @@ const elementHandler = {};
         {
             if (ev.button === 0)
             {
-                const newElement = searchKeywords[searchResultButtons[index].innerHTML](elementHandler.functionBodyDragContainers[elementHandler.activeFunctionGuid]);
-                newElement.element.style.top = "20px";
-                newElement.element.style.left = "20px";
+                const parentNode = elementHandler.functionBodyDragContainers[elementHandler.activeFunctionGuid];
+                const newElement = searchKeywords[searchResultButtons[index].innerHTML](parentNode);
+                newElement.element.style.left = (parentNode.parentNode.scrollLeft + 20) + "px";
+                newElement.element.style.top = (parentNode.parentNode.scrollTop + 20) + "px";
                 searchBox.value = "";
             }
         };
@@ -151,7 +152,17 @@ elementHandler.SwitchToFunction = function(functionGuid, hideFunctionSelector)
 {
     const dragArea = document.getElementById("main-drag-area");
     let functionDragContainer = elementHandler.functionBodyDragContainers.getOwnProperty(functionGuid);
-    const functionData = customFunctions.getOwnProperty(functionGuid) || MainFunction;
+    let functionData = customFunctions.getOwnProperty(functionGuid);
+    if (!functionData)
+    {
+        if (MainFunction.guid === functionGuid)
+            functionData = MainFunction;
+        else
+        {
+            // deleted function
+            return;
+        }
+    }
 
     if (!elementHandler.functionBodyDragContainers.hasOwnProperty(functionGuid))
     {

@@ -69,7 +69,60 @@ compiler.CompileAndRun = async function()
                     const span = document.createElement("span");
                     span.className = "console-error-link";
                     span.innerText = segments[i];
-                    span.onclick = () => helper.Flash(dataElement);
+
+                    let parentNode; // calculate later if needed
+
+                    const functionGuid = functionName === "Main" ? MainFunction.guid : customFunctionsByName[functionName].guid;
+                    span.onclick = () =>
+                    {
+                        if (functionGuid !== elementHandler.activeFunctionGuid)
+                            elementHandler.SwitchToFunction(functionGuid, false);
+
+                        if (!parentNode)
+                        {
+                            parentNode = dataElement;
+                            while (parentNode && !parentNode.uiElementData)
+                                parentNode = parentNode.parentNode;
+
+                            parentNode = parentNode.uiElementData.parentNode.parentNode;
+
+                            if (!parentNode)
+                                return;
+                        }
+
+                        const rect = dataElement.getBoundingClientRect();
+                        const parentRect = parentNode.getBoundingClientRect();
+                        const elementLeft = rect.left + parentNode.scrollLeft - parentRect.left;
+                        const elementTop = rect.top + parentNode.scrollTop - parentRect.top;
+                        const elementRight = elementLeft + rect.width;
+                        const elementBottom = elementTop + rect.height;
+                        const parentNodeWidth = parentRect.width;
+                        const parentNodeHeight = parentRect.height;
+
+                        const margin = 40;
+
+                        const overflowLeft = margin + parentNode.scrollLeft - elementLeft;
+                        const overflowRight = elementRight + margin - (parentNodeWidth + parentNode.scrollLeft);
+                        if (overflowLeft > 0 || overflowRight > 0)
+                        {
+                            if (overflowLeft > 0 || rect.width + margin * 2 > parentNodeWidth)
+                                parentNode.scrollLeft = elementLeft - margin;
+                            else
+                                parentNode.scrollLeft = elementRight + margin - parentNodeWidth;
+                        }
+
+                        const overflowTop = margin + parentNode.scrollTop - elementTop;
+                        const overflowBottom = elementBottom + margin - (parentNodeHeight + parentNode.scrollTop);
+                        if (overflowTop > 0 || overflowBottom > 0)
+                        {
+                            if (overflowTop > 0 || rect.height + margin * 2 > parentNodeHeight)
+                                parentNode.scrollTop = elementTop - margin;
+                            else
+                                parentNode.scrollTop = elementBottom + margin - parentNodeHeight;
+                        }
+
+                        helper.Flash(dataElement);
+                    }
 
                     consoleLineDiv.appendChild(span);
                 }
