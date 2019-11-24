@@ -70,6 +70,7 @@
     align-items: center;
     justify-content: center;
     user-select: none;
+    cursor: pointer;
 }
 
 .block > .container > .mainblock-container > .mainblock-borderleft
@@ -94,12 +95,14 @@
 
 .drop-placeholder
 {
-    height: 30px;
+    height: 100%;
+    margin-top: -1px;
     display: flex;
     align-self: stretch;
     align-items: center;
     justify-content: center;
     user-select: none;
+    cursor: pointer;
 }
 
 .drop-highlight

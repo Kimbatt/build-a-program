@@ -24,6 +24,7 @@ const elementHandler = {};
         "Function call": d => new FunctionCall(d),
         "Return statement": d => new ReturnStatement(d)
     };
+    elementHandler.searchKeywords = searchKeywords;
 
     for (let keyword in searchKeywords)
         stringMap.add(keyword, searchKeywords[keyword]);
@@ -183,18 +184,159 @@ elementHandler.SwitchToFunction = function(functionGuid, hideFunctionSelector)
         document.getElementById("function-selector-overlay").style.display = "none";
 };
 
-(() =>
-{
-    // create main function element here
-    elementHandler.CreateNewFunctionBody("Main");
-
-    elementHandler.activeFunctionGuid = MainFunction.guid;
-    document.getElementById("main-drag-area").appendChild(elementHandler.functionBodyDragContainers[MainFunction.guid]);
-})();
-
 elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
 {
     elementHandler.SwitchToFunction(MainFunction.guid, hideFunctionSelector);
 };
 
-elementHandler.SwitchToMainFunction(false);
+// quick add elements
+(() =>
+{
+    // prepare element selectors by types
+    // possible types: number, boolean, string, expression, statement
+
+    elementHandler.quickAddElements = {
+        number: {
+            "Variable": d => new VariableExpression(d),
+            "Number": d => new NumberLiteralExpression(d),
+            "Numeric expression": d => new BinaryNumericExpression(d),
+            "Unary numeric expression": d => new UnaryNumericExpression(d),
+            "Function call": d => new FunctionCall(d),
+        },
+        boolean: {
+            "Variable": d => new VariableExpression(d),
+            "Boolean value": d => new BooleanLiteralExpression(d),
+            "Binary boolean expression": d => new BinaryBooleanExpression(d),
+            "Unary boolean expression": d => new UnaryBooleanExpression(d),
+            "Number comparison": d => new NumberComparison(d),
+            "String comparison": d => new StringComparison(d),
+            "Function call": d => new FunctionCall(d),
+        },
+        string: {
+            "Variable": d => new VariableExpression(d),
+            "String": d => new StringLiteralExpression(d),
+            "String expression": d => new BinaryStringExpression(d),
+            "Function call": d => new FunctionCall(d),
+        },
+        expression: {
+            "Variable": d => new VariableExpression(d),
+            "Function call": d => new FunctionCall(d),
+            "Number": d => new NumberLiteralExpression(d),
+            "Numeric expression": d => new BinaryNumericExpression(d),
+            "Unary numeric expression": d => new UnaryNumericExpression(d),
+            "Number comparison": d => new NumberComparison(d),
+            "Boolean value": d => new BooleanLiteralExpression(d),
+            "Binary boolean expression": d => new BinaryBooleanExpression(d),
+            "Unary boolean expression": d => new UnaryBooleanExpression(d),
+            "String": d => new StringLiteralExpression(d),
+            "String expression": d => new BinaryStringExpression(d),
+            "String comparison": d => new StringComparison(d),
+        },
+        statement: {
+            "Variable declaration": d => new VariableDeclaration(d),
+            "Variable assignment": d => new VariableAssignment(d),
+            "If statement": d => new IfStatement(d),
+            "While statement": d => new WhileStatement(d),
+            "Function call": d => new FunctionCall(d),
+            "Return statement": d => new ReturnStatement(d)
+        }
+    };
+
+    elementHandler.quickAddOverlays = {};
+
+    for (let type in elementHandler.quickAddElements)
+    {
+        const overlay = document.createElement("div");
+        overlay.className = "fullscreen-overlay";
+        overlay.style.display = "none";
+
+        function HideCurrentOverlay()
+        {
+            overlay.style.display = "none";
+            elementHandler.currentTargetDropArea = undefined;
+            elementHandler.currentTargetParentNode = undefined;
+        }
+
+        overlay.onclick = HideCurrentOverlay;
+
+        const box = document.createElement("div");
+        box.style.background = "black";
+        box.style.borderRadius = "10px";
+        box.style.fontSize = "24px";
+        box.style.border = "2px solid #4e4e4e";
+        box.style.position = "absolute";
+        box.style.display = "grid";
+        box.onclick = ev => ev.stopPropagation();
+
+        const boxTitle = document.createElement("div");
+        boxTitle.innerText = "Quick add";
+        boxTitle.style.gridRow = "1";
+        boxTitle.style.gridColumn = "1 / span 2";
+        boxTitle.style.textAlign = "center";
+        boxTitle.style.margin = "12px 0px";
+        box.appendChild(boxTitle);
+
+        const elements = elementHandler.quickAddElements[type];
+        let index = 0;
+
+        for (let elementType in elements)
+        {
+            const elementConstructor = elements[elementType];
+
+            const addButton = document.createElement("button");
+            addButton.className = "buttonbutton";
+            addButton.onclick = () =>
+            {
+                const newElement = elementConstructor(elementHandler.currentTargetParentNode);
+                draggable.ForceDrop(newElement.element, elementHandler.currentTargetDropArea);
+                HideCurrentOverlay();
+            };
+
+            addButton.innerText = elementType;
+            addButton.style.gridRow = ((index >> 1) + 2).toString();
+            addButton.style.gridColumn = ((index & 1) + 1).toString();
+            addButton.style.margin = "6px";
+
+            box.appendChild(addButton);
+
+            ++index;
+        }
+
+        elementHandler.quickAddOverlays[type] = overlay;
+        overlay.appendChild(box);
+        document.body.appendChild(overlay);
+    }
+})();
+
+elementHandler.currentTargetDropArea = undefined;
+elementHandler.currentTargetParentNode = undefined;
+elementHandler.RegisterQuickAdd = function(parentNode, dropArea, elem, type)
+{
+    elem.title = "Quick add";
+    elem.addEventListener("click", ev =>
+    {
+        if (ev.button !== 0)
+            return;
+
+        elementHandler.currentTargetDropArea = dropArea;
+        elementHandler.currentTargetParentNode = parentNode;
+        const overlay = elementHandler.quickAddOverlays[type];
+        overlay.style.display = "";
+        const box = overlay.children[0];
+        const elementRect = elem.getBoundingClientRect();
+        const elementCenterX = elementRect.x + elementRect.width * 0.5;
+        const elementCenterY = elementRect.y + elementRect.height * 0.5;
+
+        const boxRect = box.getBoundingClientRect();
+        const parentNodeRect = parentNode.parentNode.getBoundingClientRect();
+
+        const margin = 40;
+        const minX = parentNodeRect.x + margin;
+        const maxX = parentNodeRect.x + parentNodeRect.width - margin - boxRect.width;
+        const minY = parentNodeRect.y + margin;
+        const maxY = parentNodeRect.y + parentNodeRect.height - margin - boxRect.height;
+
+        box.style.left = Math.min(Math.max(minX, elementCenterX - boxRect.width * 0.5), maxX) + "px";
+        box.style.top = Math.min(Math.max(minY, elementCenterY - boxRect.height * 0.5), maxY) + "px";
+    });
+};

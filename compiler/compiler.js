@@ -236,7 +236,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                 if (GetVariableType(expression.variableName) === "unknown")
                 {
                     errors.push({
-                        message: "{{Variable " + expression.variableName + "}} must be declared before using it",
+                        message: "{{Variable \"" + expression.variableName + "\"}} must be declared before using it",
                         data: [expression.srcElement.variableNameInputField]
                     });
                     return false;
@@ -355,7 +355,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     if (ok && GetVariableType(statement.variableName) !== "unknown")
                     {
                         errors.push({
-                            message: "{{Variable " + statement.variableName + "}} was already declared before",
+                            message: "{{Variable \"" + statement.variableName + "\"}} was already declared before",
                             data: [statement.srcElement.variableNameInputField]
                         });
                         ok = false;
@@ -383,7 +383,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                     if (variableNameIsOk && requiredVariableType === "unknown")
                     {
                         errors.push({
-                            message: "{{Variable " + statement.variableName + "}} must be declared before using it",
+                            message: "{{Variable \"" + statement.variableName + "\"}} must be declared before using it",
                             data: [statement.srcElement.variableNameInputField]
                         });
                         variableNameIsOk = false;
@@ -406,7 +406,7 @@ compiler.CheckVariables = function(compiledFunction, errors)
                             && requiredVariableType !== "unknown" && currentExpressionType !== "unknown")
                         {
                             errors.push({
-                                message: "{{Variable " + statement.variableName + "}} is " + AnOrA(requiredVariableType) + " " + requiredVariableType
+                                message: "{{Variable \"" + statement.variableName + "\"}} is " + AnOrA(requiredVariableType) + " " + requiredVariableType
                                     + ", cannot assign {{" + AnOrA(currentExpressionType) + " " + currentExpressionType + "}} to it",
                                 data: [statement.srcElement.variableNameInputField, statement.srcElement.expressionDropArea]
                             });

@@ -67,6 +67,7 @@ class BlockBase extends StatementBase
             dropAreaPlaceholder.innerText = "+";
             dropArea.appendChild(dropAreaPlaceholder);
             headerElement.dropAreaPlaceholder = dropAreaPlaceholder;
+            elementHandler.RegisterQuickAdd(this.parentNode, dropArea, dropAreaPlaceholder, expressionType);
 
             draggable.CreateDropArea(dropArea,
             {
@@ -129,6 +130,7 @@ class BlockBase extends StatementBase
         this.mainBlockPlaceholder = document.createElement("div");
         this.mainBlockPlaceholder.className = "mainblock-placeholder";
         this.mainBlockPlaceholder.innerText = "+";
+        elementHandler.RegisterQuickAdd(this.parentNode, this.mainBlock, this.mainBlockPlaceholder, "statement");
 
         this.mainBlock.appendChild(this.mainBlockPlaceholder);
         this.mainBlockPlaceholderActive = true;

@@ -34,6 +34,7 @@ class BinaryExpression extends ExpressionBase
         this.expression1PlaceholderPlus.className = "expression-placeholder";
         this.expression1PlaceholderPlus.innerText = "+";
         this.expression1.appendChild(this.expression1PlaceholderPlus);
+        elementHandler.RegisterQuickAdd(this.parentNode, this.expression1, this.expression1PlaceholderPlus, acceptsType);
 
         this.operatorSelector = document.createElement("select");
         for (let i = 0; i < texts.length; ++i)
@@ -65,6 +66,7 @@ class BinaryExpression extends ExpressionBase
         this.expression2PlaceholderPlus.className = "expression-placeholder";
         this.expression2PlaceholderPlus.innerText = "+";
         this.expression2.appendChild(this.expression2PlaceholderPlus);
+        elementHandler.RegisterQuickAdd(this.parentNode, this.expression2, this.expression2PlaceholderPlus, acceptsType);
 
         // drag handle
         this.dragHandle = document.createElement("div");
@@ -400,6 +402,7 @@ class UnaryExpression extends ExpressionBase
         this.expressionPlaceholderPlus.className = "expression-placeholder";
         this.expressionPlaceholderPlus.innerText = "+";
         this.expression.appendChild(this.expressionPlaceholderPlus);
+        elementHandler.RegisterQuickAdd(this.parentNode, this.expression, this.expressionPlaceholderPlus, acceptsType);
 
         this.operatorSelector = document.createElement("select");
         for (let i = 0; i < texts.length; ++i)

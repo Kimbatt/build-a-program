@@ -295,6 +295,7 @@ class VariableAssignment extends StatementBase
         dropAreaPlaceholder.className = "drop-placeholder";
         dropAreaPlaceholder.innerText = "+";
         dropArea.appendChild(dropAreaPlaceholder);
+        elementHandler.RegisterQuickAdd(this.parentNode, dropArea, dropAreaPlaceholder, "expression");
 
         let expressionIsEmpty = true;
 
@@ -594,6 +595,7 @@ class FunctionCall extends ElementBase
         dropAreaPlaceholder.className = "drop-placeholder";
         dropAreaPlaceholder.innerHTML = "+&nbsp;<span style=\"font-style: italic;\">" + paramName + "</span>";
         dropArea.appendChild(dropAreaPlaceholder);
+        elementHandler.RegisterQuickAdd(this.parentNode, dropArea, dropAreaPlaceholder, requiredType);
 
         let expressionIsEmpty = true;
 
@@ -742,6 +744,7 @@ class ReturnStatement extends StatementBase
         dropAreaPlaceholder.className = "drop-placeholder";
         dropAreaPlaceholder.innerHTML = "+";
         this.dropArea.appendChild(dropAreaPlaceholder);
+        elementHandler.RegisterQuickAdd(this.parentNode, this.dropArea, dropAreaPlaceholder, "expression");
 
         let expressionIsEmpty = true;
 
