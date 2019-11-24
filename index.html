@@ -115,7 +115,12 @@
         <div class="header-text">Description:</div>
         <input class="text-input normal-text" id="function-editor-function-description" placeholder="Function description" onchange="functionEditor.FunctionEditorParameterChanged(true)">
         <div class="header-text">Return type:</div>
-        <select id="function-editor-function-return-type" class="type-selector normal-text" onchange="functionEditor.FunctionEditorParameterChanged(true)"></select>
+        <select id="function-editor-function-return-type" class="type-selector normal-text" onchange="functionEditor.FunctionEditorParameterChanged(true)">
+            <option value="void">Void</option>
+            <option value="number">Number</option>
+            <option value="boolean">Boolean</option>
+            <option value="string">String</option>
+        </select>
         <div class="header-text">Parameters:</div>
         <table id="function-editor-parameters-table" class="function-viewer-parameters-table">
             <tbody>

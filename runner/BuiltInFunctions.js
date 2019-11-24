@@ -20,10 +20,23 @@ const builtInFunctions = {
         returnType: "string",
         parameters: [],
         func: async () => {
-            return {
-                type: "string",
-                value: await Console.Read()
-            };
+            const inputStr = await Console.Read();
+            if (runner.aborted)
+            {
+                // because Console.Read blocks the program running, we need to check if the program was stopped
+                // if it was stopped, we need to return an error here
+
+                return {
+                    errorType: "aborted"
+                };
+            }
+            else
+            {
+                return {
+                    type: "string",
+                    value: inputStr
+                };
+            }
         }
     },
 

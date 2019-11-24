@@ -528,10 +528,10 @@ class FunctionCall extends ElementBase
                 const currentType = droppedParam.uiElementData.getType();
                 const requiredType = functionParams[i].type;
 
-                if (currentType !== requiredType)
-                    typeMismatch = true;
-                else
+                if (currentType === requiredType || currentType === "any")
                     draggable.ForceDrop(droppedParam, this.parameterDropAreasContainer.children[i]);
+                else
+                    typeMismatch = true;
             }
             else
             {

@@ -67,7 +67,7 @@ runner.RunFunction = async function(func, parameterValues)
     }
 
     // no explicit return statement
-    // if the function is void, it's fine
+    // if the function is void, then it's fine
     // if it's not void, then we return the default value
     switch (func.returnType)
     {
@@ -101,7 +101,14 @@ runner.running = false;
 runner.RunButtonClicked = function()
 {
     if (runner.running)
+    {
         runner.aborted = true;
+        if (Console.enterPressedCallback)
+        {
+            Console.enterPressedCallback();
+            Console.enterPressedCallback = undefined;
+        }
+    }
     else
         compiler.CompileAndRun();
 };
