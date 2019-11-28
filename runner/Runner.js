@@ -151,6 +151,12 @@ runner.ProgramStartedRunning = function()
     runButton.innerText = "Stop";
     spinner.classList.remove("loading-spinner-hidden");
     spinner.classList.add("loading-spinner-visible");
+
+    document.getElementById("main-drag-area").style.pointerEvents = "none";
+    document.getElementById("search-box").disabled = true;
+    document.getElementById("function-editor-list-button").disabled = true;
+    document.getElementById("save-program-button").disabled = true;
+    document.getElementById("quit-to-menu-button").disabled = true;
 };
 
 runner.ProgramFinishedRunning = function(success)
@@ -163,6 +169,13 @@ runner.ProgramFinishedRunning = function(success)
     runButton.innerText = "Run";
     spinner.classList.remove("loading-spinner-visible");
     spinner.classList.add("loading-spinner-hidden");
+
+    document.getElementById("main-drag-area").style.pointerEvents = "";
+    document.getElementById("search-box").disabled = false;
+    document.getElementById("function-editor-list-button").disabled = false;
+    document.getElementById("save-program-button").disabled = false;
+    document.getElementById("quit-to-menu-button").disabled = false;
+
     Console.CancelRead();
 
     if (success)
