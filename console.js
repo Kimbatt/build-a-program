@@ -51,6 +51,7 @@ Console.CheckConsoleMaxSize = function()
     }
 };
 
+Console.pendingConsoleLines = [];
 Console.Write = function(arg)
 {
     const line = Console.GetConsoleLineDiv(arg, "console-line");
@@ -59,30 +60,45 @@ Console.Write = function(arg)
     else if (arg === "") // special case for empty string
         line.innerHTML = "&nbsp;";
 
-    Console.consoleLinesDiv.appendChild(line);
+    Console.pendingConsoleLines.push(line);
+};
+
+Console.FinalizeWrite = function()
+{
+    Console.consoleLinesDiv.style.display = "none";
+    while (Console.pendingConsoleLines.length !== 0)
+    {
+        const line = Console.pendingConsoleLines.shift();
+        Console.consoleLinesDiv.appendChild(line);
+    }
+
     Console.CheckConsoleMaxSize();
+    Console.consoleLinesDiv.style.display = "";
+    Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
 };
 
 Console.Error = function(arg)
 {
-    Console.consoleLinesDiv.appendChild(Console.GetConsoleLineDiv(arg, "console-line console-line-error"));
-    Console.CheckConsoleMaxSize();
+    Console.pendingConsoleLines.push(Console.GetConsoleLineDiv(arg, "console-line console-line-error"));
 };
 
 Console.Notification = function(arg)
 {
-    Console.consoleLinesDiv.appendChild(Console.GetConsoleLineDiv(arg, "console-line console-line-notification"));
-    Console.CheckConsoleMaxSize();
+    Console.pendingConsoleLines.push(Console.GetConsoleLineDiv(arg, "console-line console-line-notification"));
 };
 
 Console.Clear = function()
 {
+    Console.pendingConsoleLines.length = 0;
+
+    Console.consoleLinesDiv.style.display = "none";
     while (Console.consoleLinesDiv.lastChild)
     {
         const line = Console.consoleLinesDiv.lastChild;
         Console.consoleLinesPool.push(line);
         Console.consoleLinesDiv.removeChild(line);
     }
+    Console.consoleLinesDiv.style.display = "";
 };
 
 Console.enterPressedCallback = undefined;
@@ -110,6 +126,7 @@ Console.Read = async function()
     const inputElement = inputContainerDiv.querySelector("#console-input");
     inputElement.value = "";
     inputContainerDiv.style.display = "";
+    Console.FinalizeWrite();
     inputElement.focus();
 
     await new Promise(resolve => Console.enterPressedCallback = resolve);

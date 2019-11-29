@@ -20,7 +20,7 @@ runner.HandleBlockStatement = async function(data, parentBlock)
         const now = performance.now();
         if (now > runner.lastFrameCheckTime + runner.maxFrameTime)
         {
-            Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
+            Console.FinalizeWrite();
 
             // wait for a browser update
             runner.lastFrameCheckTime = now;

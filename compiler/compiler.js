@@ -139,7 +139,7 @@ compiler.CompileAndRun = async function()
     compiler.RemoveSrcElementsFromJSON(compiled);
     await runner.RunProgram(compiled);
 
-    Console.consoleLinesDiv.scrollTo(0, Console.consoleLinesDiv.scrollHeight);
+    Console.FinalizeWrite();
 };
 
 /**

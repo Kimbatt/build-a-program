@@ -180,4 +180,6 @@ runner.ProgramFinishedRunning = function(success)
 
     if (success)
         Console.Notification("Program finished running");
+
+    Console.FinalizeWrite();
 };
