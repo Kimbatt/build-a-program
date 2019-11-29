@@ -405,11 +405,21 @@ compiler.CheckVariables = function(compiledFunction, errors)
                         if (expressionIsOk && requiredVariableType !== currentExpressionType
                             && requiredVariableType !== "unknown" && currentExpressionType !== "unknown")
                         {
-                            errors.push({
-                                message: "{{Variable \"" + statement.variableName + "\"}} is " + AnOrA(requiredVariableType) + " " + requiredVariableType
-                                    + ", cannot assign {{" + AnOrA(currentExpressionType) + " " + currentExpressionType + "}} to it",
-                                data: [statement.srcElement.variableNameInputField, statement.srcElement.expressionDropArea]
-                            });
+                            if (currentExpressionType === "void")
+                            {
+                                errors.push({
+                                    message: "{{Function}} has void return type, it cannot be used as an expression",
+                                    data: [statement.srcElement.expressionDropArea]
+                                });
+                            }
+                            else
+                            {
+                                errors.push({
+                                    message: "{{Variable \"" + statement.variableName + "\"}} is " + AnOrA(requiredVariableType) + " " + requiredVariableType
+                                        + ", cannot assign {{" + AnOrA(currentExpressionType) + " " + currentExpressionType + "}} to it",
+                                    data: [statement.srcElement.variableNameInputField, statement.srcElement.expressionDropArea]
+                                });
+                            }
                         }
                     }
 

@@ -189,7 +189,14 @@ menu.LoadProgramFromFile = async function(file)
             return;
     }
 
-    localStorage.setItem(programName, resultText);
+    try
+    {
+        localStorage.setItem(programName, resultText);
+    }
+    catch (e)
+    {
+        await Alert("Cannot import program: the browser's local storage is full");
+    }
 
     // refresh lines
     menu.ShowLoadProgramOverlay(true);
@@ -227,19 +234,29 @@ menu.SaveProgram = async function(programName, programDataJSON)
         return false;
 
     menu.ShowLoading();
+    let compressed;
     try
     {
-        const compressed = await LZMA.compress_async(programDataJSON, 9, true);
-        localStorage.setItem(menu.programPrefix + programName, compressed);
+        compressed = await LZMA.compress_async(programDataJSON, 9, true);
     }
     catch (e)
     {
-        await Alert("Error saving program");
+        await Alert("Error saving program: failed to compress the data");
         return false;
     }
     finally
     {
         menu.HideLoading();
+    }
+
+    try
+    {
+        localStorage.setItem(menu.programPrefix + programName, compressed);
+    }
+    catch (e)
+    {
+        await Alert("Error saving program: the browser's local storage is full");
+        return false;
     }
 
     return true;

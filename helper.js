@@ -1,7 +1,7 @@
 
 const helper = {};
 
-helper.GetCoords = function(elem) // https://stackoverflow.com/a/26230989
+helper.GetCoords = function(elem)
 {
     const rect = elem.getBoundingClientRect();
 
