@@ -18,7 +18,7 @@ runner.EvaluateVariable = async function(data, parentBlock)
     return {
         type: variableValue.type,
         value: variableValue.value
-    }
+    };
 };
 
 runner.EvaluateUnaryBooleanExpression = async function(data, parentBlock) // operator boolean -> boolean
@@ -27,7 +27,7 @@ runner.EvaluateUnaryBooleanExpression = async function(data, parentBlock) // ope
 
     const ret = {
         type: "boolean"
-    }
+    };
 
     const result = await runner.EvaluateExpression(value, parentBlock);
     if (result.hasOwnProperty("errorType"))
@@ -55,7 +55,7 @@ runner.EvaluateBinaryBooleanExpression = async function(data, parentBlock) // bo
 
     const ret = {
         type: "boolean"
-    }
+    };
 
     const firstResult = await runner.EvaluateExpression(first, parentBlock);
     if (firstResult.hasOwnProperty("errorType"))
@@ -122,7 +122,7 @@ runner.EvaluateUnaryNumericExpression = async function(data, parentBlock) // ope
 
     const ret = {
         type: "number"
-    }
+    };
 
     const result = await runner.EvaluateExpression(value, parentBlock);
     if (result.hasOwnProperty("errorType"))
@@ -155,7 +155,7 @@ runner.EvaluateBinaryNumericExpression = async function(data, parentBlock) // nu
 
     const ret = {
         type: "number"
-    }
+    };
 
     const firstResult = await runner.EvaluateExpression(first, parentBlock);
     if (firstResult.hasOwnProperty("errorType"))
@@ -219,7 +219,7 @@ runner.EvaluateNumberComparison = async function(data, parentBlock) // number op
 
     const ret = {
         type: "boolean"
-    }
+    };
 
     const firstResult = await runner.EvaluateExpression(first, parentBlock);
     if (firstResult.hasOwnProperty("errorType"))
@@ -268,7 +268,7 @@ runner.EvaluateStringComparison = async function(data, parentBlock) // string op
 
     const ret = {
         type: "boolean"
-    }
+    };
 
     const firstResult = await runner.EvaluateExpression(first, parentBlock);
     if (firstResult.hasOwnProperty("errorType"))
@@ -305,7 +305,7 @@ runner.EvaluateBinaryStringExpression = async function(data, parentBlock) // str
 
     const ret = {
         type: "string"
-    }
+    };
 
     const firstResult = await runner.EvaluateExpression(first, parentBlock);
     if (firstResult.hasOwnProperty("errorType"))
