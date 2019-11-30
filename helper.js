@@ -277,6 +277,7 @@ if (!window.HTMLDivElement.prototype.scrollTo)
 }
 
 // setImmediate.js from https://github.com/YuzuJS/setImmediate
+// used for not freezing the browser if the user program runs for a long time
 
 // Copyright (c) 2012 Barnesandnoble.com, llc, Donavon West, and Domenic Denicola
 
@@ -299,7 +300,6 @@ if (!window.HTMLDivElement.prototype.scrollTo)
 // OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-// used for not freezing the browser if the user program runs for a long time
 (function (global, undefined) {
     "use strict";
 

@@ -130,7 +130,7 @@ runner.RunProgram = async function(program)
                 success = false;
                 break;
             case "aborted":
-                Console.Error("Program running was aborted");
+                Console.Error("Program running was stopped");
                 success = false;
                 break;
         }

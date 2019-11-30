@@ -3,7 +3,7 @@
 
 <head>
 <meta charset="utf-8">
-<title>Builder</title>
+<title>Build-a-program</title>
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="ui-elements/Block.css">
 <link rel="stylesheet" href="ui-elements/Statement.css">
@@ -21,7 +21,7 @@
 <div style="display: grid; width: 450px;">
     <button class="buttonbutton main-menu-button" style="grid-row: 1;" onclick="menu.CreateNewProgram()">Create a new program</button>
     <button class="buttonbutton main-menu-button" style="grid-row: 2;" onclick="menu.ShowLoadProgramOverlay(true)">Load program</button>
-    <button class="buttonbutton main-menu-button" style="grid-row: 3;">Help</button>
+    <button class="buttonbutton main-menu-button" style="grid-row: 3;" onclick="document.getElementById('help-overlay').style.display=''">Help</button>
 </div>
 
 <div id="program-loader-overlay" class="fullscreen-overlay" style="display: none;" onclick="menu.ShowLoadProgramOverlay(false)">
@@ -30,9 +30,92 @@
         <div id="program-loader-available-programs" style="height: calc(100% - 62px); overflow-y: auto; border: 2px solid #2c2c2c;"></div>
         <input id="program-load-from-file" type="file" style="display: none;" accept=".program" onclick="this.value=null" onchange="menu.LoadProgramFromFile(this.files[0])">
         <a id="program-exporter-link" style="display: none;"></a>
-        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton" onclick="document.getElementById('program-load-from-file').click()">Import from file</button>
+        <button style="position: absolute; top: 11px; right: 11px;" class="buttonbutton" onclick="menu.ShowLoadProgramOverlay(false)">Close</button>
+        <button style="position: absolute; top: 11px; right: 122px;" class="buttonbutton" onclick="document.getElementById('program-load-from-file').click()">Import from file</button>
     </div>
 </div>
+
+<div id="help-overlay" class="fullscreen-overlay" style="display: none;" onclick="document.getElementById('help-overlay').style.display='none'">
+    <div id="help-div" style="display: table; margin-top: 30px; margin-bottom: 30px;" onclick="event.stopPropagation()">
+        <div>
+            <div style="font-size: 40px; margin-bottom: 40px;">Help</div>
+            <button class="buttonbutton" style="position: absolute; top: 10px; right: 10px;" onclick="document.getElementById('help-overlay').style.display='none'">Close</button>
+        </div>
+        <div style="font-size: 24px; line-height: 40px;">
+            Welcome to Build-a-program! This application lets you build a computer program, without knowing how to write code.
+            <br><br>
+            To begin, select "Create a new program" from the main menu, and enter a name for your program.
+            <br>
+            After entering the name, you'll be able to see the program editor, and the Main function.
+            Search for elements in the search box, or click on the + icon to add new program elements.
+            <br><br>
+            You move an element by clicking the light blue colored line on the left side of an element, then moving your mouse around.
+            <br><br>
+            Each element you add is a statement, or an expression in computer programming.
+            The statemets that are added to the Main function, will be executed in order (from top to bottom).
+            To add a statement to the Main function, drag it to the Main function's drop area, then release the mouse button to drop it.
+            After dropping the element, it will be part of the program.
+            <br><br>
+            Here, you can learn about what each statement does:
+            <ul>
+                <li>Variable declaration: Creates a new variable that can store data.
+                    The type of a variable can be either a number, a boolean value (true or false), or a string (text value).
+                    The value of these variables can be later used in your program. Also, you can assign a new value to a variable any time.</li>
+                <br>
+                <li>Variable assignment: Assign a new value to the given variable. The value must match the type of the variable.</li>
+                <br>
+                <li>If Statement: An If Statement is made out of one or more blocks, and one or more conditions.
+                    A block of an If Statement only executes, if its condition is true.
+                    If it is false, then the next condition is checked, and if it's true, then its block is executed.
+                    If neither of the conditions are true, then the "else block" will be executed (if any).</li>
+                <br>
+                <li>While Statement: Similar to the If Statement, but the While Statement can execute the block multiple times,
+                    WHILE the condition is true (unlike the If Statement, which executes only one block, only once).</li>
+                <br>
+                <li>Function call: Calls the selected function, which either returns a value, or does something.
+                    See each function's description for more information.
+                    You can also create your own functions by clicking the "Functions" button in the editor.</li>
+                <br>
+                <li>Return statement: Exits the current function. If the function has a non-void return type, then a return value is also required.
+                    The returned value will be assigned to the Function call element that called this function.</li>
+            </ul>
+            <br>
+            And here, you can learn about the expressions:
+            <ul>
+                <li>Number, Boolean value, String: Constant values of the given type.</li>
+                <br>
+                <li>Variable: Gets the value of the given variable.</li>
+                <br>
+                <li>Numeric expression: Performs a mathematical operation on the two given numeric values (e.g. addition, subtraction, etc.)</li>
+                <br>
+                <li>Unary numeric expression: Performs a mathematical operation on a single numeric value (e.g. negate, absolute value, etc.)</li>
+                <br>
+                <li>Number comparison: Compares the two given numbers, and returns true or false depending on the operation (e.g. greater than, equals, etc.)</li>
+                <br>
+                <li>Binary boolean expression: Performs a boolean operation on the two given boolean values (e.g. and, or, etc.)</li>
+                <br>
+                <li>Unary boolean expression: Only one operation, the negate operation: negates the given boolean value.</li>
+                <br>
+                <li>String expression: Only one operation, the string concatenation: concatenates the two given string values.</li>
+                <br>
+                <li>String comparison: Decides if the two string values are equal or not.</li>
+            </ul>
+            <br>
+            You can create new functions by clicking the "Functions" button, and selecting "New function".
+            <br>
+            After entering a name for the function, selecting a return type, and setting up the parameters, the function will be created.
+            After that, you can call this function in your program any time you'd like.
+            These functions can also be edited or deleted later.
+            <br><br>
+            You can run the program any time by clicking the "Run" button. If the program contains any errors, they will be shown in the console.
+            <br>
+            If the program doesn't contain any errors, then the program will be executed, and any output (created by using the Write function) will be written to the console.
+            <br><br>
+            Have fun building!
+        </div>
+    </div>
+</div>
+
 <!-- end of main menu -->
 </div>
 

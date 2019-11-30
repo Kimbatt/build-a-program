@@ -407,7 +407,7 @@ input[type="text"]
     padding: 15px 30px;
 }
 
-#program-loader
+#program-loader, #help-div
 {
     position: relative;
     border: 2px solid #4e4e4e;

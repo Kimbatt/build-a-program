@@ -184,6 +184,8 @@ menu.LoadProgramFromFile = async function(file)
     let programName = menu.programPrefix + (index === -1 ? file.name : file.name.substring(0, index));
     if (localStorage.getItem(programName) !== null)
     {
+        await Alert("A program with this name already exists.\nPlease enter a different name to import this program.");
+
         programName = await menu.PromptProgramName();
         if (!programName)
             return;

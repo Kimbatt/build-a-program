@@ -271,7 +271,7 @@ const builtInFunctions = {
     },
     Random: {
         name: "Random",
-        description: "Returns a random number between min and max (min: inclusive, max: exclusive).",
+        description: "Returns a random real number between min and max (min: inclusive, max: exclusive).",
         returnType: "number",
         parameters: [
             {

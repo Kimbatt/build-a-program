@@ -1,6 +1,7 @@
 
 const elementHandler = {};
 
+// Setup
 (() =>
 {
     const stringMap = new StringMap();
@@ -189,7 +190,7 @@ elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
     elementHandler.SwitchToFunction(MainFunction.guid, hideFunctionSelector);
 };
 
-// quick add elements
+// Setup quick add
 (() =>
 {
     // prepare element selectors by types

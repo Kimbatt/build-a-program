@@ -102,6 +102,7 @@
     cursor: pointer;
     transition: background 0.1s linear;
     white-space: nowrap;
+    user-select: none;
 }
 
 .function-selector-button:hover
