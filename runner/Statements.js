@@ -44,7 +44,10 @@ runner.HandleBlockStatement = async function(data, parentBlock)
         if (!handler)
         {
             console.error("unknown statement, should not happen: " + statement.statementType);
-            continue;
+            return {
+                errorType: "error",
+                errorMessage: "Unknown statement type: " + statement.statementType
+            };
         }
 
         const statementResult = await handler(statement, thisBlock);

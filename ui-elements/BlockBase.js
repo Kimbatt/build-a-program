@@ -230,7 +230,10 @@ class BlockBase extends StatementBase
     {
         --this.childCount;
         if (this.childCount === 0)
+        {
             this.mainBlock.appendChild(this.mainBlockPlaceholder);
+            this.mainBlockPlaceholderActive = true;
+        }
 
         //console.log("detach");
         this.mainBlock.style.minWidth = this.mainBlockMinWidth;

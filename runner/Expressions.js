@@ -1,7 +1,17 @@
 
 runner.EvaluateExpression = async function(data, parentBlock)
 {
-    return await runner.expressionEvaluators[data.expressionType](data, parentBlock);
+    const handler = runner.expressionEvaluators[data.expressionType];
+    if (!handler)
+    {
+        console.error("unknown expression, should not happen: " + data.expressionType);
+        return {
+            errorType: "error",
+            errorMessage: "Unknown expression type: " + data.expressionType
+        };
+    }
+    
+    return await handler(data, parentBlock);
 };
 
 runner.EvaluateLiteral = async function(data, parentBlock)
