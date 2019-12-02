@@ -276,6 +276,23 @@ if (!window.HTMLDivElement.prototype.scrollTo)
     };
 }
 
+if (typeof ClientRect !== "undefined")
+{
+    Object.defineProperty(ClientRect.prototype, "x", {
+        get: function()
+        {
+            return this.left;
+        }
+    });
+
+    Object.defineProperty(ClientRect.prototype, "y", {
+        get: function()
+        {
+            return this.top;
+        }
+    });
+}
+
 // setImmediate.js from https://github.com/YuzuJS/setImmediate
 // used for not freezing the browser if the user program runs for a long time
 

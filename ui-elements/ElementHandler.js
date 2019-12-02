@@ -243,6 +243,7 @@ elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
         }
     };
 
+    const container = document.getElementById("quick-add-overlay-container");
     elementHandler.quickAddOverlays = {};
 
     for (let type in elementHandler.quickAddElements)
@@ -305,7 +306,7 @@ elementHandler.SwitchToMainFunction = function(hideFunctionSelector)
 
         elementHandler.quickAddOverlays[type] = overlay;
         overlay.appendChild(box);
-        document.body.appendChild(overlay);
+        container.appendChild(overlay);
     }
 })();
 
