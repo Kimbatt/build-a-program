@@ -198,6 +198,9 @@ functionEditor.ExitFunctionEditor = async function(save)
         if (/[!"#%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/.test(name))
             return " cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
 
+        if (name === "hasOwnProperty")
+            return " cannot be \"hasOwnProperty\", this name is reserved in JavaScript";
+
         return "OK";
     }
     

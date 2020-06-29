@@ -18,6 +18,9 @@ compiler.CheckVariableName = function(variableName)
     if (/[!"#%&'()*+,.\/:;<=>?@\[\\\]^`{|}~]/.test(variableName))
         return "{{Variable name}} cannot contain any of the following characters: ! \" # % & ' ( ) * + , . / : ; < = > ? @ [ \\ ] ^ ` { | } ~";
 
+    if (variableName === "hasOwnProperty")
+        return "\"hasOwnProperty\" is reserved in JavaScript, it cannot be used as a {{variable name}}";
+
     return "OK";
 };
 
